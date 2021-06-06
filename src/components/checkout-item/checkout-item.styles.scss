@@ -23,10 +23,13 @@
   }
 
   .quantity {
-    padding-left: 20px;
-    .quantity-button{
+    display: flex;
+    .arrow{
       cursor: pointer;
-      padding: 0 3px;
+      user-select: none;
+    }
+    .value {
+      margin: 0 10px;
     }
   }
 

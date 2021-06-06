@@ -11,18 +11,15 @@ export const addItemToCart = (cartItems, cartItemToAdd) => {
   return [...cartItems,{...cartItemToAdd, quantity: 1}];
 }
 
-export const removeItemFromCart = (cartItems,cartItemToRemove) =>{
-  return cartItems.filter(item=> item !== cartItemToRemove);
-}
+export const removeItemFromCart = (cartItems, cartItemToRemove) =>{
+  const existingCartItem = cartItems
+  .find(cartItem => cartItem.id === cartItemToRemove.id);
+  if(existingCartItem.quantity === 1){
+    return cartItems.filter(item=> item.id !== cartItemToRemove.id);
+  }
 
-export const incrementItemFromCart = (cartItems, cartItemToIncrement) =>{
-  
-  return cartItems.map(item=> item.id === cartItemToIncrement.id ?
-    {...item, quantity: item.quantity+1} : item);
-}
-
-export const decrementItemFromCart = (cartItems, cartItemToIncrement) =>{
-  
-  return cartItems.map(item=> (item.id === cartItemToIncrement.id && item.quantity > 1) ?
-    {...item, quantity: item.quantity-1} : item);
+  return cartItems.map(cartItem => cartItem.id === cartItemToRemove.id ? 
+    {...cartItem, quantity: cartItem.quantity -1}
+    : cartItem
+    );
 }
