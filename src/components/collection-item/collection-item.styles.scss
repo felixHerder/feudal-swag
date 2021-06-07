@@ -1,10 +1,12 @@
 .collection-item {
-  width: 22%;
+  width: 22vw;
   display: flex;
   flex-direction: column;
   height: 350px;
   align-items: center;
   position: relative;
+  margin: 0 5px;
+  
 
   .image {
     width: 100%;
@@ -42,14 +44,16 @@
     display: flex;
     justify-content: space-between;
     font-size: 18px;
+    // margin:0 10px;
 
     .name {
-      width: 90%;
+      width: 85%;
       margin-bottom: 15px;
     }
 
     .price {
-      width: 10%;
+      width: 20%;
+      text-align: right;
     }
   }
 }
