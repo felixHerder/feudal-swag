@@ -30,6 +30,7 @@ const mapDispatchToProps = dispatch => ({
   addCartItem: item => dispatch(addCartItem(item)),
   toggleCartHidden: ()=>dispatch(toggleCartHidden())
 });
+
 const mapStateToProps = state =>({
   hidden: state.cart.hidden
 });
