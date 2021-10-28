@@ -2,14 +2,15 @@ import React from 'react';
 import FormInput from '../form-input/form-input.component';
 import CustomButton from '../custom-button/custom-button.component';
 
-import { auth, createUserProfileDocument } from '../../firebase/firebase.utils';
+import {getAuth,createUserWithEmailAndPassword } from 'firebase/auth';
+
+import { createUserProfileDocument } from '../../firebase/firebase.utils';
 
 import './signup.styles.scss';
 
 class SignUp extends React.Component {
   constructor() {
     super();
-
     this.state = {
       displayName: '',
       email: '',
@@ -17,19 +18,26 @@ class SignUp extends React.Component {
       confirmPassword: ''
     }
   }
+  _isMounted = false;
+  onComponentDidMount(){
+    this._isMounted = true;
+  }
+  onComponentWillUnmount(){
+    this._isMounted = false;
+  } 
   handleSubmit = async event =>{
     event.preventDefault();
-
     const { displayName, email, password, confirmPassword } = this.state;
-
     if(password !== confirmPassword){
       alert('passwords don\'t match');
       return;
     }
     try {
-      const {user} = await auth.createUserWithEmailAndPassword(email,password);
+      const {user} = await createUserWithEmailAndPassword(getAuth(),email,password);
+      //create user doc in users collection in Firestore DB
       await createUserProfileDocument(user,{displayName})
-      this.setState({
+      //don't update state if component will unmount
+      this._isMounted && this.setState({
         displayName: '',
         email: '',
         password: '',
