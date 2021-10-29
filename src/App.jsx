@@ -3,11 +3,10 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
-import "./App.css";
 
 import HomePage from "./pages/homepage/homepage.component";
 // import ShopPage from "./pages/shop/shop.component";
-import Header from "./components/header/header.component";
+import Header from "./components/Header";
 import SignInAndSignUpPage from "./pages/signin-and-signup/signin-and-signup.component";
 // import CheckoutPage from "./pages/checkout/checkout.component";
 
@@ -21,17 +20,17 @@ import { selectCurrentUser } from "./redux/user/user.selectors";
 class App extends React.Component {
   render() {
     return (
-      <div>
+      <>
         <Header />
         <Switch>
           <Route exact path="/">
-            <HomePage />
+            {/* <HomePage /> */}
           </Route>
           {/* <Route path="/shop" component={ShopPage} />
           <Route path="/checkout" component={CheckoutPage} /> */}
           <Route path="/signin">{this.props.currentUser ? <Redirect to="/" /> : <SignInAndSignUpPage />}</Route>
         </Switch>
-      </div>
+      </>
     );
   }
 
