@@ -1,5 +1,5 @@
 import React from "react";
-import { Container,SimpleGrid,Center } from "@chakra-ui/react";
+import { Container,SimpleGrid, } from "@chakra-ui/react";
 import SignIn from "../components/Signin";
 import SignUp from "../components/Signup";
 

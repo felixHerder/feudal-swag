@@ -3,8 +3,8 @@ import React from "react";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { createUserProfileDocument } from "../firebase/firebase.utils";
 
-import { FormControl, FormLabel, FormErrorMessage, FormHelperText, Input, Form, InputGroup, InputLeftAddon } from "@chakra-ui/react";
-import { Box, Text, Heading, VStack, Button, Center, Stack, Container, SimpleGrid } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input } from "@chakra-ui/react";
+import { Box, Text, Heading, VStack, Button } from "@chakra-ui/react";
 
 class SignUp extends React.Component {
   state = {
@@ -42,12 +42,10 @@ class SignUp extends React.Component {
       console.log("error creating user", error);
     }
   };
-
   handleChange = (event) => {
     const { name, value } = event.target;
     this.setState({ [name]: value });
   };
-
   render() {
     return (
       <Box>

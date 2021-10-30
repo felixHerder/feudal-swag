@@ -1,41 +1,37 @@
 const INITIAL_STATE = {
   sections: [
     {
-      title: 'coifs',
-      imageUrl: 'https://i.ibb.co/cvpntL1/hats.png',
-      id: 1,
-      linkUrl: 'shop/hats'
+      title: "gauntlets",
+      imageUrl: "https://i.ibb.co/0jqHpnp/sneakers.png",
     },
     {
-      title: 'surcoats',
-      imageUrl: 'https://i.ibb.co/px2tCc3/jackets.png',
-      id: 2,
-      linkUrl: 'shop/jackets'
+      title: "bracers",
+      imageUrl: "https://i.ibb.co/GCCdy8t/womens.png",
     },
     {
-      title: 'clogers',
-      imageUrl: 'https://i.ibb.co/0jqHpnp/sneakers.png',
-      id: 3,
-      linkUrl: 'shop/sneakers'
+      title: "greaves",
+      imageUrl: "https://i.ibb.co/R70vBrQ/men.png",
     },
     {
-      title: 'ladies',
-      imageUrl: 'https://i.ibb.co/GCCdy8t/womens.png',
-      size: 'large',
-      id: 4,
-      linkUrl: 'shop/womens'
+      title: "sabatons",
+      imageUrl: "https://i.ibb.co/R70vBrQ/men.png",
     },
     {
-      title: 'lords',
-      imageUrl: 'https://i.ibb.co/R70vBrQ/men.png',
-      size: 'large',
-      id: 5,
-      linkUrl: 'shop/mens'
-    }
-  ]
-}
+      title: "helmets",
+      imageUrl: "img/helmets/helmet001.jpg",
+    },
+    {
+      title: "breastplate",
+      imageUrl: "https://i.ibb.co/px2tCc3/jackets.png",
+    },
+    {
+      title: "gambesons",
+      imageUrl: "https://i.ibb.co/R70vBrQ/men.png",
+    },
+  ],
+};
 
 const directoryReducer = (state = INITIAL_STATE, action) => {
   return state;
-}
+};
 export default directoryReducer;

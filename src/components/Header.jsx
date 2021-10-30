@@ -5,10 +5,11 @@ import { createStructuredSelector } from "reselect";
 import { selectCurrentUser } from "../redux/user/user.selectors";
 import { getAuth } from "firebase/auth";
 
-import { Container, HStack, Center, Icon, Heading, IconButton, Link, useColorMode, Text, Button, Box, Divider, Portal } from "@chakra-ui/react";
-import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Container, HStack, Center, Icon, Heading, IconButton, useColorMode,  Button, Portal } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem,MenuGroup,MenuDivider } from "@chakra-ui/react";
 import { SunIcon, MoonIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { GiVisoredHelm } from "react-icons/gi";
+import {RiLogoutBoxRLine} from'react-icons/ri'
 import { ReactComponent as Logo } from "../assets/banner.svg";
 import CartPopover from "./CartPopover";
 import DrawerNav from "./NavDrawer";
@@ -21,15 +22,15 @@ const Header = ({ currentUser }) => {
   return (
     <Container h="70px" maxW="container.xl" px={[1, 2, 4]} sx={{ userSelect: "none" }} display="flex" justifyContent="space-between">
       {/* Brand Logo */}
-      <Center as={RouterLink} to="/" h="100%" minW="70px">
+      <Center as={RouterLink} to="/" h="100%" minW={["50px"]}>
         <Icon as={Logo} fill="currentColor" boxSize={8} />
         <Heading as="h1" letterSpacing="tight" size="md" ml={2} display={["none", null, "block"]}>
           Feudal Swag
         </Heading>
       </Center>
       {/* Nav links */}
-      <HStack spacing={[2, null, 4]}>
-        <HStack spacing={[4, 4, 8]} fontSize={["xs", "sm", "md"]} display={["none", "flex"]} alignItems="center">
+      <HStack spacing={[0, null, 4]}>
+        <HStack spacing={[0, null, 4]} fontSize={["xs", "sm", "md"]} display={["none", "flex"]} alignItems="center">
           <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/shop">
             SHOP
           </Button>
@@ -49,30 +50,24 @@ const Header = ({ currentUser }) => {
               </MenuButton>
               <Portal>
                 <MenuList>
-                  <MenuItem>
-                    <Text size="sm">Signed in as {currentUser.displayName}</Text>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link as={RouterLink} to="/checkout">
-                      Checkout
-                    </Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link as={RouterLink} to="/profile">
+                  <MenuGroup title={`Signed in as ${currentUser.displayName}`}>
+                    <MenuItem as={RouterLink} to="/checkout">
+                      Cart
+                    </MenuItem>
+                    <MenuItem as={RouterLink} to="/profile">
                       Profile Settings
-                    </Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link as={RouterLink} to="/" onClick={handleSignout}>
-                      SIGN OUT
-                    </Link>
-                  </MenuItem>
+                    </MenuItem>
+                    <MenuDivider/>
+                    <MenuItem as={RouterLink} to="/" onClick={handleSignout} icon={<Icon boxSize={5} as={RiLogoutBoxRLine}/>}>
+                      Sign Out
+                    </MenuItem>
+                  </MenuGroup>
                 </MenuList>
               </Portal>
             </Menu>
           ) : null}
         </HStack>
-        <HStack spacing={[1, 2, 4]}>
+        <HStack spacing={[1, null, 4]}>
           {/* Mobile drawer toggle */}
           <DrawerNav />
           {/* Cart popover toggle button */}

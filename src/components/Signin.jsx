@@ -1,8 +1,8 @@
 import React from "react";
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInAnonymously } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, } from "firebase/auth";
 
-import { FormControl, FormLabel, FormErrorMessage, FormHelperText, Input, Form } from "@chakra-ui/react";
-import { Box, Text, Heading, VStack, Button, Center, Stack, Container, SimpleGrid } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input,  } from "@chakra-ui/react";
+import { Box, Text, Heading, VStack, Button, Center, } from "@chakra-ui/react";
 
 class SignIn extends React.Component {
   state = { email: "", password: "" };
