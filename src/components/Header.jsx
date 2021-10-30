@@ -5,7 +5,7 @@ import { createStructuredSelector } from "reselect";
 import { selectCurrentUser } from "../redux/user/user.selectors";
 import { getAuth } from "firebase/auth";
 
-import { Container, HStack, Center, Icon,Heading, IconButton, Link, useColorMode, Text, Button, Box, Divider, Portal } from "@chakra-ui/react";
+import { Container, HStack, Center, Icon, Heading, IconButton, Link, useColorMode, Text, Button, Box, Divider, Portal } from "@chakra-ui/react";
 import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { SunIcon, MoonIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { GiVisoredHelm } from "react-icons/gi";
@@ -30,16 +30,16 @@ const Header = ({ currentUser }) => {
       {/* Nav links */}
       <HStack spacing={[2, null, 4]}>
         <HStack spacing={[4, 4, 8]} fontSize={["xs", "sm", "md"]} display={["none", "flex"]} alignItems="center">
-          <Link as={RouterLink} to="/shop">
+          <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/shop">
             SHOP
-          </Link>
-          <Link as={RouterLink} to="/contact">
-            CONTACT
-          </Link>
+          </Button>
+          <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/contact">
+            SECTIONS
+          </Button>
           {!currentUser ? (
-            <Link as={RouterLink} to="/signin">
+            <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/signin">
               SIGN IN
-            </Link>
+            </Button>
           ) : null}
           {/* User menu options */}
           {currentUser ? (
@@ -49,6 +49,9 @@ const Header = ({ currentUser }) => {
               </MenuButton>
               <Portal>
                 <MenuList>
+                  <MenuItem>
+                    <Text size="sm">Signed in as {currentUser.displayName}</Text>
+                  </MenuItem>
                   <MenuItem>
                     <Link as={RouterLink} to="/checkout">
                       Checkout
@@ -69,9 +72,9 @@ const Header = ({ currentUser }) => {
             </Menu>
           ) : null}
         </HStack>
-        <HStack spacing={[1,2,4]}>
+        <HStack spacing={[1, 2, 4]}>
           {/* Mobile drawer toggle */}
-          <DrawerNav/>
+          <DrawerNav />
           {/* Cart popover toggle button */}
           <CartPopover />
           {/* Theme toggle button */}

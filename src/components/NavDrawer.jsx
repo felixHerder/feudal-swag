@@ -5,12 +5,12 @@ import { createStructuredSelector } from "reselect";
 import { selectCurrentUser } from "../redux/user/user.selectors";
 import { getAuth } from "firebase/auth";
 
-import {  HStack, Icon, VStack,  IconButton, Link, Text,  Divider,  } from "@chakra-ui/react";
+import { HStack, Icon, VStack, IconButton, Link, Text, Divider } from "@chakra-ui/react";
 import { Drawer, DrawerBody, DrawerOverlay, DrawerContent, DrawerCloseButton } from "@chakra-ui/react";
-import {  HamburgerIcon, } from "@chakra-ui/icons";
+import { HamburgerIcon } from "@chakra-ui/icons";
 import { GiVisoredHelm } from "react-icons/gi";
 
-function NavDrawer({currentUser}) {
+function NavDrawer({ currentUser }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const toggleOpen = () => setIsOpen((isOpen) => !isOpen);
   const handleSignout = () => {
@@ -31,7 +31,7 @@ function NavDrawer({currentUser}) {
                 SHOP
               </Link>
               <Link as={RouterLink} to="/contact" onClick={toggleOpen}>
-                CONTACT
+                SECTIONS
               </Link>
               {currentUser ? (
                 <>

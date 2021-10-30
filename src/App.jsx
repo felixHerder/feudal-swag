@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
 
-import HomePage from "./pages/homepage/homepage.component";
+import HomePage from "./pages/Home";
 // import ShopPage from "./pages/shop/shop.component";
 import Header from "./components/Header";
-import SignInAndSignUpPage from "./pages/signin-and-signup/signin-and-signup.component";
+import SignInAndSignUpPage from "./pages/SignInUp";
 // import CheckoutPage from "./pages/checkout/checkout.component";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -24,7 +24,7 @@ class App extends React.Component {
         <Header />
         <Switch>
           <Route exact path="/">
-            {/* <HomePage /> */}
+            <HomePage />
           </Route>
           {/* <Route path="/shop" component={ShopPage} />
           <Route path="/checkout" component={CheckoutPage} /> */}
