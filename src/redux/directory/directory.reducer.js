@@ -2,32 +2,25 @@ const INITIAL_STATE = {
   sections: [
     {
       title: "gauntlets",
-      imageUrl: "https://i.ibb.co/0jqHpnp/sneakers.png",
-    },
-    {
-      title: "bracers",
-      imageUrl: "https://i.ibb.co/GCCdy8t/womens.png",
+      imageUrl: "/img/heavy-armor/gauntlets/gauntlets_001.jpg",
     },
     {
       title: "greaves",
-      imageUrl: "https://i.ibb.co/R70vBrQ/men.png",
+      imageUrl: "/img/heavy-armor/greaves/greaves_002.jpg",
     },
     {
       title: "sabatons",
-      imageUrl: "https://i.ibb.co/R70vBrQ/men.png",
+      imageUrl: "/img/heavy-armor/sabatons/sabatons_006.jpg",
     },
     {
       title: "helmets",
-      imageUrl: "img/helmets/helmet001.jpg",
+      imageUrl: "/img/heavy-armor/helmets/helmets_005.jpg",
     },
     {
-      title: "breastplate",
-      imageUrl: "https://i.ibb.co/px2tCc3/jackets.png",
+      title: "breastplates",
+      imageUrl: "/img/heavy-armor/breastplates/breastplates_001.jpg",
     },
-    {
-      title: "gambesons",
-      imageUrl: "https://i.ibb.co/R70vBrQ/men.png",
-    },
+
   ],
 };
 

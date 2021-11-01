@@ -3,9 +3,8 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
-
-import HomePage from "./pages/Home";
-// import ShopPage from "./pages/shop/shop.component";
+import Home from "./pages/Home";
+import Shop from "./pages/Shop";
 import Header from "./components/Header";
 import SignInAndSignUpPage from "./pages/SignInUp";
 // import CheckoutPage from "./pages/checkout/checkout.component";
@@ -15,7 +14,7 @@ import { onSnapshot } from "firebase/firestore";
 import { createUserProfileDocument } from "./firebase/firebase.utils";
 import { setCurrentUser } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
-// import {selectCollectionsForPreview} from './redux/shop/shop.selectors';
+import { fetchData } from "./redux/shop/shop.actions";
 
 class App extends React.Component {
   render() {
@@ -24,10 +23,12 @@ class App extends React.Component {
         <Header />
         <Switch>
           <Route exact path="/">
-            <HomePage />
+            <Home />
           </Route>
-          {/* <Route path="/shop" component={ShopPage} />
-          <Route path="/checkout" component={CheckoutPage} /> */}
+          <Route path="/shop">
+            <Shop/>
+          </Route>
+          {/* <Route path="/checkout" component={CheckoutPage} /> */}
           <Route path="/signin">{this.props.currentUser ? <Redirect to="/" /> : <SignInAndSignUpPage />}</Route>
         </Switch>
       </>
@@ -36,6 +37,7 @@ class App extends React.Component {
 
   unsubscribeFromAuth = null;
   componentDidMount() {
+    this.props.fetchData();
     const { setCurrentUser } = this.props;
     //subscribed to Firebase auth
     this.unsubscribeFromAuth = onAuthStateChanged(getAuth(), async (userAuth) => {
@@ -55,7 +57,6 @@ class App extends React.Component {
       }
     });
   }
-
   componentWillUnmount() {
     this.unsubscribeFromAuth();
   }
@@ -63,11 +64,11 @@ class App extends React.Component {
 
 const mapStatetoProps = createStructuredSelector({
   currentUser: selectCurrentUser,
-  // collectionsArray: selectCollectionsForPreview
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+  fetchData: () => dispatch(fetchData()),
 });
 
 export default connect(mapStatetoProps, mapDispatchToProps)(App);

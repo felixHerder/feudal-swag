@@ -6,7 +6,7 @@ import { selectDirectorySections } from "../redux/directory/directory.selectors"
 
 import { Container, Flex, Box, Button, Heading, Text, Center, useColorModeValue } from "@chakra-ui/react";
 
-const Homepage = ({ sections }) => {
+const Home = ({ sections }) => {
   const titleBg = useColorModeValue("white", "gray.800");
   const titleBgHover = useColorModeValue("brand.100", "brand.800");
   return (
@@ -19,9 +19,9 @@ const Homepage = ({ sections }) => {
           Rifle through some of our belongings!
         </Text>
       </Box>
-      <Flex mt={4} wrap="wrap" sx={{ gap: 16 }}>
-        {sections.map(({ id, title, imageUrl }) => (
-          <Box key={id} boxSize="260px" flexGrow="1" position="relative" overflow="hidden" role="group" borderRadius="lg">
+      <Flex m={4} wrap="wrap" sx={{ gap: 16 }}>
+        {sections.map(({ title, imageUrl },idx) => (
+          <Box key={idx} boxSize="320px" flexGrow="1" position="relative" overflow="hidden" role="group" borderRadius="lg">
             <Box
               className="img"
               transition="transform 0.2s ease"
@@ -32,22 +32,21 @@ const Homepage = ({ sections }) => {
                 backgroundSize: "cover",
               }}
             />
-            <Center w="100%" position="absolute" h="100%" top="0" flexDirection="column">
+            <Center w="100%" position="absolute" h="100%" top="0">
               <Heading
                 as={RouterLink}
                 to={`/shop/${title}`}
                 className="title"
-                px={4}
-                py={2}
-                _groupHover={{ transform: "scale(1.2)" }}
+                px={5}
+                py={3}
+                _groupHover={{ transform: "scale(1.2)",borderRadius:"3xl" }}
                 textAlign="center"
-                letterSpacing="tighter"
                 size="md"
                 bg={titleBg}
                 transition="all .2s ease"
                 _hover={{ bg: titleBgHover }}
                 _focus={{ boxShadow: "outline" }}
-                borderRadius="md"
+                borderRadius="sm"
               >
                 {title.toUpperCase()}
               </Heading>
@@ -63,4 +62,4 @@ const Homepage = ({ sections }) => {
 const mapStateToProps = createStructuredSelector({
   sections: selectDirectorySections,
 });
-export default connect(mapStateToProps)(Homepage);
+export default connect(mapStateToProps)(Home);
