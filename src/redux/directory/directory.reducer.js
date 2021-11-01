@@ -14,7 +14,7 @@ const INITIAL_STATE = {
     },
     {
       title: "helmets",
-      imageUrl: "/img/heavy-armor/helmets/helmets_005.jpg",
+      imageUrl: "/img/heavy-armor/helmets/helmets_002.jpg",
     },
     {
       title: "breastplates",

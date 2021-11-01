@@ -4,54 +4,30 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { selectDirectorySections } from "../redux/directory/directory.selectors";
 
-import { Container, Flex, Box, Button, Heading, Text, Center, useColorModeValue } from "@chakra-ui/react";
+import { Container, Flex, Box, Button, Heading, Text, Center, useColorModeValue, Image } from "@chakra-ui/react";
 
 const Home = ({ sections }) => {
-  const titleBg = useColorModeValue("white", "gray.800");
-  const titleBgHover = useColorModeValue("brand.100", "brand.800");
+  const buttonBg = useColorModeValue("gray.700", "gray.200");
+
   return (
-    <Container maxW="container.xl">
+    <Container maxW="container.lg">
       <Box my={[4, 6, 12]} textAlign="center">
         <Heading as="h1" size={"2xl"}>
           Best apparel in the Kinkdom
         </Heading>
-        <Text mt={2} fontSize={["lg","xl","2xl"]}>
+        <Text mt={6} fontSize={["lg", "xl", "2xl"]}>
           Rifle through some of our belongings!
         </Text>
       </Box>
-      <Flex m={4} wrap="wrap" sx={{ gap: 16 }}>
-        {sections.map(({ title, imageUrl },idx) => (
-          <Box key={idx} boxSize="320px" flexGrow="1" position="relative" overflow="hidden" role="group" borderRadius="lg">
-            <Box
-              className="img"
-              transition="transform 0.2s ease"
-              _groupHover={{ transform: "scale(1.05)" }}
-              h="100%"
-              sx={{
-                bg: `url(${imageUrl}) no-repeat center center`,
-                backgroundSize: "cover",
-              }}
-            />
-            <Center w="100%" position="absolute" h="100%" top="0">
-              <Heading
-                as={RouterLink}
-                to={`/shop/${title}`}
-                className="title"
-                px={5}
-                py={3}
-                _groupHover={{ transform: "scale(1.2)",borderRadius:"3xl" }}
-                textAlign="center"
-                size="md"
-                bg={titleBg}
-                transition="all .2s ease"
-                _hover={{ bg: titleBgHover }}
-                _focus={{ boxShadow: "outline" }}
-                borderRadius="sm"
-              >
+      <Flex m={4} wrap="wrap" sx={{ gap: 48 }} justifyContent="center" >
+        {sections.map(({ title, imageUrl }, idx) => (
+          <Box key={idx} boxSize="260px" maxW="360px" flexGrow="1" overflow="hidden" role="group" position="relative" borderRadius="3xl" boxShadow="xl">
+            <Image h="100%" w="100%" src={imageUrl} objectFit="cover" objectPosition="center 100%" transition="transform .5s ease" transform="scale(1.05)" _groupHover={{transform:"scale(1)"}}/>
+            <Center w="100%" my={10}  position="absolute" bottom="0">
+              <Button as={RouterLink} to={`/shop/${title}`} size="lg" p={8} bg={buttonBg} boxShadow="lg">
                 {title.toUpperCase()}
-              </Heading>
+              </Button>
             </Center>
-            <Button>Shop now</Button>
           </Box>
         ))}
       </Flex>

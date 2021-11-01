@@ -1,31 +1,42 @@
 import React from "react";
-import { Route } from "react-router-dom";
 import { connect } from "react-redux";
+import { fetchData } from "../redux/shop/shop.actions";
+import { selectItems, selectSections, selectSectionItems } from "../redux/shop/shop.selectors";
 
-import { fetchData } from "../redux/shop/shop.actions.js";
-
-import WithSpinner from "../components/with-spinner/with-spinner.component";
-import CollectionsOverview from "../components/collections-overview/collections-overview.component";
-import CollectionPage from "./collection/collection.component";
-
-// import { db, convertCollectionsSnapshotToMap } from '../../firebase/firebase.utils';
-
-// const CollectionsOverviewWithSpinner = WithSpinner(CollectionsOverview);
-// const CollectionPageWithSpinner = WithSpinner(CollectionPage);
+import { Container, Box, Flex, Stack, Heading, SimpleGrid } from "@chakra-ui/react";
+import Item from "../components/Item";
 
 class Shop extends React.Component {
   componentDidMount() {
-    this.props.fetchData();
+    const { items, sections, fetchData } = this.props;
+    console.log("Shop comp mounted");
+    if (!sections || !items) {
+      console.log("Shop data missing,fetching");
+      fetchData();
+    }
   }
 
   render() {
-    const { match } = this.props;
-    console.log(match);
+    const { isLoading, getSectionItems, sections } = this.props;
     return (
-      <div>
-        {/* <Route exact path={`${match.path}/`} render={(props) => <CollectionsOverviewWithSpinner isLoading={loading} {...props} />} />
-        <Route path={`${match.path}/:collectionId`} render={(props) => <CollectionPageWithSpinner isLoading={loading} {...props} />} /> */}
-      </div>
+      <Container maxW="container.xl">
+        {isLoading ? (
+          <div>Loading... </div>
+        ) : (
+          Object.keys(sections).map((section,idx) => (
+            <Box py={4} key={idx}>
+              <Heading my={4} textTransform="capitalize">{section}</Heading>
+              <SimpleGrid columns={[1, 2, 4]} spacing={4}>
+                {getSectionItems(section)
+                  .slice(0, 4)
+                  .map((item, idx) => (
+                    <Item key={idx} item={item} />
+                  ))}
+              </SimpleGrid>
+            </Box>
+          ))
+        )}
+      </Container>
     );
   }
 }
@@ -33,5 +44,11 @@ class Shop extends React.Component {
 const mapDispatchToProps = {
   fetchData,
 };
+const mapStateToProps = (state) => ({
+  sections: selectSections(state),
+  items: selectItems(state),
+  getSectionItems: (section) => selectSectionItems(state, section),
+  isLoading: state.shop.isFetching,
+});
 
-export default connect(null, mapDispatchToProps)(Shop);
+export default connect(mapStateToProps, mapDispatchToProps)(Shop);

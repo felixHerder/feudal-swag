@@ -9,30 +9,28 @@ async function populateDb() {
     const batch = writeBatch(db);
 
     //clear collections of documents
-    const itemsColRef = await collection(db, "items");
-    const itemsDocsSnap = await getDocs(itemsColRef);
-    for (const itemDoc of itemsDocsSnap.docs) {
-      await deleteDoc(itemDoc.ref);
-    }
-    const sectionsColRef = await collection(db, "sections");
-    const sectionsDocsSnap = await getDocs(sectionsColRef);
-    for (const sectionDoc of sectionsDocsSnap.docs) {
-      await deleteDoc(sectionDoc.ref);
+    const shopColRef = await collection(db, "shop");
+    const shopDocsSnap = await getDocs(shopColRef);
+    for (const shopDoc of shopDocsSnap.docs) {
+      await deleteDoc(shopDoc.ref);
     }
 
     //populate db
     const sectionsArr = Object.keys(armorData);
     let itemId = 0;
+    let sectionsMap = {};
+    let itemsMap = {};
     for (const sectionName of sectionsArr) {
       let sectionIds = [];
       for (const item of armorData[sectionName]) {
-        const itemRef = await doc(db, "items", itemId.toString());
-        await setDoc(itemRef, { id: itemId, sectionName, ...item });
+        itemsMap[itemId] = {...item,id:itemId,section:sectionName};
         sectionIds.push(itemId);
         itemId++;
       }
-      await setDoc(doc(db, "sections", sectionName), { items: sectionIds });
+      sectionsMap[sectionName] = sectionIds;
     }
+    await setDoc(doc(db, "shop", "items"), itemsMap);
+    await setDoc(doc(db, "shop", "sections"), sectionsMap);
 
     await batch.commit();
     console.log("batch done");

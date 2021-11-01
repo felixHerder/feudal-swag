@@ -14,7 +14,7 @@ function CartPopover({ cartHidden, itemCount, toggleCartHidden, cartItems }) {
     <>
       <Popover isLazy isOpen={!cartHidden} onClose={toggleCartHidden} placement="bottom-end" arrowSize={16}>
         <PopoverTrigger>
-          <Button variant="ghost"  px={0} position="relative" onClick={toggleCartHidden}>
+          <Button variant="ghost" px={0} position="relative" onClick={toggleCartHidden}>
             <Icon as={TrunkIcon} boxSize={9} fill="currentcolor" />
             <Text fontSize="x-small" as="span" position="absolute" top="50%" left="50%" transform="translate(-50%,-50%)">
               {itemCount}
@@ -30,9 +30,11 @@ function CartPopover({ cartHidden, itemCount, toggleCartHidden, cartItems }) {
               <Center minH="160px">
                 <Text className="empty-message">Your trunk is empty</Text>
               </Center>
-              <Button my={1} variant="solid" isFullWidth>
-                GO TO CHECKOUT
-              </Button>
+              <Center px={2}>
+                <Button my={2} size="sm" isFullWidth>
+                  GO TO CHECKOUT
+                </Button>
+              </Center>
             </PopoverBody>
           </PopoverContent>
         </Portal>

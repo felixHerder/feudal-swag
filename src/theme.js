@@ -23,8 +23,20 @@ const components = {
       },
     },
   },
+  Button:{
+    baseStyle:{
+      borderRadius:"full",
+      boxShadow:"none",
+      _hover:{
+        boxShadow:"glowsm",
+      }
+    }
+  }
 };
-console.log(defaultTheme);
-const theme = extendTheme({ colors, fonts, config, components }, withDefaultColorScheme({ colorScheme: "brand" }));
-console.log(theme.components.Button);
+const shadows ={
+  glowlg: "0 0 12px 3px rgba(177, 140, 255, 0.6)",
+  glowsm: "0 0 2px 0px rgba(177, 140, 255, 0.9)"
+}
+const theme = extendTheme({ colors, fonts, config, components,shadows }, withDefaultColorScheme({ colorScheme: "brand" }));
+console.log(theme);
 export default theme;

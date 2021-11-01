@@ -14,7 +14,6 @@ import { onSnapshot } from "firebase/firestore";
 import { createUserProfileDocument } from "./firebase/firebase.utils";
 import { setCurrentUser } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
-import { fetchData } from "./redux/shop/shop.actions";
 
 class App extends React.Component {
   render() {
@@ -26,7 +25,7 @@ class App extends React.Component {
             <Home />
           </Route>
           <Route path="/shop">
-            <Shop/>
+            <Shop />
           </Route>
           {/* <Route path="/checkout" component={CheckoutPage} /> */}
           <Route path="/signin">{this.props.currentUser ? <Redirect to="/" /> : <SignInAndSignUpPage />}</Route>
@@ -37,25 +36,23 @@ class App extends React.Component {
 
   unsubscribeFromAuth = null;
   componentDidMount() {
-    this.props.fetchData();
     const { setCurrentUser } = this.props;
     //subscribed to Firebase auth
-    this.unsubscribeFromAuth = onAuthStateChanged(getAuth(), async (userAuth) => {
-      if (userAuth) {
-        console.log(userAuth);
-        //get and/or create user doc in users collection in Firestore DB
-        const userRef = await createUserProfileDocument(userAuth);
-        //subsribe to user doc doc changes and set redux user state
-        onSnapshot(userRef, (snapShot) => {
-          setCurrentUser({
-            id: snapShot.id,
-            ...snapShot.data(),
-          });
-        });
-      } else {
-        setCurrentUser(null);
-      }
-    });
+    // this.unsubscribeFromAuth = onAuthStateChanged(getAuth(), async (userAuth) => {
+    //   if (userAuth) {
+    //     //get and/or create user doc in users collection in Firestore DB
+    //     const userRef = await createUserProfileDocument(userAuth);
+    //     //subsribe to user doc doc changes and set redux user state
+    //     onSnapshot(userRef, (snapShot) => {
+    //       setCurrentUser({
+    //         id: snapShot.id,
+    //         ...snapShot.data(),
+    //       });
+    //     });
+    //   } else {
+    //     setCurrentUser(null);
+    //   }
+    // });
   }
   componentWillUnmount() {
     this.unsubscribeFromAuth();
@@ -68,7 +65,6 @@ const mapStatetoProps = createStructuredSelector({
 
 const mapDispatchToProps = (dispatch) => ({
   setCurrentUser: (user) => dispatch(setCurrentUser(user)),
-  fetchData: () => dispatch(fetchData()),
 });
 
 export default connect(mapStatetoProps, mapDispatchToProps)(App);

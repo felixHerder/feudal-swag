@@ -3,7 +3,7 @@ import ShopActionTypes from "./shop.types";
 const INITIAL_STATE = {
   items: null,
   sections: null,
-  isFetching: false,
+  isFetching: true,
   error: null,
 };
 
