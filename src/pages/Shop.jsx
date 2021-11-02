@@ -1,53 +1,36 @@
 import React from "react";
 import { connect } from "react-redux";
-import { fetchData } from "../redux/shop/shop.actions";
-import { selectItems, selectSections, selectSectionItems } from "../redux/shop/shop.selectors";
+import { fetchShopData } from "../redux/shop/shop.actions";
+import { selectSections } from "../redux/shop/shop.selectors";
 
-import { Container, Box, Flex, Stack, Heading, SimpleGrid } from "@chakra-ui/react";
-import Item from "../components/Item";
+import { Container } from "@chakra-ui/react";
+import ShopSectionRow from "../components/ShopSectionRow";
+import LoadingWrapper from "../components/LoadingWrapper";
 
 class Shop extends React.Component {
   componentDidMount() {
-    const { items, sections, fetchData } = this.props;
-    console.log("Shop comp mounted");
-    if (!sections || !items) {
-      console.log("Shop data missing,fetching");
-      fetchData();
+    const { sections, fetchShopData } = this.props;
+    if (!sections) {
+      fetchShopData();
     }
   }
-
   render() {
-    const { isLoading, getSectionItems, sections } = this.props;
+    const { isLoading, sections } = this.props;
     return (
       <Container maxW="container.xl">
-        {isLoading ? (
-          <div>Loading... </div>
-        ) : (
-          Object.keys(sections).map((section,idx) => (
-            <Box py={4} key={idx}>
-              <Heading my={4} textTransform="capitalize">{section}</Heading>
-              <SimpleGrid columns={[1, 2, 4]} spacing={4}>
-                {getSectionItems(section)
-                  .slice(0, 4)
-                  .map((item, idx) => (
-                    <Item key={idx} item={item} />
-                  ))}
-              </SimpleGrid>
-            </Box>
-          ))
-        )}
+        <LoadingWrapper isLoading={isLoading}>
+          <ShopSections sections={sections} />
+        </LoadingWrapper>
       </Container>
     );
   }
 }
-
+const ShopSections = ({ sections }) => Object.keys(sections).map((section, idx) => <ShopSectionRow key={idx} section={section} />);
 const mapDispatchToProps = {
-  fetchData,
+  fetchShopData,
 };
 const mapStateToProps = (state) => ({
   sections: selectSections(state),
-  items: selectItems(state),
-  getSectionItems: (section) => selectSectionItems(state, section),
   isLoading: state.shop.isFetching,
 });
 

@@ -1,5 +1,5 @@
 import ShopActionTypes from "./shop.types";
-
+// import {itemsMap,sectionsMap} from "../../firebase/mockDb.js"
 const INITIAL_STATE = {
   items: null,
   sections: null,

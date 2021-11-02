@@ -9,9 +9,9 @@ import Header from "./components/Header";
 import SignInAndSignUpPage from "./pages/SignInUp";
 // import CheckoutPage from "./pages/checkout/checkout.component";
 
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { onSnapshot } from "firebase/firestore";
-import { createUserProfileDocument } from "./firebase/firebase.utils";
+// import { getAuth, onAuthStateChanged } from "firebase/auth";
+// import { onSnapshot } from "firebase/firestore";
+// import { createUserProfileDocument } from "./firebase/firebase.utils";
 import { setCurrentUser } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 
@@ -24,11 +24,14 @@ class App extends React.Component {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route path="/shop">
+          <Route exact path="/shop">
             <Shop />
           </Route>
+          <Route exact path="/shop/:sectionId">
+            {/* <Section /> */}
+          </Route>
           {/* <Route path="/checkout" component={CheckoutPage} /> */}
-          <Route path="/signin">{this.props.currentUser ? <Redirect to="/" /> : <SignInAndSignUpPage />}</Route>
+          <Route exact path="/signin">{this.props.currentUser ? <Redirect to="/" /> : <SignInAndSignUpPage />}</Route>
         </Switch>
       </>
     );
@@ -36,7 +39,7 @@ class App extends React.Component {
 
   unsubscribeFromAuth = null;
   componentDidMount() {
-    const { setCurrentUser } = this.props;
+    // const { setCurrentUser } = this.props;
     //subscribed to Firebase auth
     // this.unsubscribeFromAuth = onAuthStateChanged(getAuth(), async (userAuth) => {
     //   if (userAuth) {

@@ -20,7 +20,6 @@ const INITIAL_STATE = {
       title: "breastplates",
       imageUrl: "/img/heavy-armor/breastplates/breastplates_001.jpg",
     },
-
   ],
 };
 

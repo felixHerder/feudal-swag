@@ -1,7 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { addCartItem, toggleCartHidden } from "../redux/cart/cart.actions";
-import { Center, Box, Flex, Button, Image, Text, useColorModeValue,Heading } from "@chakra-ui/react";
+import { Center, Box, Flex, Button, Image, Text, useColorModeValue, IconButton } from "@chakra-ui/react";
+import FavIcon from "./FavIcon";
 
 const Item = ({ item, addCartItem, toggleCartHidden, hidden }) => {
   const { name, price, imgurl } = item;
@@ -18,13 +19,18 @@ const Item = ({ item, addCartItem, toggleCartHidden, hidden }) => {
         <Image src={imgurl} h="100%" w="100%" alt="item" objectPosition="center" objectFit="cover" />
       </Box>
       <Flex justifyContent="space-between" alignItems="center" my={3} px={4} lineHeight="short">
-        <Text fontWeight="bold" fontSize="lg" color={textName}>{name}</Text>
-        <Text fontSize="md" color={textPrice}>${price}</Text>
+        <Text fontSize="md" color={textPrice}>
+          ${price}
+        </Text>
+        <Text fontWeight="bold" fontSize="xl" color={textName}>
+          {name}
+        </Text>
       </Flex>
-      <Center mb={5}>
-        <Button size="sm"  fontWeight="normal" width="50%"  onClick={handleClick}>
+      <Center mb={4} justifyContent="space-between" px={4}>
+        <Button size="sm" fontWeight="normal" isFullWidth onClick={handleClick}>
           Add to Trunk
         </Button>
+        <IconButton icon={<FavIcon boxSize={4} isFav={false} mt="1px" />} role="group" variant="outline" ml={8} size="sm" />
       </Center>
     </Box>
   );
