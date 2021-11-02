@@ -6,7 +6,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 
 import App from "./App";
-import theme from "./theme";
+import theme from "./theme/theme";
 import "@fontsource/nova-round/400.css";
 import "@fontsource/cabin/400.css";
 import "@fontsource/cabin/700.css";

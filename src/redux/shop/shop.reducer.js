@@ -4,7 +4,7 @@ const INITIAL_STATE = {
   items: null,
   sections: null,
   isFetching: true,
-  error: null,
+  error: false,
 };
 
 const shopReducer = (state = INITIAL_STATE, action) => {
@@ -18,7 +18,7 @@ const shopReducer = (state = INITIAL_STATE, action) => {
       return {
         ...action.payload,
         isFetching: false,
-        error: null,
+        error: false,
       };
     case ShopActionTypes.FETCH_DATA_FAILED:
       return {

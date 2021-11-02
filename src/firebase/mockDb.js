@@ -12,4 +12,5 @@ for (const sectionName of sectionsArr) {
   }
   sectionsMap[sectionName] = sectionIds;
 }
+console.log(itemsMap)
 

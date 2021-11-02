@@ -6,7 +6,7 @@ const INITIAL_STATE = {
     },
     {
       title: "greaves",
-      imageUrl: "/img/heavy-armor/greaves/greaves_002.jpg",
+      imageUrl: "/img/heavy-armor/greaves/greaves_003.jpg",
     },
     {
       title: "sabatons",

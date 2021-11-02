@@ -1,5 +1,5 @@
 import { writeBatch, deleteDoc, doc, getDocs, setDoc, collection } from "firebase/firestore";
-import armorData from "./armorData.js";
+import armorData from "./armorData.mjs";
 import { db } from "./firebase.utils.mjs";
 // const {db,firebaseApp} = fb;
 

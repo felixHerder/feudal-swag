@@ -1,21 +1,33 @@
 import React from "react";
 import { connect } from "react-redux";
+import { Link as RouterLink } from "react-router-dom";
 import { selectSectionItems } from "../redux/shop/shop.selectors";
 
-import { Box, Heading, SimpleGrid } from "@chakra-ui/react";
-import Item from "../components/Item";
+import { Box, Button, SimpleGrid } from "@chakra-ui/react";
+import ItemCard from "./ItemCard";
 
 function ShopSectionRow({ section, getSectionItems }) {
   return (
     <Box py={4}>
-      <Heading my={4} textTransform="capitalize">
+      <Button
+        isFullWidth
+        as={RouterLink}
+        to={`/shop/${section}`}
+        my={4}
+        textTransform="capitalize"
+        variant="ghost"
+        fontFamily="heading"
+        fontSize={["2xl", "2xl", "3xl"]}
+        colorScheme="gray"
+        p={[4, 4, 6]}
+      >
         {section}
-      </Heading>
+      </Button>
       <SimpleGrid columns={[1, 2, 2, 4]} spacing={4}>
         {getSectionItems(section)
           .slice(0, 4)
           .map((item, idx) => (
-            <Item key={idx} item={item} />
+            <ItemCard key={idx} item={item} />
           ))}
       </SimpleGrid>
     </Box>

@@ -1,48 +1,29 @@
 import React from "react";
+import {useParams} from 'react-router-dom'
 import { connect } from "react-redux";
-import { fetchData, fetchDataFailed } from "../redux/shop/shop.actions";
-import { selectItems, selectSections, selectSectionItems } from "../redux/shop/shop.selectors";
+import { selectSectionItems } from "../redux/shop/shop.selectors";
 
-import { Container } from "@chakra-ui/react";
-import ShopSectionRow from "../components/ShopSectionRow";
+import { Container, Heading, SimpleGrid } from "@chakra-ui/react";
+import Item from "../components/ItemCard";
 
-class Shop extends React.Component {
-  componentDidMount() {
-    const { items, sections, fetchDataFailed } = this.props;
-    fetchDataFailed();
-    if (!sections || !items) {
-      // fetchData();
-    }
-  }
-  render() {
-    const { isLoading, sections } = this.props;
-    return (
+function Section({getSectionItems }) {
+  const {sectionId} = useParams();
+  return (
     <Container maxW="container.xl">
-      <LoadingWrapper isLoading>
-       <ShopSections sections={sections} />
-      </LoadingWrapper> 
+      <Heading textAlign="center" size="2xl" mt={[2,4,6]} mb={[4,8,12]} textTransform="capitalize">
+        {sectionId}
+      </Heading>
+      <SimpleGrid columns={[1, 2, 2, 4]} spacing={4}>
+        {getSectionItems(sectionId)
+          .map((item, idx) => (
+            <Item key={idx} item={item} />
+          ))}
+      </SimpleGrid>
     </Container>
-    );
-  }
+  );
 }
-const LoadingWrapper = ({isLoading,children,...props})=>{
-  return(
-    <>
-    {isLoading ? <div>Loading</div> :children}
-    </>
-  )
-}
-const ShopSections = ({ sections }) => Object.keys(sections).map((section, idx) => <ShopSectionRow key={idx} section={section} />);
-
-const mapDispatchToProps = {
-  fetchData,
-  fetchDataFailed,
-};
 const mapStateToProps = (state) => ({
-  sections: selectSections(state),
-  items: selectItems(state),
   getSectionItems: (section) => selectSectionItems(state, section),
-  isLoading: state.shop.isFetching,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Shop);
+export default connect(mapStateToProps)(Section);

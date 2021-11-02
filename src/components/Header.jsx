@@ -5,14 +5,17 @@ import { createStructuredSelector } from "reselect";
 import { selectCurrentUser } from "../redux/user/user.selectors";
 import { getAuth } from "firebase/auth";
 
-import { Container, HStack, Center, Icon, Heading, IconButton, useColorMode,  Button, Portal } from "@chakra-ui/react";
-import { Menu, MenuButton, MenuList, MenuItem,MenuGroup,MenuDivider } from "@chakra-ui/react";
+import { Container, HStack, Center, Icon, Heading, IconButton, useColorMode, Button, Portal } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem, MenuGroup, MenuDivider } from "@chakra-ui/react";
 import { SunIcon, MoonIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { GiVisoredHelm } from "react-icons/gi";
-import {RiLogoutBoxRLine} from'react-icons/ri'
+import { RiLogoutBoxRLine } from "react-icons/ri";
 import { ReactComponent as Logo } from "../assets/banner.svg";
 import CartPopover from "./CartPopover";
 import DrawerNav from "./NavDrawer";
+import {GiGauntlet,GiGreaves,GiMetalBoot,GiDwarfHelmet,GiBreastplate} from 'react-icons/gi'
+
+const sectionIcons = [GiGauntlet,GiGreaves,GiMetalBoot,GiDwarfHelmet,GiBreastplate];
 
 const Header = ({ currentUser }) => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -34,9 +37,21 @@ const Header = ({ currentUser }) => {
           <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/shop">
             SHOP
           </Button>
-          <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/contact">
-            SECTIONS
-          </Button>
+          {/* Sections Menu */}
+          <Menu isLazy >
+            <MenuButton as={Button} pl={6} variant="ghost" colorScheme="gray" rightIcon={<ChevronDownIcon />}>
+              SECTIONS
+            </MenuButton>
+            <Portal>
+              <MenuList minW="auto">
+                {["gauntlets", "greaves","sabatons","helmets","breastplates"].map((section,idx) => (
+                  <MenuItem px={8} py={4} as={RouterLink} to={`/shop/${section}`} icon={<Icon boxSize={5} as={sectionIcons[idx]}/>}>
+                    {section.toUpperCase()}
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Portal>
+          </Menu>
           {!currentUser ? (
             <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/signin">
               SIGN IN
@@ -57,8 +72,8 @@ const Header = ({ currentUser }) => {
                     <MenuItem as={RouterLink} to="/profile">
                       Profile Settings
                     </MenuItem>
-                    <MenuDivider/>
-                    <MenuItem as={RouterLink} to="/" onClick={handleSignout} icon={<Icon boxSize={5} as={RiLogoutBoxRLine}/>}>
+                    <MenuDivider />
+                    <MenuItem as={RouterLink} to="/" onClick={handleSignout} icon={<Icon boxSize={5} as={RiLogoutBoxRLine} />}>
                       Sign Out
                     </MenuItem>
                   </MenuGroup>

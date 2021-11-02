@@ -1,4 +1,5 @@
 import React from "react";
+import { Route } from "react-router-dom";
 import { connect } from "react-redux";
 import { fetchShopData } from "../redux/shop/shop.actions";
 import { selectSections } from "../redux/shop/shop.selectors";
@@ -6,6 +7,8 @@ import { selectSections } from "../redux/shop/shop.selectors";
 import { Container } from "@chakra-ui/react";
 import ShopSectionRow from "../components/ShopSectionRow";
 import LoadingWrapper from "../components/LoadingWrapper";
+import Section from "./Section";
+import Item from "./Item";
 
 class Shop extends React.Component {
   componentDidMount() {
@@ -17,15 +20,29 @@ class Shop extends React.Component {
   render() {
     const { isLoading, sections } = this.props;
     return (
-      <Container maxW="container.xl">
-        <LoadingWrapper isLoading={isLoading}>
+      <LoadingWrapper isLoading={isLoading}>
+        <Route exact path="/shop/">
           <ShopSections sections={sections} />
-        </LoadingWrapper>
-      </Container>
+        </Route>
+        <Route exact path="/shop/:sectionId">
+          <Section />
+        </Route>
+        <Route exact path="/shop/:sectionId/:itemId">
+          <Item />
+        </Route>
+      </LoadingWrapper>
     );
   }
 }
-const ShopSections = ({ sections }) => Object.keys(sections).map((section, idx) => <ShopSectionRow key={idx} section={section} />);
+
+const ShopSections = ({ sections }) => (
+  <Container maxW="container.xl">
+    {Object.keys(sections).map((section, idx) => (
+      <ShopSectionRow key={idx} section={section} />
+    ))}
+  </Container>
+);
+
 const mapDispatchToProps = {
   fetchShopData,
 };

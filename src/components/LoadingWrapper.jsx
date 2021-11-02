@@ -4,7 +4,7 @@ export default function LoadingWrapper ({ isLoading, children }) {
   return (
     <>
       {isLoading ? (
-        <Center minH="90vh">
+        <Center minH="75vh">
           <CircularProgress isIndeterminate color="brand.500" size={24} thickness="4px" />
         </Center>
       ) : (

@@ -6,6 +6,7 @@ import { createStructuredSelector } from "reselect";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import Header from "./components/Header";
+import BreadCrumbs from "./components/Breadcrumbs";
 import SignInAndSignUpPage from "./pages/SignInUp";
 // import CheckoutPage from "./pages/checkout/checkout.component";
 
@@ -20,15 +21,13 @@ class App extends React.Component {
     return (
       <>
         <Header />
+        <BreadCrumbs/>
         <Switch>
           <Route exact path="/">
             <Home />
           </Route>
-          <Route exact path="/shop">
+          <Route path="/shop">
             <Shop />
-          </Route>
-          <Route exact path="/shop/:sectionId">
-            {/* <Section /> */}
           </Route>
           {/* <Route path="/checkout" component={CheckoutPage} /> */}
           <Route exact path="/signin">{this.props.currentUser ? <Redirect to="/" /> : <SignInAndSignUpPage />}</Route>
@@ -58,7 +57,7 @@ class App extends React.Component {
     // });
   }
   componentWillUnmount() {
-    this.unsubscribeFromAuth();
+    // this.unsubscribeFromAuth();
   }
 }
 
