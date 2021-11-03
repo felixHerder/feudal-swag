@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { connect } from "react-redux";
-import { addCartItem, toggleCartHidden } from "../redux/cart/cart.actions";
+import { addCartItem, setCartHidden } from "../redux/cart/cart.actions";
 import { selectItemById } from "../redux/shop/shop.selectors";
 
 import { Center, Box, Flex, Button, Image, Text, IconButton, Heading, Container, SimpleGrid, useDisclosure, useRadio, useRadioGroup, } from "@chakra-ui/react";
@@ -108,10 +108,10 @@ function RadioButton(props) {
   );
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  addCartItem: (item) => dispatch(addCartItem(item)),
-  toggleCartHidden: () => dispatch(toggleCartHidden()),
-});
+const mapDispatchToProps =  {
+  addCartItem,
+  setCartHidden,
+};
 
 const mapStateToProps = (state) => ({
   hidden: state.cart.hidden,

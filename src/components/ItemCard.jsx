@@ -1,13 +1,19 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { connect } from "react-redux";
+import { setCartHidden, addCartItem } from "../redux/cart/cart.actions";
 import { Box, Flex, Image, Text, IconButton, Icon } from "@chakra-ui/react";
 import FavIcon from "./FavIcon";
 import { ReactComponent as TrunkIcon } from "../assets/trunk.svg";
 import useThemeColors from "../theme/useThemeColors";
 
-const ItemCard = ({ item }) => {
+const ItemCard = ({ item, addCartItem, setCartHidden }) => {
   const { name, price, imgurl, id, section } = item;
   const { cardBg, textPrice, textSecondary, overlayBg } = useThemeColors();
+  const handleAddtoCart = () => {
+    setCartHidden(false);
+    addCartItem({ id, size: 0 });
+  };
   return (
     <Box
       borderRadius="lg"
@@ -39,11 +45,26 @@ const ItemCard = ({ item }) => {
             {name}
           </Text>
         </Box>
-        <IconButton ml="auto"  icon={<FavIcon boxSize={5} isFav={false} mt="3px" />} role="group" variant="ghost" size="md" title="Add to favourites" />
-        <IconButton ml={1} icon={<Icon as={TrunkIcon} fill="currentColor" boxSize={6} />} role="group" variant="ghost" size="md" title="Add to trunk" />
+        <IconButton ml="auto" icon={<FavIcon boxSize={5} isFav={false} mt="3px" />} role="group" variant="ghost" size="md" title="Add to favourites" />
+        <IconButton
+          ml={1}
+          icon={<Icon as={TrunkIcon} fill="currentColor" mt="2px" boxSize={6} />}
+          role="group"
+          variant="ghost"
+          size="md"
+          title="Add to trunk"
+          onClick={handleAddtoCart}
+        />
       </Flex>
     </Box>
   );
 };
 
-export default ItemCard;
+const mapStatetoProps = (state) => ({
+});
+const mapDispatchToProps = {
+  setCartHidden,
+  addCartItem,
+};
+
+export default connect(mapStatetoProps, mapDispatchToProps)(ItemCard);
