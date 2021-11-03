@@ -1,11 +1,11 @@
 import React from "react";
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-import { FormControl, FormLabel, Input,  } from "@chakra-ui/react";
-import { Box, Text, Heading, VStack, Button, Center, } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input, } from "@chakra-ui/react";
+import { Box, Text, Heading, VStack, Button,Center } from "@chakra-ui/react";
 
 class SignIn extends React.Component {
-  state = { email: "", password: "" };
+  state = { email: "", password: "", isLoading: false, error: false };
   signInWithGoogle = async () => {
     try {
       await signInWithPopup(getAuth(), new GoogleAuthProvider());
@@ -13,14 +13,24 @@ class SignIn extends React.Component {
       console.log("error signing in with google", error);
     }
   };
+  _isMounted = false;
+  componentDidMount() {
+    this._isMounted = true;
+  }
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
   handleSubmit = async (event) => {
     event.preventDefault();
+    this.setState({ isLoading: true, error: false });
     const { email, password } = this.state;
     try {
       await signInWithEmailAndPassword(getAuth(), email, password);
-      this.setState({ email: "", password: "" });
     } catch (error) {
-      console.log("error signing in", error);
+      this.setState({ error: true });
+      console.error("error signing in", error);
+    } finally {
+      this._isMounted && this.setState({ email: "", password: "", isLoading: false });
     }
   };
   handleChange = (event) => {
@@ -36,18 +46,19 @@ class SignIn extends React.Component {
         <Text mb={4}>Sign in with email and password</Text>
         <form onSubmit={this.handleSubmit}>
           <VStack spacing={2} sx={{ "& label": { fontSize: "sm", mb: 1 } }}>
-            <FormControl id="email">
+            <FormControl id="emailSignin" isRequired>
               <FormLabel>Email</FormLabel>
-              <Input type="email" name="email" value={this.state.email} onChange={this.handleChange} />
+              <Input focusBorderColor="brand.400" type="email" name="email" value={this.state.email} onChange={this.handleChange} />
             </FormControl>
-            <FormControl id="password">
+            <FormControl id="passwordSignIn" isRequired>
               <FormLabel>Password</FormLabel>
-              <Input type="password" name="password" value={this.state.password} onChange={this.handleChange} />
+              <Input focusBorderColor="brand.400" type="password" name="password" value={this.state.password} onChange={this.handleChange} />
             </FormControl>
           </VStack>
-          <Button mt={4} isFullWidth type="submit">
+          <Button mt={4} isFullWidth type="submit" isLoading={this.state.isLoading} loadingText="Submitting">
             Sign in
           </Button>
+          {this.state.error ? <Text my={2} fontSize="sm" textAlign="center">Something is not right, try again</Text> : null}
         </form>
         <Center my={2}>
           <Text>or</Text>

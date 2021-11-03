@@ -1,5 +1,8 @@
 import { initializeApp } from "firebase/app";
+import { getAuth,signOut } from "@firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { store } from "../redux/store";
+import { setCurrentUser } from "../redux/user/user.actions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBpGcrRiUqw1eJezaBOmyoUEuaYY92SyJU",
@@ -13,9 +16,12 @@ const firebaseConfig = {
 export const firebaseApp = initializeApp(firebaseConfig);
 export const db = getFirestore();
 
+export const signOutUser = ()=>{
+  store.dispatch(setCurrentUser(null));
+  signOut(getAuth())}; 
+
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
-
   const userRef = doc(db, `users/${userAuth.uid}`);
   const userSnapshot = await getDoc(userRef);
 

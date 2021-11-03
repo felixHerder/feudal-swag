@@ -15,6 +15,7 @@ function Item({ getItem, hidden }) {
   const { name, price, imgurl,imgurlLarge, description, sizes } = item;
   const { bg, cardBg, textPrice, textSecondary } = useThemeColors();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  //eslint-disable-next-line
   const [size, setSize] = React.useState(sizes[0]);
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "itemSizes",

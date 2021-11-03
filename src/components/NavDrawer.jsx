@@ -19,8 +19,7 @@ function NavDrawer({ currentUser }) {
 
   return (
     <>
-      <IconButton variant="ghost" colorScheme="gray" px={2} icon={<HamburgerIcon boxSize={6} />} display={["block", "none"]} onClick={toggleOpen} />
-
+      <IconButton variant="ghost" colorScheme="gray" px={2} icon={<HamburgerIcon boxSize={6} />} display={["block",null, "none"]} onClick={toggleOpen} />
       <Drawer isOpen={isOpen} placement="right" onClose={toggleOpen}>
         <DrawerOverlay />
         <DrawerContent maxWidth="max-content">

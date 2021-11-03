@@ -5,7 +5,6 @@ import { ChevronRightIcon } from "@chakra-ui/icons";
 export default function BreadCrumbs() {
   const { pathname } = useLocation();
   const breadcrumbs = pathname.split("/").slice(1);
-  console.log(breadcrumbs);
   return (
     <Container maxW="container.xl" pb={4}>
       {breadcrumbs[0] ? (
@@ -17,9 +16,8 @@ export default function BreadCrumbs() {
           </BreadcrumbItem>
           {breadcrumbs.map((crumb, idx) => {
             const path=breadcrumbs.slice(0, idx + 1).join("/");
-            console.log({crumb,path});
             return (
-              <BreadcrumbItem>
+              <BreadcrumbItem key={idx}>
                 <BreadcrumbLink as={RouterLink} to={"/"+path}>
                   {crumb}
                 </BreadcrumbLink>
