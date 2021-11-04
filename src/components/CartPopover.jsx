@@ -35,7 +35,7 @@ function CartPopover({ cartHidden, itemCount, setCartHidden, cartItems }) {
             <PopoverCloseButton />
             <PopoverHeader>Trunk Preview</PopoverHeader>
             <PopoverBody p={0}>
-              {cartItems && cartItems.length > 0 && (
+              {/* {cartItems && cartItems.length > 0 && (
                 <VStack spacing={0}>
                   {cartItems.map((item, idx) => (
                     <HStack spacing={12} w="100%" key={idx} justifyContent="space-between" bg={idx%2?cardBg : bg} px={4} py={2}>
@@ -53,7 +53,7 @@ function CartPopover({ cartHidden, itemCount, setCartHidden, cartItems }) {
                     </HStack>
                   ))}
                 </VStack>
-              )}
+              )} */}
 
               {/* Empty Cart state */}
               {itemCount === 0 && (
@@ -65,7 +65,7 @@ function CartPopover({ cartHidden, itemCount, setCartHidden, cartItems }) {
             <PopoverFooter>
               <Center px={2}>
                 <Button my={2} size="sm" isFullWidth>
-                  GO TO CHECKOUT
+                  GO TO TRUNK
                 </Button>
               </Center>
             </PopoverFooter>

@@ -2,7 +2,7 @@ import CartActionTypes from "./cart.types.js";
 
 const INITIAL_STATE = {
   hidden: true,
-  cartItems: {},
+  cartItems: null,
 };
 //store cart items as an object with each item being a prop generated from id and size and count as value
 const getKey = (id, size) => {

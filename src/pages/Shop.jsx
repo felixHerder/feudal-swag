@@ -1,54 +1,43 @@
 import React from "react";
-import { Route } from "react-router-dom";
 import { connect } from "react-redux";
-import { fetchShopData } from "../redux/shop/shop.actions";
-import { selectSections } from "../redux/shop/shop.selectors";
+import { fetchShopSections, fetchShopItemsByIds } from "../redux/shop/shop.actions";
 
 import { Container } from "@chakra-ui/react";
-import ShopSectionRow from "../components/ShopSectionRow";
 import LoadingWrapper from "../components/LoadingWrapper";
-import Section from "./Section";
-import Item from "./Item";
+import SectionRow from "../components/SectionRow";
 
-class Shop extends React.Component {
-  componentDidMount() {
-    const { sections, fetchShopData } = this.props;
-    if (!sections) {
-      fetchShopData();
+function Shop({ sectionsMap, fetchShopSections,fetchShopItemsByIds, isLoading }) {
+  //on Comp mount fetch shop sections then on sections update fetch the first 3 items
+  React.useEffect(() => {
+    if (!sectionsMap) {
+      fetchShopSections();
+    } else {
+      //fetch the first 3 item on each section
+      const ids = Object.values(sectionsMap).flatMap((section) => section.slice(0, 3));
+      console.log('fetching ids:',ids)
+      fetchShopItemsByIds(ids);
     }
-  }
-  render() {
-    const { isLoading, sections } = this.props;
-    return (
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sectionsMap]);
+
+  console.log("Shop Rendered with sections:", sectionsMap);
+  return (
+    <Container maxW="container.xl" mb={8} minH="75vh">
       <LoadingWrapper isLoading={isLoading}>
-        <Route exact path="/shop/">
-          <ShopSections sections={sections} />
-        </Route>
-        <Route exact path="/shop/:sectionId">
-          <Section />
-        </Route>
-        <Route exact path="/shop/:sectionId/:itemId">
-          <Item />
-        </Route>
+        {sectionsMap && Object.keys(sectionsMap).map((section, idx) => <SectionRow key={idx} section={section} />)}
       </LoadingWrapper>
-    );
-  }
+    </Container>
+  );
 }
 
-const ShopSections = ({ sections }) => (
-  <Container maxW="container.xl">
-    {Object.keys(sections).map((section, idx) => (
-      <ShopSectionRow key={idx} section={section} />
-    ))}
-  </Container>
-);
-
 const mapDispatchToProps = {
-  fetchShopData,
+  fetchShopSections,
+  fetchShopItemsByIds,
 };
+
 const mapStateToProps = (state) => ({
-  sections: selectSections(state),
-  isLoading: state.shop.isFetching,
+  sectionsMap: state.shop.sections,
+  isLoading: state.shop.isFetchingSections,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Shop);

@@ -13,7 +13,7 @@ function UserMenu({ currentUser }) {
     <>
       {currentUser ? (
         <Menu isLazy>
-          <MenuButton as={Button} px={4} variant="ghost" rightIcon={<ChevronDownIcon />}>
+          <MenuButton as={Button} pl={4} variant="ghost" rightIcon={<ChevronDownIcon />}>
             {currentUser.isAnonymous ? `Guest (${currentUser.uid.slice(0, 3).toLowerCase()})` : currentUser.displayName}
           </MenuButton>
           <Portal>

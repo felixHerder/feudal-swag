@@ -9,16 +9,18 @@ import Header from "./components/Header";
 import BreadCrumbs from "./components/Breadcrumbs";
 import SignInAndSignUpPage from "./pages/SignInUp";
 // import CheckoutPage from "./pages/checkout/checkout.component";
-        //eslint-disable-next-line
+//eslint-disable-next-line
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 // import { onSnapshot } from "firebase/firestore";
 // import { createUserProfileDocument } from "./firebase/firebase.utils";
 import { setCurrentUser } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
+import Section from "./pages/Section";
+import Item from "./pages/Item";
 
 class App extends React.Component {
   render() {
-    const {currentUser} = this.props;
+    const { currentUser } = this.props;
     return (
       <>
         <Header />
@@ -27,9 +29,16 @@ class App extends React.Component {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route path="/shop">
+          <Route exact path="/shop">
             <Shop />
           </Route>
+          <Route exact path="/shop/:sectionId">
+            <Section />
+          </Route>
+          <Route exact path="/shop/:sectionId/:itemId">
+            <Item />
+          </Route>
+
           {/* <Route path="/checkout" component={CheckoutPage} /> */}
           <Route exact path="/signin">
             {!currentUser || currentUser.isAnonymous ? <SignInAndSignUpPage /> : <Redirect to="/" />}
@@ -47,7 +56,7 @@ class App extends React.Component {
     this.unsubscribeFromAuth = onAuthStateChanged(auth, async (userAuth) => {
       if (userAuth) {
         console.log("AuthState User found:", userAuth.uid);
-        const { uid, isAnonymous,displayName } = userAuth;
+        const { uid, isAnonymous, displayName } = userAuth;
         setCurrentUser({ uid, isAnonymous, displayName });
         //get and/or create user doc in users collection in Firestore DB
         //subsribe to user doc doc changes and set redux user state

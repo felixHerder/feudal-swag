@@ -3,28 +3,48 @@ import ShopActionTypes from "./shop.types";
 const INITIAL_STATE = {
   items: null,
   sections: null,
-  isFetching: true,
+  isFetchingItems: true,
+  isFetchingSections: true,
   error: false,
 };
 
 const shopReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case ShopActionTypes.FETCH_DATA_START:
+    case ShopActionTypes.FETCH_ITEMS_START:
       return {
         ...state,
-        isFetching: true,
+        isFetchingItems: true,
       };
-    case ShopActionTypes.FETCH_DATA_SUCCESS:
+    case ShopActionTypes.FETCH_ITEMS_SUCCESS:
       return {
+        ...state,
         ...action.payload,
-        isFetching: false,
+        isFetchingItems: false,
         error: false,
       };
-    case ShopActionTypes.FETCH_DATA_FAILED:
+    case ShopActionTypes.FETCH_ITEMS_FAILED:
       return {
         ...state,
-        isFetching: false,
-        error: action.paylod,
+        isFetchingItems: false,
+        error: action.payload,
+      };
+      case ShopActionTypes.FETCH_SECTIONS_START:
+      return {
+        ...state,
+        isFetchingSections: true,
+      };
+    case ShopActionTypes.FETCH_SECTIONS_SUCCESS:
+      return {
+        ...state,
+        ...action.payload,
+        isFetchingSections: false,
+        error: false,
+      };
+    case ShopActionTypes.FETCH_SECTIONS_FAILED:
+      return {
+        ...state,
+        isFetchingSections: false,
+        error: action.payload,
       };
     default:
       return state;

@@ -1,38 +1,42 @@
-import { writeBatch, deleteDoc, doc, getDocs, setDoc, collection } from "firebase/firestore";
-import armorData from "./armorData.mjs";
-import { db } from "./firebase.utils.mjs";
-// const {db,firebaseApp} = fb;
+import { initializeApp } from "firebase/app";
+import { deleteDoc, doc, getDocs, setDoc, collection, getFirestore } from "firebase/firestore";
+import { sectionsMap, itemsMap } from "./armorData.mjs";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBpGcrRiUqw1eJezaBOmyoUEuaYY92SyJU",
+  authDomain: "feudalswag.firebaseapp.com",
+  projectId: "feudalswag",
+  storageBucket: "feudalswag.appspot.com",
+  messagingSenderId: "252489365389",
+  appId: "1:252489365389:web:e23ccd1948abca43d96fc4",
+  measurementId: "G-QG6VPVK7LC",
+};
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore();
 async function populateDb() {
   try {
-    //begin batch transaction
-    const batch = writeBatch(db);
+    //TO DO  batch transaction
 
     //clear collections of documents
-    const shopColRef = await collection(db, "shop");
-    const shopDocsSnap = await getDocs(shopColRef);
-    for (const shopDoc of shopDocsSnap.docs) {
-      await deleteDoc(shopDoc.ref);
+    const itemColRef = await collection(db, "items");
+    const itemDocsSnap = await getDocs(itemColRef);
+    for (const itemDoc of itemDocsSnap.docs) {
+      await deleteDoc(itemDoc.ref);
+    }
+    const sectionColRef = await collection(db, "sections");
+    const sectionDocsSnap = await getDocs(sectionColRef);
+    for (const sectionDoc of sectionDocsSnap.docs) {
+      await deleteDoc(sectionDoc.ref);
     }
 
     //populate db
-    const sectionsArr = Object.keys(armorData);
-    let itemId = 0;
-    let sectionsMap = {};
-    let itemsMap = {};
-    for (const sectionName of sectionsArr) {
-      let sectionIds = [];
-      for (const item of armorData[sectionName]) {
-        itemsMap[itemId] = {...item,id:itemId,section:sectionName};
-        sectionIds.push(itemId);
-        itemId++;
-      }
-      sectionsMap[sectionName] = sectionIds;
+    for(const skey of Object.keys(sectionsMap)){
+      await setDoc(doc(db, "sections", skey), {itemIds:sectionsMap[skey]});
     }
-    await setDoc(doc(db, "shop", "items"), itemsMap);
-    await setDoc(doc(db, "shop", "sections"), sectionsMap);
+    for (const ikey of Object.keys(itemsMap)){
+      await setDoc(doc(db, "items", ikey), itemsMap[ikey]);
+    }
 
-    await batch.commit();
     console.log("batch done");
   } catch (error) {
     console.error("batch failed with error:", error);
@@ -42,18 +46,4 @@ async function populateDb() {
 }
 populateDb().then(() => process.exit());
 
-// const sections = Object.keys(armorData);
-// let itemsCol = [];
-// let sectionsCol = {};
-// let itemId = 0;
-// console.log(sections);
-// sections.forEach((section) => {
-//   sectionsCol[section] = [];
-//   armorData[section].forEach((item) => {
-//     itemsCol.push({ id: itemId,section, ...item });
-//     sectionsCol[section].push(itemId);
-//     itemId++
-//   });
-// });
-// console.log(sectionsCol);
-// console.log(itemsCol);
+

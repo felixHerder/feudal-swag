@@ -115,7 +115,7 @@ const mapDispatchToProps =  {
 
 const mapStateToProps = (state) => ({
   hidden: state.cart.hidden,
-  getItem: (id) => selectItemById(state, id),
+  getItem: (id) => state.shop.item[id]
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Item);

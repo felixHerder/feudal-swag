@@ -1,7 +1,7 @@
 import { createSelector } from "reselect";
 
-const selectCartItems = (state) => state.cart.cartItems;
-const selectShopItems = (state) => state.shop.items;
+const selectCartItems = (state) => state.cart.cartItems || {} ;
+const selectShopItems = (state) => state.shop.items || {};
 
 export const selectCartItemsFromShop = createSelector([selectCartItems, selectShopItems], (cartItems, shopItems) =>
   Object.keys(cartItems).map((item) => {
