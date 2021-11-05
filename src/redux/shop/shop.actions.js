@@ -31,14 +31,14 @@ export const fetchShopItemsBySection =
         const id = idsToFetch[i];
         //fetch items only if  specific item is not found in store
         if (!items[id]) {
-          console.log("getting item:", id);
+          console.log("fetchShopItemsBySection item:", id);
           const itemDoc = (await getDoc(doc(db, "items", id.toString()))).data();
           items[id] = itemDoc;
         }
       }
       dispatch(fetchShopItemsSuccess({ items, sections }));
     } catch (error) {
-      console.error("failed to fetch armor data,error:", error);
+      console.error("failed to fetchShopItemsBySection,error:", error);
       dispatch(fetchShopItemsFailed(error));
     }
   };
@@ -51,16 +51,16 @@ export const fetchShopItemsByIds = (idsToFetch) => async (dispatch, getState) =>
       for (const id of idsToFetch) {
         //fetch items only if  specific item is not found in store
         if (!items[id]) {
-          console.log("fechting item", id);
+          console.log("fetchShopItemsByIds item", id);
           const itemDoc = (await getDoc(doc(db, "items", id.toString()))).data();
           items[id] = itemDoc;
         }
       }
     }
-    dispatch(fetchShopItemsSuccess({items}));
+    dispatch(fetchShopItemsSuccess({ items }));
   } catch (error) {
-    console.error("failed to fetch armor data,error:", error);
-    dispatch(fetchShopItemsFailed(error));
+    console.error("failed to fetchShopItemsByIds,error:", error);
+    dispatch(fetchShopItemsFailed(error.message));
   }
 };
 
@@ -69,7 +69,7 @@ export const fetchShopSections = () => async (dispatch, getState) => {
   try {
     let sections = getState().shop.sections;
     //fetch sections if null in store
-    if (!sections) {
+    if (!sections || !Object.keys(sections).length) {
       sections = {};
       const sectionDocs = (await getDocs(await collection(db, "sections"))).docs;
       sectionDocs.forEach((doc) => {
@@ -78,7 +78,7 @@ export const fetchShopSections = () => async (dispatch, getState) => {
     }
     dispatch(fetchShopSectionsSuccess({ sections }));
   } catch (error) {
-    console.error("failed to fetch sections data,error:", error);
+    console.error("failed to fetchShopSections,error:", error);
     dispatch(fetchShopSectionsFailed(error));
   }
 };

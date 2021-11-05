@@ -1,24 +1,17 @@
 import React from "react";
 import { connect } from "react-redux";
-import { fetchShopSections, fetchShopItemsByIds } from "../redux/shop/shop.actions";
+import { fetchShopSections } from "../redux/shop/shop.actions";
 
 import { Container } from "@chakra-ui/react";
 import LoadingWrapper from "../components/LoadingWrapper";
 import SectionRow from "../components/SectionRow";
 
 function Shop({ sectionsMap, fetchShopSections,fetchShopItemsByIds, isLoading }) {
-  //on Comp mount fetch shop sections then on sections update fetch the first 3 items
+  //on Comp mount fetch shop sections 
   React.useEffect(() => {
-    if (!sectionsMap) {
       fetchShopSections();
-    } else {
-      //fetch the first 3 item on each section
-      const ids = Object.values(sectionsMap).flatMap((section) => section.slice(0, 3));
-      console.log('fetching ids:',ids)
-      fetchShopItemsByIds(ids);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sectionsMap]);
+  }, []);
 
   console.log("Shop Rendered with sections:", sectionsMap);
   return (
@@ -32,7 +25,6 @@ function Shop({ sectionsMap, fetchShopSections,fetchShopItemsByIds, isLoading })
 
 const mapDispatchToProps = {
   fetchShopSections,
-  fetchShopItemsByIds,
 };
 
 const mapStateToProps = (state) => ({

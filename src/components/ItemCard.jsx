@@ -7,11 +7,13 @@ import FavIcon from "./FavIcon";
 import { ReactComponent as TrunkIcon } from "../assets/trunk.svg";
 import useThemeColors from "../theme/useThemeColors";
 
-const ItemCard = ({ item, addCartItem, setCartHidden }) => {
+const ItemCard = ({ item, addCartItem, setCartHidden,cartHidden }) => {
   const { name, price, imgurl, id, section } = item;
   const { cardBg, textPrice, textSecondary, overlayBg } = useThemeColors();
   const handleAddtoCart = () => {
-    setCartHidden(false);
+    if(cartHidden){
+      setCartHidden(false);
+    }
     addCartItem({ id, size: 0 });
   };
   return (
@@ -61,6 +63,7 @@ const ItemCard = ({ item, addCartItem, setCartHidden }) => {
 };
 
 const mapStatetoProps = (state) => ({
+  cartHidden: state.cart.hidden
 });
 const mapDispatchToProps = {
   setCartHidden,

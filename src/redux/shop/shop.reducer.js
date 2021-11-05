@@ -3,8 +3,8 @@ import ShopActionTypes from "./shop.types";
 const INITIAL_STATE = {
   items: null,
   sections: null,
-  isFetchingItems: true,
-  isFetchingSections: true,
+  isFetchingItems: [],
+  isFetchingSections: false,
   error: false,
 };
 
@@ -13,13 +13,15 @@ const shopReducer = (state = INITIAL_STATE, action) => {
     case ShopActionTypes.FETCH_ITEMS_START:
       return {
         ...state,
-        isFetchingItems: true,
+        isFetchingItems: [...state.isFetchingItems,true],
       };
     case ShopActionTypes.FETCH_ITEMS_SUCCESS:
+      const { items, sections } = action.payload;
       return {
         ...state,
-        ...action.payload,
-        isFetchingItems: false,
+        items: { ...state.items, ...items },
+        sections: { ...state.sections, ...sections },
+        isFetchingItems: [...state.isFetchingItems.slice(0,-1)],
         error: false,
       };
     case ShopActionTypes.FETCH_ITEMS_FAILED:
@@ -28,7 +30,7 @@ const shopReducer = (state = INITIAL_STATE, action) => {
         isFetchingItems: false,
         error: action.payload,
       };
-      case ShopActionTypes.FETCH_SECTIONS_START:
+    case ShopActionTypes.FETCH_SECTIONS_START:
       return {
         ...state,
         isFetchingSections: true,

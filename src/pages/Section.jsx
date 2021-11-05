@@ -1,20 +1,24 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { connect } from "react-redux";
-import { selectItemsBySection } from "../redux/shop/shop.selectors";
+import { useSelector, useDispatch } from "react-redux";
+import { selectItemsBySection,selectIsFetchingItems } from "../redux/shop/shop.selectors";
 import { fetchShopItemsBySection } from "../redux/shop/shop.actions";
 import { Container, Heading, SimpleGrid } from "@chakra-ui/react";
 import Item from "../components/ItemCard";
 import LoadingWrapper from "../components/LoadingWrapper";
 
-function Section({ itemsBySection, fetchShopItemsBySection, isLoading }) {
+function Section() {
   const { sectionId } = useParams();
+  const dispatch = useDispatch();
+  const isLoading = useSelector((state) => selectIsFetchingItems(state));
+  const itemsBySection = useSelector((state) => selectItemsBySection(state, sectionId));
+
   React.useEffect(() => {
-    fetchShopItemsBySection(sectionId);
-    console.log('Section mounted')
-  }, [sectionId,fetchShopItemsBySection]);
-  const itemsArr = itemsBySection(sectionId);
-  console.log("Section ",sectionId,"renderd")
+    dispatch(fetchShopItemsBySection(sectionId));
+    console.log("Section mounted");
+  }, [sectionId, dispatch]);
+
+  console.log("Section ", sectionId, "rendered");
   return (
     <Container maxW="container.xl" minH="75vh">
       <LoadingWrapper isLoading={isLoading}>
@@ -22,20 +26,11 @@ function Section({ itemsBySection, fetchShopItemsBySection, isLoading }) {
           {sectionId}
         </Heading>
         <SimpleGrid columns={[1, 2, 3]} spacing={4}>
-          {itemsArr && itemsArr.map((item, idx) => item && (
-            <Item key={idx} item={item} />
-          ))}
+          {itemsBySection && itemsBySection.map((item, idx) => item && <Item key={idx} item={item} />)}
         </SimpleGrid>
       </LoadingWrapper>
     </Container>
   );
 }
-const mapStateToProps = (state) => ({
-  itemsBySection: (section) => selectItemsBySection(state, section),
-  isLoading: state.shop.isFetchingItems,
-});
-const mapDispatchToProps = {
-  fetchShopItemsBySection,
-};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Section);
+export default Section;
