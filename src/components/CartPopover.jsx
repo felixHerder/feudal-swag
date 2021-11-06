@@ -1,26 +1,25 @@
 import React from "react";
 import { connect } from "react-redux";
 import { setCartHidden, clearItemFromCart } from "../redux/cart/cart.actions";
-import { selectCartItemsCount, selectCartTotal, selectCartItemsFromShop, selectCartItemIds } from "../redux/cart/cart.selectors";
-import { selectIsFetchingItems } from "../redux/shop/shop.selectors";
-import { fetchShopItemsByIds } from "../redux/shop/shop.actions";
+import { selectCartItemsCount, selectCartTotal, selectCartItemsFromShop, selectCartItemIds, selectIsCartLoading } from "../redux/cart/cart.selectors";
+// import { fetchShopItemsByIds } from "../redux/shop/shop.actions";
 import { ReactComponent as TrunkIcon } from "../assets/trunk.svg";
 import { Center, Text, Icon, Button, Portal, Box, Image, HStack, VStack, CloseButton } from "@chakra-ui/react";
 import { Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverFooter } from "@chakra-ui/react";
 import useThemeColors from "../theme/useThemeColors";
 import LoadingWrapper from "./LoadingWrapper";
 
-function CartPopover({ cartHidden, itemCount, setCartHidden, cartItems, cartTotal, cartItemIds, fetchShopItemsByIds, isLoading, clearItemFromCart }) {
+function CartPopover({ cartHidden, itemCount, setCartHidden, cartItems, cartTotal, cartItemIds, fetchShopItemsByIds, isCartLoading, clearItemFromCart }) {
   React.useEffect(() => {
-    if (cartHidden === false) {
-      fetchShopItemsByIds(cartItemIds);
-    }
+    // if (cartHidden === false) {
+    //   fetchShopItemsByIds(cartItemIds);
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cartHidden]);
 
   const colors = useThemeColors();
   const handleClearItem = (item) => {
-    clearItemFromCart({ id: item.id, size: item.sizeId })
+    clearItemFromCart({ itemId: item.id, sizeId: item.sizeId });
   };
   return (
     <>
@@ -46,16 +45,18 @@ function CartPopover({ cartHidden, itemCount, setCartHidden, cartItems, cartTota
         <Portal>
           <PopoverContent w="auto" mx={4} bg={colors.cardBg}>
             <PopoverArrow bg={colors.cardBg} />
-            <PopoverCloseButton size="lg" />
-            <PopoverHeader fontSize="xl">Trunk Preview</PopoverHeader>
-            <PopoverBody p={0} maxH="calc(100vh - 260px)" minH="100px" minW="280px" overflowY="auto" bg={colors.cardBg}>
-              <LoadingWrapper isLoading={isLoading}>
-                {cartItems && cartItems.length > 0 && (
+            <PopoverCloseButton size="lg" mt={1} />
+            <PopoverHeader fontSize="lg" py={4} pl={6}>
+              Trunk Preview
+            </PopoverHeader>
+            <PopoverBody p={0} maxH="calc(100vh - 260px)" minH="100px" width="280px" overflowY="auto" bg={colors.cardBg}>
+              {cartItems && cartItems.length > 0 && (
+                <LoadingWrapper isLoading={isCartLoading}>
                   <VStack spacing={0}>
                     {cartItems.map(
                       (item, idx) =>
                         item && (
-                          <HStack spacing={12} w="100%" key={idx} justifyContent="space-between" bg={idx % 2 ? colors.cardBg : colors.cardBgLight} py={2}>
+                          <HStack spacing={0} w="100%" key={idx} justifyContent="space-between" bg={idx % 2 ? colors.cardBg : colors.cardBgLight} py={2}>
                             <HStack pl={2}>
                               <CloseButton onClick={() => handleClearItem(item)} title="Remove from trunk" />
                               <Image boxSize="56px" src={item.imgurl} alt="cart item" objectFit="cover" objectPosition="center" borderRadius="md" />
@@ -73,8 +74,8 @@ function CartPopover({ cartHidden, itemCount, setCartHidden, cartItems, cartTota
                         )
                     )}
                   </VStack>
-                )}
-              </LoadingWrapper>
+                </LoadingWrapper>
+              )}
               {/* Empty Cart state */}
               {itemCount === 0 && (
                 <Center minH="inherit">
@@ -106,12 +107,12 @@ const mapStatetoProps = (state) => ({
   cartItems: selectCartItemsFromShop(state),
   cartTotal: selectCartTotal(state),
   cartItemIds: selectCartItemIds(state),
-  isLoading: selectIsFetchingItems(state),
+  isCartLoading: selectIsCartLoading(state),
 });
 const mapDispatchToProps = {
   setCartHidden,
   clearItemFromCart,
-  fetchShopItemsByIds,
+  // fetchShopItemsByIds,
 };
 
 export default connect(mapStatetoProps, mapDispatchToProps)(CartPopover);

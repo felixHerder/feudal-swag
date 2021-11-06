@@ -1,20 +1,20 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { connect } from "react-redux";
-import { setCartHidden, addCartItem } from "../redux/cart/cart.actions";
+import { setCartHidden, addItemToCart } from "../redux/cart/cart.actions";
 import { Box, Flex, Image, Text, IconButton, Icon } from "@chakra-ui/react";
 import FavIcon from "./FavIcon";
 import { ReactComponent as TrunkIcon } from "../assets/trunk.svg";
 import useThemeColors from "../theme/useThemeColors";
 
-const ItemCard = ({ item, addCartItem, setCartHidden,cartHidden }) => {
+const ItemCard = ({ item, addItemToCart, setCartHidden,cartHidden }) => {
   const { name, price, imgurl, id, section } = item;
   const { cardBg, textPrice, textSecondary, overlayBg } = useThemeColors();
   const handleAddtoCart = () => {
     if(cartHidden){
       setCartHidden(false);
     }
-    addCartItem({ id, size: 0 });
+    addItemToCart({ itemId:id, sizeId: 0 });
   };
   return (
     <Box
@@ -67,7 +67,7 @@ const mapStatetoProps = (state) => ({
 });
 const mapDispatchToProps = {
   setCartHidden,
-  addCartItem,
+  addItemToCart,
 };
 
 export default connect(mapStatetoProps, mapDispatchToProps)(ItemCard);

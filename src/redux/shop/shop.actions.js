@@ -1,6 +1,5 @@
 import { getDoc, doc, collection, getDocs } from "firebase/firestore";
 import ShopActionTypes from "./shop.types";
-
 import { db } from "../../firebase/firebase.utils";
 
 const fetchShopItemsStart = () => ({ type: ShopActionTypes.FETCH_ITEMS_START });
@@ -18,12 +17,14 @@ export const fetchShopItemsBySection =
     try {
       let sections = getState().shop.sections;
       //fetch sections if null in store
-      if (!sections) {
+      if (!sections || !Object.keys(sections).length) {
+        dispatch(fetchShopSectionsStart());
         sections = {};
         const sectionDocs = (await getDocs(await collection(db, "sections"))).docs;
         sectionDocs.forEach((doc) => {
           sections[doc.id] = doc.data().itemIds;
         });
+        dispatch(fetchShopSectionsSuccess(sections));
       }
       const idsToFetch = sections[section];
       let items = { ...getState().shop.items };
@@ -36,7 +37,7 @@ export const fetchShopItemsBySection =
           items[id] = itemDoc;
         }
       }
-      dispatch(fetchShopItemsSuccess({ items, sections }));
+      dispatch(fetchShopItemsSuccess(items));
     } catch (error) {
       console.error("failed to fetchShopItemsBySection,error:", error);
       dispatch(fetchShopItemsFailed(error));
@@ -44,20 +45,26 @@ export const fetchShopItemsBySection =
   };
 
 export const fetchShopItemsByIds = (idsToFetch) => async (dispatch, getState) => {
-  dispatch(fetchShopItemsStart());
   try {
-    let items = { ...getState().shop.items };
+    let items = getState().shop.items || {};
     if (idsToFetch) {
+      //fetch items only if  specific item is not found in store
+      const newItems = {};
       for (const id of idsToFetch) {
-        //fetch items only if  specific item is not found in store
         if (!items[id]) {
+          if (Object.keys(newItems).length === 1) {
+            dispatch(fetchShopItemsStart());
+          }
           console.log("fetchShopItemsByIds item", id);
           const itemDoc = (await getDoc(doc(db, "items", id.toString()))).data();
-          items[id] = itemDoc;
+          newItems[id] = itemDoc;
         }
       }
+      if (Object.keys(newItems).length) {
+        items = { ...items, ...newItems };
+      }
     }
-    dispatch(fetchShopItemsSuccess({ items }));
+    dispatch(fetchShopItemsSuccess(items));
   } catch (error) {
     console.error("failed to fetchShopItemsByIds,error:", error);
     dispatch(fetchShopItemsFailed(error.message));
@@ -65,18 +72,18 @@ export const fetchShopItemsByIds = (idsToFetch) => async (dispatch, getState) =>
 };
 
 export const fetchShopSections = () => async (dispatch, getState) => {
-  dispatch(fetchShopSectionsStart());
   try {
     let sections = getState().shop.sections;
     //fetch sections if null in store
     if (!sections || !Object.keys(sections).length) {
+      dispatch(fetchShopSectionsStart());
       sections = {};
       const sectionDocs = (await getDocs(await collection(db, "sections"))).docs;
       sectionDocs.forEach((doc) => {
         sections[doc.id] = doc.data().itemIds;
       });
+      dispatch(fetchShopSectionsSuccess(sections));
     }
-    dispatch(fetchShopSectionsSuccess({ sections }));
   } catch (error) {
     console.error("failed to fetchShopSections,error:", error);
     dispatch(fetchShopSectionsFailed(error));

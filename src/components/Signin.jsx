@@ -1,18 +1,12 @@
 import React from "react";
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-
-import { FormControl, FormLabel, Input, } from "@chakra-ui/react";
-import { Box, Text, Heading, VStack, Button,Center } from "@chakra-ui/react";
+import { connect } from "react-redux";
+import { FormControl, FormLabel, Input } from "@chakra-ui/react";
+import { Box, Text, Heading, VStack, Button, Center } from "@chakra-ui/react";
+import { continueWithGoogle } from "../redux/user/user.actions";
 
 class SignIn extends React.Component {
   state = { email: "", password: "", isLoading: false, error: false };
-  signInWithGoogle = async () => {
-    try {
-      await signInWithPopup(getAuth(), new GoogleAuthProvider());
-    } catch (error) {
-      console.log("error signing in with google", error);
-    }
-  };
   _isMounted = false;
   componentDidMount() {
     this._isMounted = true;
@@ -58,12 +52,16 @@ class SignIn extends React.Component {
           <Button mt={4} isFullWidth type="submit" isLoading={this.state.isLoading} loadingText="Submitting">
             Sign in
           </Button>
-          {this.state.error ? <Text my={2} fontSize="sm" textAlign="center">Something is not right, try again</Text> : null}
+          {this.state.error ? (
+            <Text my={2} fontSize="sm" textAlign="center">
+              Something is not right, try again
+            </Text>
+          ) : null}
         </form>
         <Center my={2}>
           <Text>or</Text>
         </Center>
-        <Button isFullWidth colorScheme="blue" onClick={this.signInWithGoogle}>
+        <Button isFullWidth colorScheme="blue" onClick={this.props.continueWithGoogle}>
           Continue with Google
         </Button>
       </Box>
@@ -71,4 +69,4 @@ class SignIn extends React.Component {
   }
 }
 
-export default SignIn;
+export default connect(null, { continueWithGoogle })(SignIn);

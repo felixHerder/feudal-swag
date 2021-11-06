@@ -25,7 +25,7 @@ const Header = () => {
       {/* Nav links */}
       <Flex>
         <HStack spacing={[0, null, 4]} fontSize={["xs", "sm", "md"]} display={["none", "none", "inline-flex"]} alignItems="center">
-          <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/shop">
+          <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/shop" px={6}>
             SHOP
           </Button>
           {/* Sections Menu */}

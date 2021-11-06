@@ -13,10 +13,11 @@ import SignInAndSignUpPage from "./pages/SignInUp";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 // import { onSnapshot } from "firebase/firestore";
 // import { createUserProfileDocument } from "./firebase/firebase.utils";
-import { setCurrentUser } from "./redux/user/user.actions";
+import { updateUser } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 import Section from "./pages/Section";
 import Item from "./pages/Item";
+import { updateCart } from "./redux/cart/cart.actions";
 
 class App extends React.Component {
   render() {
@@ -50,20 +51,25 @@ class App extends React.Component {
 
   unsubscribeFromAuth = null;
   componentDidMount() {
-    const { setCurrentUser } = this.props;
+    const { updateUser, updateCart } = this.props;
     const auth = getAuth();
 
-    this.unsubscribeFromAuth = onAuthStateChanged(auth, async (userAuth) => {
-      if (userAuth) {
-        console.log("AuthState User found:", userAuth.uid);
-        const { uid, isAnonymous, displayName } = userAuth;
-        setCurrentUser({ uid, isAnonymous, displayName });
-        //get and/or create user doc in users collection in Firestore DB
-        //subsribe to user doc doc changes and set redux user state
+    this.unsubscribeFromAuth = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log("AuthState User found:", user.uid);
+        const {
+          uid,
+          email,
+          isAnonymous,
+          displayName,
+          metadata: { createdAt },
+        } = user;
+        const currentUser = { uid, isAnonymous, displayName, email, createdAt };
+        updateUser({ currentUser });
+        updateCart(uid);
       } else {
         console.log("AuthState No user found");
-
-        // signInAnonymously(auth).then(() => console.log("signed in as guest"));
+        signInAnonymously(auth).then(() => console.log("signed in as guest"));
       }
     });
   }
@@ -76,8 +82,9 @@ const mapStatetoProps = createStructuredSelector({
   currentUser: selectCurrentUser,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
-});
+const mapDispatchToProps = {
+  updateUser,
+  updateCart,
+};
 
 export default connect(mapStatetoProps, mapDispatchToProps)(App);

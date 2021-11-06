@@ -17,7 +17,7 @@ const Home = ({ sections }) => {
     <Container maxW="container.xl">
       <Box mt={[4, 6, 12]} textAlign="center">
         <Heading as="h1" size={"2xl"}>
-          Best apparel in the Kinkdom
+          Best apparel in the Kingdom
         </Heading>
         <Text pt={6} pb={8} fontSize={["lg", "xl", "2xl"]}>
           Rifle through some of our belongings!

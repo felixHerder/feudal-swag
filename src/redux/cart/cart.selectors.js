@@ -2,6 +2,7 @@ import { createSelector } from "reselect";
 
 const selectCartItems = (state) => state.cart.cartItemIds;
 const selectShopItems = (state) => state.shop.items;
+export const selectIsCartLoading = (state)=> state.cart.isLoading;
 
 export const selectCartItemsFromShop = createSelector(
   [selectCartItems, selectShopItems],

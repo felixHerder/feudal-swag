@@ -16,11 +16,9 @@ const shopReducer = (state = INITIAL_STATE, action) => {
         isFetchingItems: [...state.isFetchingItems,true],
       };
     case ShopActionTypes.FETCH_ITEMS_SUCCESS:
-      const { items, sections } = action.payload;
       return {
         ...state,
-        items: { ...state.items, ...items },
-        sections: { ...state.sections, ...sections },
+        items: {...state.items,...action.payload},
         isFetchingItems: [...state.isFetchingItems.slice(0,-1)],
         error: false,
       };
@@ -38,7 +36,7 @@ const shopReducer = (state = INITIAL_STATE, action) => {
     case ShopActionTypes.FETCH_SECTIONS_SUCCESS:
       return {
         ...state,
-        ...action.payload,
+        sections:action.payload,
         isFetchingSections: false,
         error: false,
       };

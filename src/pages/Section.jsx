@@ -15,7 +15,6 @@ function Section() {
 
   React.useEffect(() => {
     dispatch(fetchShopItemsBySection(sectionId));
-    console.log("Section mounted");
   }, [sectionId, dispatch]);
 
   console.log("Section ", sectionId, "rendered");

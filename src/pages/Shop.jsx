@@ -6,7 +6,7 @@ import { Container } from "@chakra-ui/react";
 import LoadingWrapper from "../components/LoadingWrapper";
 import SectionRow from "../components/SectionRow";
 
-function Shop({ sectionsMap, fetchShopSections,fetchShopItemsByIds, isLoading }) {
+function Shop({ sectionsMap, fetchShopSections, isLoading }) {
   //on Comp mount fetch shop sections 
   React.useEffect(() => {
       fetchShopSections();

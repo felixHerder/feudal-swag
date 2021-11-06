@@ -13,7 +13,7 @@ function UserMenu({ currentUser }) {
     <>
       {currentUser ? (
         <Menu isLazy>
-          <MenuButton as={Button} pl={4} variant="ghost" rightIcon={<ChevronDownIcon />}>
+          <MenuButton as={Button} pl={6} variant="ghost" rightIcon={<ChevronDownIcon />}>
             {currentUser.isAnonymous ? `Guest (${currentUser.uid.slice(0, 3).toLowerCase()})` : currentUser.displayName}
           </MenuButton>
           <Portal>
@@ -24,7 +24,7 @@ function UserMenu({ currentUser }) {
               <MenuItem as={RouterLink} to="/favs" icon={<Icon boxSize={5} as={BsHeart} />}>
                 Favourites
               </MenuItem>
-              <MenuItem as={RouterLink} to="/profile" icon={<Icon boxSize={5} as={BsPerson} />}>
+              <MenuItem as={RouterLink} to="/user" icon={<Icon boxSize={5} as={BsPerson} />}>
                 User Settings
               </MenuItem>
               <MenuDivider />
@@ -34,7 +34,7 @@ function UserMenu({ currentUser }) {
                 </MenuItem>
               ) : (
                 <MenuItem as={RouterLink} to="/signin"icon={<Icon boxSize={5} as={RiLoginBoxLine} />}>
-                  SIGN IN
+                  Sign In / Sign Up
                 </MenuItem>
               )}
             </MenuList>
