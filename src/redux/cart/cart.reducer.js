@@ -1,38 +1,40 @@
-import CartActionTypes from './cart.types.js';
-import { addItemToCart, removeItemFromCart } 
-from './cart.utils.js';
+import CartActionTypes from "./cart.types.js";
 
 const INITIAL_STATE = {
   hidden: true,
-  cartItems: []
+  cartItemIds: null,
+  isLoading: false,
+  error: false,
 };
-
 const cartReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case CartActionTypes.TOGGLE_CART_HIDDEN:
+    case CartActionTypes.SET_CART_HIDDEN:
       return {
         ...state,
-        hidden: !state.hidden
+        hidden: action.payload,
       };
-    case CartActionTypes.ADD_ITEM:
+    case CartActionTypes.UPDATE_CART_START:
       return {
         ...state,
-        cartItems: addItemToCart(state.cartItems, action.payload)
+        isLoading: true,
+        error:false,
       };
-    case CartActionTypes.CLEAR_ITEM_FROM_CART:
+      case CartActionTypes.UPDATE_CART_SUCCESS:
       return {
         ...state,
-        cartItems: state.cartItems.filter(item=> item.id !== action.payload.id)
+        cartItemIds: action.payload,
+        isLoading: false,
+        error:false,
       };
-    case CartActionTypes.REMOVE_ITEM:
-      return {
-        ...state,
-        cartItems: removeItemFromCart(state.cartItems, action.payload)
-      };
-
+      case CartActionTypes.UPDATE_CART_FAIL:
+        return {
+          ...state,
+          isLoading: false,
+          error:action.payload,
+        };
     default:
       return state;
   }
-}
+};
 
 export default cartReducer;

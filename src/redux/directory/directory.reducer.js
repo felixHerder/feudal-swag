@@ -1,41 +1,29 @@
 const INITIAL_STATE = {
   sections: [
     {
-      title: 'coifs',
-      imageUrl: 'https://i.ibb.co/cvpntL1/hats.png',
-      id: 1,
-      linkUrl: 'shop/hats'
+      title: "gauntlets",
+      imageUrl: "/img/heavy-armor/gauntlets/gauntlets_large_001.jpg",
     },
     {
-      title: 'surcoats',
-      imageUrl: 'https://i.ibb.co/px2tCc3/jackets.png',
-      id: 2,
-      linkUrl: 'shop/jackets'
+      title: "greaves",
+      imageUrl: "/img/heavy-armor/greaves/greaves_large_003.jpg",
     },
     {
-      title: 'clogers',
-      imageUrl: 'https://i.ibb.co/0jqHpnp/sneakers.png',
-      id: 3,
-      linkUrl: 'shop/sneakers'
+      title: "sabatons",
+      imageUrl: "/img/heavy-armor/sabatons/sabatons_large_006.jpg",
     },
     {
-      title: 'ladies',
-      imageUrl: 'https://i.ibb.co/GCCdy8t/womens.png',
-      size: 'large',
-      id: 4,
-      linkUrl: 'shop/womens'
+      title: "helmets",
+      imageUrl: "/img/heavy-armor/helmets/helmets_large_002.jpg",
     },
     {
-      title: 'lords',
-      imageUrl: 'https://i.ibb.co/R70vBrQ/men.png',
-      size: 'large',
-      id: 5,
-      linkUrl: 'shop/mens'
-    }
-  ]
-}
+      title: "breastplates",
+      imageUrl: "/img/heavy-armor/breastplates/breastplates_large_001.jpg",
+    },
+  ],
+};
 
 const directoryReducer = (state = INITIAL_STATE, action) => {
   return state;
-}
+};
 export default directoryReducer;

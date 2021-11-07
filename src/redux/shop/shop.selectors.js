@@ -1,20 +1,15 @@
-import {createSelector} from 'reselect'
+import { createSelector } from "reselect";
 
-const selectShop = state => state.shop;
+const selectId = (state, id) => id;
+export const selectIsFetchingItems = (state) => state.shop.isFetchingItems[0];
+export const selectItems = (state) => state.shop.items;
+export const selectSections = (state) => state.shop.sections;
+export const selectItemIdsBySection = createSelector([selectSections, selectId], (sections, id) => sections && sections[id]);
+export const selectItemById = createSelector([selectItems,selectId],(items,id)=>items && items[id]);
 
-export const selectShopCollections = createSelector(
-  [selectShop],
-  shop => shop.collections
-)
+export const selectItemsBySection = createSelector([selectItems, selectSections, selectId], (items, sections, sectionId) => {
+  return sections && sections[sectionId] && sections[sectionId].map((id) => items && items[id]);
+});
 
-export const selectCollectionsForPreview = createSelector(
-  [selectShopCollections],
-  collections => collections ? Object.values(collections) : []
-)
-
-export const selectCollection = collectionUrlParam =>
- createSelector(
-  [selectShopCollections],
-  collections => collections ? collections[collectionUrlParam] : null
-);
-
+export const makeSelectItemsBySection = () =>
+  createSelector([selectItems, selectSections, selectId], (items, sections, sectionId) => sections && sections[sectionId].map((id) => items && items[id]));
