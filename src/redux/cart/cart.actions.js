@@ -17,7 +17,7 @@ const getKey = (itemId, sizeId) => {
   return itemId + "-" + sizeId;
 };
 
-export const updateCart = (uid) => async (dispatch) => {
+export const updateCartFromDb = (uid) => async (dispatch) => {
   dispatch(updateCartStart());
   try {
     //get cartItemIds from firestore db

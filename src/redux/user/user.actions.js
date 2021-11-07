@@ -6,10 +6,10 @@ import {
   linkWithCredential,
   GoogleAuthProvider,
   signInWithPopup,
-  deleteUser,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase.utils";
+import { updateCartFromDb } from "../cart/cart.actions";
 import { UserActionTypes } from "./user.types";
 
 export const setCurrentUser = (user) => ({
@@ -20,9 +20,19 @@ const fetchUserStart = () => ({ type: UserActionTypes.FETCH_USER_START });
 const fetchUserSuccess = (user) => ({ type: UserActionTypes.FETCH_USER_SUCCESS, payload: user });
 const fetchUserFailed = (error) => ({ type: UserActionTypes.FETCH_USER_FAILED, payload: error });
 
-const updateUserDoc = async (currentUser) => {
-  const userRef = doc(db, `users/${currentUser.uid}`);
-  await setDoc(userRef, currentUser, { merge: true });
+
+
+export const updateUserInDb = (currentUser) => async (dispatch) => {
+  dispatch(fetchUserStart());
+  try {
+    const userRef = doc(db, `users/${currentUser.uid}`);
+    await setDoc(userRef, currentUser, { merge: true });
+    dispatch(updateCartFromDb(currentUser.uid));
+    dispatch(fetchUserSuccess({ currentUser }));
+  } catch (error) {
+    console.error("error in updateUser:", error.message);
+    dispatch(fetchUserFailed(error.message));
+  }
 };
 
 export const signUpUser = (email, password, displayName) => async (dispatch, getState) => {
@@ -44,8 +54,7 @@ export const signUpUser = (email, password, displayName) => async (dispatch, get
       metadata: { createdAt },
     } = auth.currentUser;
     const currentUser = { email, displayName, isAnonymous, uid, createdAt, cartItemIds };
-    await updateUserDoc(currentUser);
-    dispatch(fetchUserSuccess({ currentUser }));
+    dispatch(updateUserInDb(currentUser));
   } catch (error) {
     console.error("error in signUpUser:", error);
     dispatch(fetchUserFailed(error.message));
@@ -56,13 +65,10 @@ export const continueWithGoogle = () => async (dispatch, getState) => {
   dispatch(fetchUserStart());
   try {
     const auth = getAuth();
-    const oldUser = auth.currentUser;
     let cartItemIds = [];
     if (auth.currentUser && auth.currentUser.isAnonymous) {
       cartItemIds = getState().cart.cartItemIds;
-      console.log("deleting user", auth.currentUser.uid);
       await signInWithPopup(auth, new GoogleAuthProvider());
-      deleteUser(oldUser);
     } else {
       await signInWithPopup(auth, new GoogleAuthProvider());
     }
@@ -74,23 +80,9 @@ export const continueWithGoogle = () => async (dispatch, getState) => {
       metadata: { createdAt },
     } = auth.currentUser;
     const currentUser = { isAnonymous, uid, createdAt, email, displayName, cartItemIds };
-    await updateUserDoc(currentUser);
-    dispatch(fetchUserSuccess({ currentUser }));
+    dispatch(updateUserInDb(currentUser));
   } catch (error) {
     console.error("error in continueWithGoogle:", error);
     dispatch(fetchUserFailed(error.message));
   }
 };
-
-export const updateUser =
-  ({ currentUser }) =>
-  async (dispatch) => {
-    dispatch(fetchUserStart());
-    try {
-      await updateUserDoc(currentUser);
-      dispatch(fetchUserSuccess({ currentUser }));
-    } catch (error) {
-      console.error("error in updateUser:", error.message);
-      dispatch(fetchUserFailed(error.message));
-    }
-  };

@@ -1,5 +1,5 @@
 import React from "react";
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { connect } from "react-redux";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { Box, Text, Heading, VStack, Button, Center } from "@chakra-ui/react";

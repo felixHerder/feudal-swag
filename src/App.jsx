@@ -13,11 +13,10 @@ import SignInAndSignUpPage from "./pages/SignInUp";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 // import { onSnapshot } from "firebase/firestore";
 // import { createUserProfileDocument } from "./firebase/firebase.utils";
-import { updateUser } from "./redux/user/user.actions";
+import { updateUserInDb } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 import Section from "./pages/Section";
 import Item from "./pages/Item";
-import { updateCart } from "./redux/cart/cart.actions";
 
 class App extends React.Component {
   render() {
@@ -51,12 +50,12 @@ class App extends React.Component {
 
   unsubscribeFromAuth = null;
   componentDidMount() {
-    const { updateUser, updateCart } = this.props;
+    const { updateUserInDb } = this.props;
     const auth = getAuth();
 
     this.unsubscribeFromAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        console.log("AuthState User found:", user.uid);
+        console.log("AuthState User found:", user.uid, user);
         const {
           uid,
           email,
@@ -65,8 +64,7 @@ class App extends React.Component {
           metadata: { createdAt },
         } = user;
         const currentUser = { uid, isAnonymous, displayName, email, createdAt };
-        updateUser({ currentUser });
-        updateCart(uid);
+        updateUserInDb(currentUser);
       } else {
         console.log("AuthState No user found");
         signInAnonymously(auth).then(() => console.log("signed in as guest"));
@@ -83,8 +81,7 @@ const mapStatetoProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
-  updateUser,
-  updateCart,
+  updateUserInDb,
 };
 
 export default connect(mapStatetoProps, mapDispatchToProps)(App);

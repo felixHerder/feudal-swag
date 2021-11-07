@@ -53,6 +53,7 @@
     ]
   },
   "devDependencies": {
+    "firebase-admin": "^10.0.0",
     "lorem-ipsum": "^2.0.4"
   }
 }
