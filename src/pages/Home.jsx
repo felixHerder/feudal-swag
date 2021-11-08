@@ -5,27 +5,28 @@ import { Container, Flex, Box, Heading, Text, Center, Icon, Image } from "@chakr
 import { GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreastplate } from "react-icons/gi";
 import useThemeColors from "../theme/useThemeColors";
 
-const sectionIcons = [GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreastplate];
-const sections = [
+export const sectionIcons = [GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreastplate];
+export const sectionsData = [
   {
+    icon: GiBreastplate,
+    title: "breastplates",
+    imageUrl: "/img/heavy-armor/breastplates/breastplates_large_001.jpg",
+  },
+  {
+    icon: GiGauntlet,
     title: "gauntlets",
     imageUrl: "/img/heavy-armor/gauntlets/gauntlets_large_001.jpg",
   },
+  { icon: GiGreaves, title: "greaves", imageUrl: "/img/heavy-armor/greaves/greaves_large_003.jpg" },
   {
-    title: "greaves",
-    imageUrl: "/img/heavy-armor/greaves/greaves_large_003.jpg",
-  },
-  {
-    title: "sabatons",
-    imageUrl: "/img/heavy-armor/sabatons/sabatons_large_006.jpg",
-  },
-  {
+    icon: GiDwarfHelmet,
     title: "helmets",
     imageUrl: "/img/heavy-armor/helmets/helmets_large_002.jpg",
   },
   {
-    title: "breastplates",
-    imageUrl: "/img/heavy-armor/breastplates/breastplates_large_001.jpg",
+    icon: GiMetalBoot,
+    title: "sabatons",
+    imageUrl: "/img/heavy-armor/sabatons/sabatons_large_006.jpg",
   },
 ];
 
@@ -43,7 +44,7 @@ const Home = () => {
         </Text>
       </Box>
       <Flex mb={12} wrap="wrap" sx={{ gap: 16 }} justifyContent="center">
-        {sections.map(({ title, imageUrl }, idx) => (
+        {sectionsData.map(({ title, imageUrl, icon }, idx) => (
           <Box
             as={RouterLink}
             to={`/shop/${title}`}
@@ -74,7 +75,7 @@ const Home = () => {
               />
             </Box>
             <Center bg={cardBg} py={4} _groupHover={{ color: textPrice }} _groupActive={{ color: textPrice }}>
-              <Icon mr={2} as={sectionIcons[idx]} />
+              <Icon mr={2} as={icon} />
               <Heading size="sm" fontFamily="body">
                 {title.toUpperCase()}
               </Heading>

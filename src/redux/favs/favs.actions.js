@@ -58,11 +58,6 @@ export const updateFavsFromDb = (uid) => async (dispatch) => {
     let favsItemIds = [];
     if (userSnapshot.exists()) {
       favsItemIds = userSnapshot.data().favsItemIds || [];
-      //update items in shop
-      const idsToFetch = Object.keys(favsItemIds);
-      if (idsToFetch) {
-        dispatch(fetchShopItemsByIds(idsToFetch));
-      }
     }
     //update cart in store
     dispatch(updateFavsSuccess(favsItemIds));

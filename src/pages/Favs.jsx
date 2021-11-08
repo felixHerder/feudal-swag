@@ -19,11 +19,11 @@ export default function Favs() {
 
   console.log("Favs rendered");
   return (
-    <Container maxW="container.lg" minH="75vh">
+    <Container maxW="container.lg" minH="65vh">
+      <Heading textAlign="center" size="2xl" mt={[2, 4, 6]} mb={[4, 8, 12]} textTransform="capitalize">
+        Favourites
+      </Heading>
       <LoadingWrapper isLoading={areItemsLoading}>
-        <Heading textAlign="center" size="2xl" mt={[2, 4, 6]} mb={[4, 8, 12]} textTransform="capitalize">
-          Favourites
-        </Heading>
         <SimpleGrid columns={[1, 2, 3]} spacing={4}>
           {favsItems && favsItems.map((item, idx) => item && <ItemCard key={idx} item={item} />)}
         </SimpleGrid>

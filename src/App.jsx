@@ -57,7 +57,7 @@ class App extends React.Component {
 
     this.unsubscribeFromAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        console.log("AuthState User found:", user.uid, user);
+        console.log("AuthState User found:", user.uid);
         const {
           uid,
           email,

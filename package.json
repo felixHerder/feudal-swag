@@ -32,7 +32,8 @@
     "start": "craco start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "delusers": "node ./src/firebase/firebase.admin.js"
   },
   "eslintConfig": {
     "extends": [

@@ -3,20 +3,35 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { addItemToCart } from "../redux/cart/cart.actions";
 import { selectIsFetchingItems, selectItemById } from "../redux/shop/shop.selectors";
+import { addItemToFavs, removeItemFromFavs } from "../redux/favs/favs.actions";
 
-import { Center, Box, Flex, Button, Image, Text, IconButton, Heading, Container, SimpleGrid, useDisclosure, useRadio, useRadioGroup } from "@chakra-ui/react";
+import {
+  Center,
+  Box,
+  Flex,
+  Button,
+  Image,
+  Text,
+  IconButton,
+  Heading,
+  Container,
+  SimpleGrid,
+  useDisclosure,
+  useRadio,
+  useRadioGroup,
+} from "@chakra-ui/react";
 import { Modal, ModalOverlay, ModalContent, ModalCloseButton } from "@chakra-ui/react";
 import FavIcon from "../components/FavIcon";
 import useThemeColors from "../theme/useThemeColors";
 import LoadingWrapper from "../components/LoadingWrapper";
 import { fetchShopItemsByIds } from "../redux/shop/shop.actions";
-
+import { selectIsItemFav } from "../redux/favs/favs.selectors";
 export default function Item() {
   const dispatch = useDispatch();
   const { itemId } = useParams();
-  const item = useSelector((state) => selectItemById(state,itemId));
+  const item = useSelector((state) => selectItemById(state, itemId));
   const isLoading = useSelector((state) => selectIsFetchingItems(state));
-  console.log("Item comp rendered with",{item})
+  console.log("Item comp rendered with", { item });
   React.useEffect(() => {
     if (!item) {
       dispatch(fetchShopItemsByIds([itemId]));
@@ -25,9 +40,7 @@ export default function Item() {
   }, [itemId]);
   return (
     <Container maxW="container.lg" minH="75vh">
-      <LoadingWrapper isLoading={isLoading}>
-        {item && <ItemContent item={item}/>}
-      </LoadingWrapper>
+      <LoadingWrapper isLoading={isLoading}>{item && <ItemContent item={item} />}</LoadingWrapper>
     </Container>
   );
 }
@@ -38,6 +51,7 @@ const ItemContent = ({ item }) => {
   const { bg, cardBg, textPrice, textSecondary } = useThemeColors();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [sizeId, setSizeId] = React.useState(0);
+  const isItemFav = useSelector((state) => selectIsItemFav(state, item.id));
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "itemSizes",
     defaultValue: sizeId.toString(),
@@ -45,13 +59,29 @@ const ItemContent = ({ item }) => {
   });
   const group = getRootProps();
   const handleAddToCart = () => {
-    dispatch(addItemToCart({ itemId: item.id, sizeId}));
+    dispatch(addItemToCart({ itemId: item.id, sizeId }));
+  };
+  const handleAddtoFavs = () => {
+    if (isItemFav) {
+      dispatch(removeItemFromFavs(item.id));
+    } else {
+      dispatch(addItemToFavs(item.id));
+    }
   };
   return (
     <>
       <SimpleGrid columns={[1, 1, 2]} spacing={8} my={[4, 8, 16]} mb={8} alignItems="center">
         {/* Image */}
-        <Box maxHeight="480px" h="100%" w="100%" cursor="pointer" onClick={onOpen} borderRadius="md" overflow="hidden" _active={{ boxShadow: "outline" }}>
+        <Box
+          maxHeight="480px"
+          h="100%"
+          w="100%"
+          cursor="pointer"
+          onClick={onOpen}
+          borderRadius="md"
+          overflow="hidden"
+          _active={{ boxShadow: "outline" }}
+        >
           <Image src={imgurlLarge} h="100%" w="100%" alt="item" objectPosition="center" objectFit="cover" />
         </Box>
         {/* Item details */}
@@ -66,7 +96,7 @@ const ItemContent = ({ item }) => {
               SELECT SIZE:
             </Text>
             <Flex {...group} sx={{ rowGap: 8, columnGap: 16 }} wrap="wrap">
-              {sizes.map((size,idx) => {
+              {sizes.map((size, idx) => {
                 const value = idx.toString();
                 const radio = getRadioProps({ value });
                 return (
@@ -85,7 +115,15 @@ const ItemContent = ({ item }) => {
             <Button isFullWidth fontWeight="normal" size="lg" onClick={handleAddToCart}>
               Add to Trunk
             </Button>
-            <IconButton icon={<FavIcon boxSize={6} isFav={false} mt="4px" />} role="group" variant="outline" ml={8} size="lg" />
+            <IconButton
+              icon={<FavIcon boxSize={6} isFav={isItemFav} mt="4px" />}
+              role="group"
+              variant="outline"
+              ml={8}
+              size="lg"
+              title="Toggle favourite"
+              onClick={handleAddtoFavs}
+            />
           </Center>
         </Box>
       </SimpleGrid>

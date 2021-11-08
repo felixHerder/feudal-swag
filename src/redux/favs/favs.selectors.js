@@ -10,7 +10,7 @@ export const selectFavsItemIdsArr = createSelector(
 );
 export const selectFavsItems = createSelector(
   [selectShopItems, selectFavsItemIdsArr],
-  (shopItemsMap, favsItemsIdsArr) => favsItemsIdsArr && favsItemsIdsArr.map((favItemId) => shopItemsMap[favItemId])
+  (shopItemsMap, favsItemsIdsArr) => favsItemsIdsArr && favsItemsIdsArr.map((favItemId) =>shopItemsMap && shopItemsMap[favItemId])
 );
 
 export const selectIsItemFav = createSelector([selectFavsItemIds, selectId], (favsItemIds, itemId) => {

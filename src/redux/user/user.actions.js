@@ -24,11 +24,12 @@ const fetchUserFailed = (error) => ({ type: UserActionTypes.FETCH_USER_FAILED, p
 
 export const updateUserInDb = (currentUser) => async (dispatch) => {
   dispatch(fetchUserStart());
+  console.log("updateUserInDb id:", currentUser.uid, currentUser);
   try {
     const userRef = doc(db, `users/${currentUser.uid}`);
     await setDoc(userRef, currentUser, { merge: true });
     dispatch(updateCartFromDb(currentUser.uid));
-    dispatch(updateFavsFromDb(currentUser.uid));    
+    dispatch(updateFavsFromDb(currentUser.uid));
     dispatch(fetchUserSuccess({ currentUser }));
   } catch (error) {
     console.error("error in updateUser:", error.message);
@@ -40,8 +41,8 @@ export const signUpUser = (email, password, displayName) => async (dispatch, get
   dispatch(fetchUserStart());
   try {
     const auth = getAuth();
-    const cartItemIds = getState().cart.cartItemIds;
-    const favsItemIds = getState().cart.favsItemIds;
+    const cartItemIds = { ...getState().cart.cartItemIds };
+    const favsItemIds = { ...getState().favs.favsItemIds };
     if (auth.currentUser && auth.currentUser.isAnonymous) {
       //upgrade guest anonymous acount
       const credential = EmailAuthProvider.credential(email, password);
@@ -69,9 +70,9 @@ export const signInUser = (email, password) => async (dispatch, getState) => {
     const auth = getAuth();
     let currentUser = {};
     if (auth.currentUser && auth.currentUser.isAnonymous) {
-      const cartItemIds = getState().cart.cartItemIds;
-      const favsItemIds = getState().cart.favsItemIds;
-      currentUser = { cartItemIds,favsItemIds };
+      const cartItemIds = { ...getState().cart.cartItemIds };
+      const favsItemIds = { ...getState().favs.favsItemIds };
+      currentUser = { cartItemIds, favsItemIds };
     }
     await signInWithEmailAndPassword(auth, email, password);
     const {
@@ -95,9 +96,9 @@ export const continueWithGoogle = () => async (dispatch, getState) => {
     let currentUser = {};
     //get cartitems from guest acount
     if (auth.currentUser && auth.currentUser.isAnonymous) {
-      const cartItemIds = getState().cart.cartItemIds;
-      const favsItemIds = getState().cart.favsItemIds;
-      currentUser = { cartItemIds,favsItemIds };
+      const cartItemIds = { ...getState().cart.cartItemIds };
+      const favsItemIds = { ...getState().favs.favsItemIds };
+      currentUser = { cartItemIds, favsItemIds };
     }
     await signInWithPopup(auth, new GoogleAuthProvider());
     const {

@@ -28,7 +28,6 @@ class SignIn extends React.Component {
   };
   componentDidUpdate(prevProps, prevState) {
     //close modal on user change
-    console.log("compDidUpdate, prev:", prevProps.isLoading, " current:", this.props.isLoading);
     if (prevProps.isLoading === true && this.props.isLoading === false && !this.props.error) {
       if (this.props.onClose) {
         this.setState({ googleActive: false });
