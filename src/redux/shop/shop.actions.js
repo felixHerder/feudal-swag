@@ -13,7 +13,6 @@ const fetchShopSectionsSuccess = (payload) => ({ type: ShopActionTypes.FETCH_SEC
 export const fetchShopItemsBySection =
   (section, itemCount = 999, itemSkip = 0) =>
   async (dispatch, getState) => {
-    dispatch(fetchShopItemsStart());
     try {
       let sections = getState().shop.sections;
       //fetch sections if null in store
@@ -27,17 +26,23 @@ export const fetchShopItemsBySection =
         dispatch(fetchShopSectionsSuccess(sections));
       }
       const idsToFetch = sections[section];
-      let items = { ...getState().shop.items };
+      let items = getState().shop.items || {};
+      const newItems = {};
       for (let i = itemSkip; i < idsToFetch.length && i < itemCount; i++) {
         const id = idsToFetch[i];
         //fetch items only if  specific item is not found in store
         if (!items[id]) {
+          if (Object.keys(newItems).length === 1) {
+            dispatch(fetchShopItemsStart());
+          }
           console.log("fetchShopItemsBySection item:", id);
           const itemDoc = (await getDoc(doc(db, "items", id.toString()))).data();
-          items[id] = itemDoc;
+          newItems[id] = itemDoc;
         }
       }
-      dispatch(fetchShopItemsSuccess(items));
+      if (Object.keys(newItems).length) {
+        dispatch(fetchShopItemsSuccess(newItems));
+      }
     } catch (error) {
       console.error("failed to fetchShopItemsBySection,error:", error);
       dispatch(fetchShopItemsFailed(error));
@@ -47,9 +52,9 @@ export const fetchShopItemsBySection =
 export const fetchShopItemsByIds = (idsToFetch) => async (dispatch, getState) => {
   try {
     let items = getState().shop.items || {};
+    const newItems = {};
     if (idsToFetch) {
       //fetch items only if  specific item is not found in store
-      const newItems = {};
       for (const id of idsToFetch) {
         if (!items[id]) {
           if (Object.keys(newItems).length === 1) {
@@ -61,10 +66,9 @@ export const fetchShopItemsByIds = (idsToFetch) => async (dispatch, getState) =>
         }
       }
       if (Object.keys(newItems).length) {
-        items = { ...items, ...newItems };
+        dispatch(fetchShopItemsSuccess(newItems));
       }
     }
-    dispatch(fetchShopItemsSuccess(items));
   } catch (error) {
     console.error("failed to fetchShopItemsByIds,error:", error);
     dispatch(fetchShopItemsFailed(error.message));
@@ -73,7 +77,7 @@ export const fetchShopItemsByIds = (idsToFetch) => async (dispatch, getState) =>
 
 export const fetchShopSections = () => async (dispatch, getState) => {
   try {
-    let sections = getState().shop.sections;
+    let sections = getState().shop.sections || {};
     //fetch sections if null in store
     if (!sections || !Object.keys(sections).length) {
       dispatch(fetchShopSectionsStart());

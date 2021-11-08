@@ -3,7 +3,7 @@ import CartActionTypes from "./cart.types.js";
 const INITIAL_STATE = {
   hidden: true,
   cartItemIds: null,
-  isLoading: false,
+  isFetching: false,
   error: false,
 };
 const cartReducer = (state = INITIAL_STATE, action) => {
@@ -16,22 +16,22 @@ const cartReducer = (state = INITIAL_STATE, action) => {
     case CartActionTypes.UPDATE_CART_START:
       return {
         ...state,
-        isLoading: true,
-        error:false,
+        isFetching: true,
+        error: false,
       };
-      case CartActionTypes.UPDATE_CART_SUCCESS:
+    case CartActionTypes.UPDATE_CART_SUCCESS:
       return {
         ...state,
         cartItemIds: action.payload,
-        isLoading: false,
-        error:false,
+        isFetching: false,
+        error: false,
       };
-      case CartActionTypes.UPDATE_CART_FAIL:
-        return {
-          ...state,
-          isLoading: false,
-          error:action.payload,
-        };
+    case CartActionTypes.UPDATE_CART_FAIL:
+      return {
+        ...state,
+        isFetching: false,
+        error: action.payload,
+      };
     default:
       return state;
   }

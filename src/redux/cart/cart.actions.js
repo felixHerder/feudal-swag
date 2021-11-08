@@ -42,7 +42,11 @@ export const updateCartFromDb = (uid) => async (dispatch) => {
 
 const updateUserCartItems = async (uid, newItemIds) => {
   const userRef = doc(db, `users/${uid}`);
-  await setDoc(userRef, { cartItemIds: newItemIds }, { merge: true });
+  const userDoc = await getDoc(userRef);
+  if (userDoc.exists()) {
+    const userData = userDoc.data();
+    await setDoc(userRef, { ...userData, cartItemIds: newItemIds }, { merge: false });
+  }
 };
 
 export const addItemToCart =
@@ -50,19 +54,19 @@ export const addItemToCart =
   async (dispatch, getState) => {
     dispatch(updateCartStart());
     try {
-      const {
-        cart,
-        user: { currentUser },
-      } = getState();
+      const { cart, user } = getState();
       //generate new item ids map
       const key = getKey(itemId, sizeId);
       const newItemIds = { ...cart.cartItemIds };
       newItemIds[key] = newItemIds[key] ? newItemIds[key] + 1 : 1;
       //update user doc in firestore db
-      if (currentUser) {
-        await updateUserCartItems(currentUser.uid, newItemIds);
+      if (user.currentUser) {
+        await updateUserCartItems(user.currentUser.uid, newItemIds);
       }
       //update store
+      if (cart.hidden) {
+        dispatch(setCartHidden(false));
+      }
       dispatch(updateCartSuccess(newItemIds));
     } catch (error) {
       console.error("error in addItemToCart:", error);
@@ -74,17 +78,14 @@ export const clearItemFromCart =
   async (dispatch, getState) => {
     dispatch(updateCartStart());
     try {
-      const {
-        cart,
-        user: { currentUser },
-      } = getState();
+      const { cart, user } = getState();
       //generate new item ids map
       const key = getKey(itemId, sizeId);
       const newItemIds = { ...cart.cartItemIds };
       delete newItemIds[key];
       //update user doc in firestore db
-      if (currentUser) {
-        await updateUserCartItems(currentUser.uid, newItemIds);
+      if (user.currentUser) {
+        await updateUserCartItems(user.currentUser.uid, newItemIds);
       }
       //update store
       dispatch(updateCartSuccess(newItemIds));
@@ -98,10 +99,7 @@ export const removeItemFromCart =
   async (dispatch, getState) => {
     dispatch(updateCartStart());
     try {
-      const {
-        cart,
-        user: { currentUser },
-      } = getState();
+      const { cart, user } = getState();
       //generate new item ids map
       const key = getKey(itemId, sizeId);
       const newItemIds = { ...cart.cartItemIds };
@@ -110,8 +108,8 @@ export const removeItemFromCart =
         delete newItemIds[key];
       }
       //update user doc in firestore db
-      if (currentUser) {
-        await updateUserCartItems(currentUser.uid, newItemIds);
+      if (user.currentUser) {
+        await updateUserCartItems(user.currentUser.uid, newItemIds);
       }
       //update store
       dispatch(updateCartSuccess(newItemIds));

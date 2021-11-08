@@ -1,14 +1,27 @@
 import React from "react";
-import { Container,SimpleGrid, } from "@chakra-ui/react";
+import { Container, Text } from "@chakra-ui/react";
+import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
 import SignIn from "../components/Signin";
 import SignUp from "../components/Signup";
 
 const SignInAndSignUpPage = () => (
   <Container centerContent maxW="container.lg">
-        <SimpleGrid mt={[2,4,8,16]} spacingX={32} spacingY={12} columns={[1, null, 2]}>
-          <SignIn />
-          <SignUp />
-        </SimpleGrid>
+    <Tabs variant="soft-rounded" w="300px">
+      <TabList display="flex" justifyContent="space-between" >
+        <Tab fontSize="xl">Sign In</Tab>
+        <Tab fontSize="xl">Sign Up</Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel>
+        <Text mb={4}>Sign in with email and password</Text>
+        <SignIn />
+        </TabPanel>
+        <TabPanel>
+        <Text mb={4}>Sign up with your email and password</Text>
+        <SignUp />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   </Container>
 );
 

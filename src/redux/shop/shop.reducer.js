@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-import SHOP_DATA from './shop.data';
-
-import ShopActionTypes from './shop.types';
-
-const INITIAL_STATE = {
-  collections: SHOP_DATA
-}
-=======
 import ShopActionTypes from "./shop.types";
 // import {itemsMap,sectionsMap} from "../../firebase/mockDb.js"
 const INITIAL_STATE = {
@@ -16,7 +7,6 @@ const INITIAL_STATE = {
   isFetchingSections: false,
   error: false,
 };
->>>>>>> major-refactor
 
 const shopReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -28,7 +18,7 @@ const shopReducer = (state = INITIAL_STATE, action) => {
     case ShopActionTypes.FETCH_ITEMS_SUCCESS:
       return {
         ...state,
-        items: {...state.items,...action.payload},
+        items: action.payload?.length === 0 ? state.items : {...state.items,...action.payload},
         isFetchingItems: [...state.isFetchingItems.slice(0,-1)],
         error: false,
       };

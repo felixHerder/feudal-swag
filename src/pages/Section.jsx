@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectItemsBySection,selectIsFetchingItems } from "../redux/shop/shop.selectors";
 import { fetchShopItemsBySection } from "../redux/shop/shop.actions";
 import { Container, Heading, SimpleGrid } from "@chakra-ui/react";
-import Item from "../components/ItemCard";
+import ItemCard from "../components/ItemCard";
 import LoadingWrapper from "../components/LoadingWrapper";
 
 function Section() {
@@ -25,7 +25,7 @@ function Section() {
           {sectionId}
         </Heading>
         <SimpleGrid columns={[1, 2, 3]} spacing={4}>
-          {itemsBySection && itemsBySection.map((item, idx) => item && <Item key={idx} item={item} />)}
+          {itemsBySection && itemsBySection.map((item, idx) => item && <ItemCard key={idx} item={item} />)}
         </SimpleGrid>
       </LoadingWrapper>
     </Container>

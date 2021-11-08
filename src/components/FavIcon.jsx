@@ -6,10 +6,6 @@ export default function FavIcon({ isFav, ...props }) {
       viewBox="0 0 16 16"
       {...props}
       sx={{ "& #outline": { fill: "currentColor" }, "& #fill": { fill: isFav ? "currentColor" : "transparent" } }}
-      _groupHover={{ "& #fill": { fill: "currentColor" } }}
-      _groupActive={{ "& #fill": { fill: "currentColor" } }}
-      _hover={{ "& #fill": { fill: "currentColor" } }}
-      _active={{ "& #fill": { fill: "currentColor" } }}
     >
       <path
         id="outline"

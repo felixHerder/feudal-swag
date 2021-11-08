@@ -67,7 +67,7 @@ let itemId = 0;
 for (const sectionName of sectionsArr) {
   let sectionIds = [];
   for (const item of armorData[sectionName]) {
-    itemsMap[itemId] = { ...item, id: itemId, section: sectionName };
+    itemsMap[itemId] = { ...item, id: itemId.toString(), section: sectionName };
     sectionIds.push(itemId.toString());
     itemId++;
   }

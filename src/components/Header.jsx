@@ -14,7 +14,7 @@ const sectionIcons = [GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreas
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   return (
-    <Container h="70px" maxW="container.xl" px={[1, 2, 4]} sx={{ userSelect: "none" }} display="flex" justifyContent="space-between">
+    <Container h="70px" maxW="container.xl" px={[2, 2, 4]} sx={{ userSelect: "none" }} display="flex" justifyContent="space-between">
       {/* Brand Logo */}
       <Center as={RouterLink} to="/" h="100%" minW={["50px"]}>
         <Icon as={Logo} fill="currentColor" boxSize={8} />

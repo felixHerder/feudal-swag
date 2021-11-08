@@ -1,5 +1,4 @@
 import { createStore, applyMiddleware, compose } from "redux";
-import { persistStore } from "redux-persist";
 import thunk from "redux-thunk";
 // import logger from "redux-logger";
 
@@ -23,6 +22,4 @@ if (process.env.NODE_ENV === "development") {
 }
 const store = createStore(rootReducer, composeEnhancers(applyMiddleware(...middlewares)));
 
-const persistor = persistStore(store);
-
-export { store, persistor };
+export default store;

@@ -4,12 +4,12 @@ const { getFirestore } = require("firebase-admin/firestore");
 
 const serviceAccount = require("../../private/feudalswag-firebase-adminsdk-cpdxn-6d5fd5eda4.json");
 
-const app = admin.initializeApp({
+admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 const db = getFirestore();
 
-const listAllUsers = (nextPageToken) => {
+const deleteAnonUsers = (nextPageToken) => {
   // List batch of users, 1000 at a time.
   getAuth()
     .listUsers(1000, nextPageToken)
@@ -22,12 +22,8 @@ const listAllUsers = (nextPageToken) => {
             if (userDocSnapShot.exists) {
               userDocSnapShot.ref.delete().then(() =>
                 getAuth()
-                  .revokeRefreshTokens(userRecord.uid)
-                  .then(() =>
-                    getAuth()
-                      .deleteUser(userRecord.uid)
-                      .then(() => console.log("deleted user:", userRecord.uid))
-                  )
+                  .deleteUser(userRecord.uid)
+                  .then(() => console.log("deleted user:", userRecord.uid))
               );
             }
           });
@@ -35,12 +31,40 @@ const listAllUsers = (nextPageToken) => {
       });
       if (listUsersResult.pageToken) {
         // List next batch of users.
-        listAllUsers(listUsersResult.pageToken);
+        deleteAnonUsers(listUsersResult.pageToken);
       }
     })
     .catch((error) => {
       console.log("Error listing users:", error);
     });
 };
-// Start listing users from the beginning, 1000 at a time.
-listAllUsers();
+const deleteAllUsers = (nextPageToken) => {
+  // List batch of users, 1000 at a time.
+  getAuth()
+    .listUsers(1000, nextPageToken)
+    .then((listUsersResult) => {
+      listUsersResult.users.forEach((userRecord) => {
+        //delete user in auth and firestore
+        const userDoc = db.doc("users/" + userRecord.uid);
+        userDoc.get().then((userDocSnapShot) => {
+          if (userDocSnapShot.exists) {
+            userDocSnapShot.ref.delete().then(() =>
+              getAuth()
+                .deleteUser(userRecord.uid)
+                .then(() => console.log("deleted user:", userRecord.uid))
+            );
+          }
+        });
+      });
+      if (listUsersResult.pageToken) {
+        // delete next batch of users.
+        deleteAnonUsers(listUsersResult.pageToken);
+      }
+    })
+    .catch((error) => {
+      console.log("Error listing users:", error);
+    });
+};
+
+// deleteAnonUsers();
+deleteAllUsers();

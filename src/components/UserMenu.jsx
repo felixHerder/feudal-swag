@@ -1,14 +1,17 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { connect } from "react-redux";
-import { RiLogoutBoxRLine,RiLoginBoxLine } from "react-icons/ri";
+import { RiLogoutBoxRLine, RiLoginBoxLine } from "react-icons/ri";
 import { BsHeart, BsPerson } from "react-icons/bs";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { ReactComponent as TrunkIcon } from "../assets/trunk.svg";
-import { Icon, Button, Menu, MenuButton, MenuList, MenuItem, MenuDivider, Portal } from "@chakra-ui/react";
+import { Icon, Button, Menu, MenuButton, MenuList, MenuItem, MenuDivider, Portal, useDisclosure } from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalHeader, ModalBody } from "@chakra-ui/react";
 import { signOutUser } from "../firebase/firebase.utils";
+import SignIn from "../components/Signin";
 
 function UserMenu({ currentUser }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
       {currentUser ? (
@@ -29,11 +32,16 @@ function UserMenu({ currentUser }) {
               </MenuItem>
               <MenuDivider />
               {!currentUser.isAnonymous ? (
-                <MenuItem as={RouterLink} to="/" onClick={signOutUser} icon={<Icon boxSize={5} as={RiLogoutBoxRLine} />}>
-                  Sign Out
-                </MenuItem>
+                <>
+                  <MenuItem onClick={()=>onOpen()} icon={<Icon boxSize={5} as={BsPerson} />}>
+                    Switch User
+                  </MenuItem>
+                  <MenuItem as={RouterLink} to="/" onClick={signOutUser} icon={<Icon boxSize={5} as={RiLogoutBoxRLine} />}>
+                    Sign Out
+                  </MenuItem>
+                </>
               ) : (
-                <MenuItem as={RouterLink} to="/signin"icon={<Icon boxSize={5} as={RiLoginBoxLine} />}>
+                <MenuItem as={RouterLink} to="/signin" icon={<Icon boxSize={5} as={RiLoginBoxLine} />}>
                   Sign In / Sign Up
                 </MenuItem>
               )}
@@ -41,9 +49,19 @@ function UserMenu({ currentUser }) {
           </Portal>
         </Menu>
       ) : null}
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent width="auto">
+          <ModalCloseButton />
+          <ModalHeader>Switch User</ModalHeader>
+          <ModalBody py={6}>
+            <SignIn onClose={onClose} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
       {/* fallback in case no user is loaded */}
       {!currentUser ? (
-        <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/signin" >
+        <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/signin">
           SIGN IN
         </Button>
       ) : null}
@@ -51,7 +69,7 @@ function UserMenu({ currentUser }) {
   );
 }
 
-const mapStatetoProps = state=>({
+const mapStatetoProps = (state) => ({
   currentUser: state.user.currentUser,
 });
 

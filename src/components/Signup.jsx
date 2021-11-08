@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { FormControl, FormLabel, Input, FormErrorMessage } from "@chakra-ui/react";
-import { Box, Text, Heading, VStack, Button } from "@chakra-ui/react";
+import { Box, Text, VStack, Button } from "@chakra-ui/react";
 import { signUpUser } from "../redux/user/user.actions";
 
 class SignUp extends React.Component {
@@ -10,7 +10,6 @@ class SignUp extends React.Component {
     email: "",
     password: "",
     confirmPassword: "",
-    isLoading: false,
     passwordInvalid: false,
     passwordsMatch: true,
   };
@@ -21,11 +20,9 @@ class SignUp extends React.Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
-  handleSubmit = (event) => {
+  handleSignUp = (event) => {
     event.preventDefault();
-    this.setState({ isLoading: true, error: false });
     const { displayName, email, password } = this.state;
-
     this.props.signUpUser(email, password, displayName);
 
     this._isMounted &&
@@ -34,7 +31,6 @@ class SignUp extends React.Component {
         email: "",
         password: "",
         confirmPassword: "",
-        isLoading: false,
       });
   };
   handleChange = (event) => {
@@ -46,21 +42,25 @@ class SignUp extends React.Component {
       this.setState({ passwordInvalid: false });
     }
     //validate passwords match
+    this.setState({ passwordsMatch: true });
+    if (name === "password" && this.state.confirmPassword !== "" && value !== this.state.confirmPassword) {
+      this.setState({ passwordsMatch: false });
+    }
     if (name === "confirmPassword" && value !== this.state.password) {
       this.setState({ passwordsMatch: false });
-    } else {
-      this.setState({ passwordsMatch: true });
     }
     this.setState({ [name]: value });
   };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.error !== this.props.error) {
+      this.setState({ isLoading: false });
+    }
+  }
   render() {
     return (
       <Box>
-        <Heading size="md" mb={1}>
-          Don't have an account
-        </Heading>
-        <Text mb={4}>Sign up with your email and password</Text>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSignUp}>
           <VStack spacing={2} sx={{ "& label": { fontSize: "sm", mb: 1 } }}>
             <FormControl isRequired id="displayName">
               <FormLabel>Name</FormLabel>
@@ -96,8 +96,8 @@ class SignUp extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  isLoading: state.user.isLoading,
   error: state.user.error,
+  isLoading: state.user.isLoading
 });
-const mapDispatchToPtops = {signUpUser}
+const mapDispatchToPtops = { signUpUser };
 export default connect(mapStateToProps, mapDispatchToPtops)(SignUp);

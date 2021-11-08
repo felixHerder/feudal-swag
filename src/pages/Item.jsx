@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { addItemToCart, setCartHidden } from "../redux/cart/cart.actions";
+import { addItemToCart } from "../redux/cart/cart.actions";
 import { selectIsFetchingItems, selectItemById } from "../redux/shop/shop.selectors";
 
 import { Center, Box, Flex, Button, Image, Text, IconButton, Heading, Container, SimpleGrid, useDisclosure, useRadio, useRadioGroup } from "@chakra-ui/react";
@@ -34,7 +34,6 @@ export default function Item() {
 
 const ItemContent = ({ item }) => {
   const dispatch = useDispatch();
-  const cartHidden = useSelector((state) => state.cart.hidden);
   const { name, price, imgurlLarge, description, sizes } = item;
   const { bg, cardBg, textPrice, textSecondary } = useThemeColors();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,10 +45,6 @@ const ItemContent = ({ item }) => {
   });
   const group = getRootProps();
   const handleAddToCart = () => {
-    if (cartHidden) {
-      dispatch(setCartHidden(false));
-    }
-    console.log(sizeId);
     dispatch(addItemToCart({ itemId: item.id, sizeId}));
   };
   return (

@@ -1,16 +1,35 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
-import { selectDirectorySections } from "../redux/directory/directory.selectors";
 
 import { Container, Flex, Box, Heading, Text, Center, Icon, Image } from "@chakra-ui/react";
-import {GiGauntlet,GiGreaves,GiMetalBoot,GiDwarfHelmet,GiBreastplate} from 'react-icons/gi'
+import { GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreastplate } from "react-icons/gi";
 import useThemeColors from "../theme/useThemeColors";
 
-const sectionIcons = [GiGauntlet,GiGreaves,GiMetalBoot,GiDwarfHelmet,GiBreastplate];
+const sectionIcons = [GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreastplate];
+const sections = [
+  {
+    title: "gauntlets",
+    imageUrl: "/img/heavy-armor/gauntlets/gauntlets_large_001.jpg",
+  },
+  {
+    title: "greaves",
+    imageUrl: "/img/heavy-armor/greaves/greaves_large_003.jpg",
+  },
+  {
+    title: "sabatons",
+    imageUrl: "/img/heavy-armor/sabatons/sabatons_large_006.jpg",
+  },
+  {
+    title: "helmets",
+    imageUrl: "/img/heavy-armor/helmets/helmets_large_002.jpg",
+  },
+  {
+    title: "breastplates",
+    imageUrl: "/img/heavy-armor/breastplates/breastplates_large_001.jpg",
+  },
+];
 
-const Home = ({ sections }) => {
+const Home = () => {
   const { cardBg, textPrice } = useThemeColors();
 
   return (
@@ -54,8 +73,8 @@ const Home = ({ sections }) => {
                 _groupActive={{ transform: "scale(1)" }}
               />
             </Box>
-            <Center bg={cardBg} py={4}  _groupHover={{ color: textPrice }} _groupActive={{ color: textPrice }}>
-              <Icon mr={2}  as={sectionIcons[idx]}/>
+            <Center bg={cardBg} py={4} _groupHover={{ color: textPrice }} _groupActive={{ color: textPrice }}>
+              <Icon mr={2} as={sectionIcons[idx]} />
               <Heading size="sm" fontFamily="body">
                 {title.toUpperCase()}
               </Heading>
@@ -67,7 +86,4 @@ const Home = ({ sections }) => {
   );
 };
 
-const mapStateToProps = createStructuredSelector({
-  sections: selectDirectorySections,
-});
-export default connect(mapStateToProps)(Home);
+export default Home;

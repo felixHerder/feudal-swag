@@ -11,13 +11,11 @@ import SignInAndSignUpPage from "./pages/SignInUp";
 // import CheckoutPage from "./pages/checkout/checkout.component";
 //eslint-disable-next-line
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
-// import { onSnapshot } from "firebase/firestore";
-// import { createUserProfileDocument } from "./firebase/firebase.utils";
 import { updateUserInDb } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 import Section from "./pages/Section";
 import Item from "./pages/Item";
-
+import Favs from "./pages/Favs";
 class App extends React.Component {
   render() {
     const { currentUser } = this.props;
@@ -38,10 +36,14 @@ class App extends React.Component {
           <Route exact path="/shop/:sectionId/:itemId">
             <Item />
           </Route>
+          <Route exact path="/favs">
+            <Favs />
+          </Route>
 
           {/* <Route path="/checkout" component={CheckoutPage} /> */}
           <Route exact path="/signin">
             {!currentUser || currentUser.isAnonymous ? <SignInAndSignUpPage /> : <Redirect to="/" />}
+            {/* <SignInAndSignUpPage />  */}
           </Route>
         </Switch>
       </>

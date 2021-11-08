@@ -3,8 +3,6 @@ const CartActionTypes = {
   UPDATE_CART_START:'UPDATE_CART_START',
   UPDATE_CART_SUCCESS:'UPDATE_CART_SUCCESS',
   UPDATE_CART_FAIL:'UPDATE_CART_FAIL'
-
-
 }
 
 export default CartActionTypes;

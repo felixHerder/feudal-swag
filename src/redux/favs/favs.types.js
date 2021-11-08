@@ -1,0 +1,7 @@
+const FavsActionTypes = {
+  UPDATE_FAVS_START:'UPDATE_FAVS_START',
+  UPDATE_FAVS_SUCCESS:'UPDATE_FAVS_SUCCESS',
+  UPDATE_FAVS_FAIL:'UPDATE_FAVS_FAIL'
+}
+
+export default FavsActionTypes;
