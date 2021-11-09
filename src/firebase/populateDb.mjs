@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { deleteDoc, doc, getDocs, setDoc, collection, getFirestore } from "firebase/firestore";
-import { sectionsMap, itemsMap } from "./armorData.mjs";
+import { sectionsMap, itemsMap,reviewsMap } from "./armorData.mjs";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBpGcrRiUqw1eJezaBOmyoUEuaYY92SyJU",
@@ -28,6 +28,11 @@ async function populateDb() {
     for (const sectionDoc of sectionDocsSnap.docs) {
       await deleteDoc(sectionDoc.ref);
     }
+    const reviewsColRef = await collection(db, "reviews");
+    const reviewsDocsSnap = await getDocs(reviewsColRef);
+    for (const reviewsDoc of reviewsDocsSnap.docs) {
+      await deleteDoc(reviewsDoc.ref);
+    }
 
     //populate db
     for(const skey of Object.keys(sectionsMap)){
@@ -35,6 +40,10 @@ async function populateDb() {
     }
     for (const ikey of Object.keys(itemsMap)){
       await setDoc(doc(db, "items", ikey), itemsMap[ikey]);
+    }
+
+    for (const rkey of Object.keys(reviewsMap)){
+      await setDoc(doc(db, "reviews", rkey), reviewsMap[rkey]);
     }
 
     console.log("batch done");

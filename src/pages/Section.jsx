@@ -18,12 +18,12 @@ function Section() {
   const areEmptyItems = itemsBySection && itemsBySection.includes(undefined);
   console.log("Section ", sectionId, "rendered, items:", itemsBySection);
   return (
-    <Container maxW="container.xl" minH="65vh">
+    <Container maxW="container.lg" minH="65vh">
       <Heading textAlign="center" size="2xl" mt={[2, 4, 6]} mb={[4, 8, 12]} textTransform="capitalize">
         {sectionId}
       </Heading>
       <LoadingWrapper isLoading={isLoading || areEmptyItems}>
-        <SimpleGrid columns={[1, 2, 3]} spacing={4}>
+        <SimpleGrid columns={[1, 2, 3]} spacing={12} py={2}>
           {itemsBySection && itemsBySection.map((item, idx) => item && <ItemCard key={idx} item={item} />)}
         </SimpleGrid>
       </LoadingWrapper>

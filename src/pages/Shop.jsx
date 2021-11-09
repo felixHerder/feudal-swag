@@ -1,5 +1,4 @@
 import React from "react";
-import { connect } from "react-redux";
 import { fetchShopSections, fetchShopItemsByIds } from "../redux/shop/shop.actions";
 import { useSelector, useDispatch } from "react-redux";
 import { Container } from "@chakra-ui/react";
@@ -27,7 +26,7 @@ function Shop() {
 
   console.log("Shop Rendered with sections:", shopSectionsArr);
   return (
-    <Container maxW="container.xl" mb={8} minH="75vh">
+    <Container maxW="container.lg" mb={8} minH="75vh">
       <LoadingWrapper isLoading={isLoading}>
         {shopSectionsArr &&
           shopSectionsArr.map(({ section, items }, idx) => <SectionRow key={idx} section={section} items={items} />)}

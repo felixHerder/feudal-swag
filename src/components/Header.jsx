@@ -19,6 +19,7 @@ import CartPopover from "./CartPopover";
 import DrawerNav from "./NavDrawer";
 import UserMenu from "./UserMenu";
 import { sectionsData } from "../pages/Home";
+import FavIcon from "./FavIcon";
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -79,6 +80,16 @@ const Header = () => {
           <DrawerNav />
           {/* Cart popover toggle button */}
           <CartPopover />
+          <IconButton
+            as={RouterLink}
+            to="/favs"
+            icon={<FavIcon mt="4px" boxSize={4} />}
+            variant="ghost"
+            colorScheme="gray"
+            px={6}
+          >
+            SHOP
+          </IconButton>
           {/* Theme toggle button */}
           <IconButton
             size="md"

@@ -2,12 +2,14 @@ import React from "react";
 import { connect } from "react-redux";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { Box, Text, VStack, Button, Center } from "@chakra-ui/react";
-import { continueWithGoogle, signInUser } from "../redux/user/user.actions";
+import { continueWithGoogle, signInUser, setUserState } from "../redux/user/user.actions";
 class SignIn extends React.Component {
   state = { email: "", password: "", googleActive: false };
   _isMounted = false;
   componentDidMount() {
     this._isMounted = true;
+    //reset error state
+    this.props.setUserState({ error: false });
   }
   componentWillUnmount() {
     this._isMounted = false;
@@ -16,7 +18,6 @@ class SignIn extends React.Component {
     event.preventDefault();
     const { email, password } = this.state;
     this.props.signInUser(email, password);
-    this._isMounted && this.setState({ email: "", password: "" });
   };
   handleContinueWithGoogle = () => {
     this.setState({ googleActive: true });
@@ -27,10 +28,13 @@ class SignIn extends React.Component {
     this.setState({ [name]: value });
   };
   componentDidUpdate(prevProps, prevState) {
-    //close modal on user change
+    //check submiting is done with no error
     if (prevProps.isLoading === true && this.props.isLoading === false && !this.props.error) {
+      //cleat state on no error
+      this._isMounted && this.setState({ email: "", password: "" });
+      this.setState({ googleActive: false });
+      //close modal on user change
       if (this.props.onClose) {
-        this.setState({ googleActive: false });
         this.props.onClose();
       }
     }
@@ -61,7 +65,13 @@ class SignIn extends React.Component {
               />
             </FormControl>
           </VStack>
-          <Button mt={4} isFullWidth type="submit" isLoading={this.props.isLoading && !this.state.googleActive} loadingText="Submitting">
+          <Button
+            mt={4}
+            isFullWidth
+            type="submit"
+            isLoading={this.props.isLoading && !this.state.googleActive}
+            loadingText="Submitting"
+          >
             Sign in
           </Button>
           {this.props.error ? (
@@ -73,7 +83,12 @@ class SignIn extends React.Component {
         <Center my={2}>
           <Text>or</Text>
         </Center>
-        <Button isFullWidth colorScheme="blue" isLoading={this.props.isLoading && this.state.googleActive} onClick={this.handleContinueWithGoogle}>
+        <Button
+          isFullWidth
+          colorScheme="blue"
+          isLoading={this.props.isLoading && this.state.googleActive}
+          onClick={this.handleContinueWithGoogle}
+        >
           Continue with Google
         </Button>
       </Box>
@@ -86,5 +101,5 @@ export default connect(
     error: state.user.error,
     isLoading: state.user.isLoading,
   }),
-  { continueWithGoogle, signInUser }
+  { continueWithGoogle, signInUser, setUserState }
 )(SignIn);

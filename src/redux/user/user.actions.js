@@ -14,8 +14,12 @@ import { updateCartFromDb } from "../cart/cart.actions";
 import { updateFavsFromDb } from "../favs/favs.actions";
 import { UserActionTypes } from "./user.types";
 
-export const setCurrentUser = (user) => ({
+export const setCurrentUser = (currentUser) => ({
   type: UserActionTypes.SET_CURRENT_USER,
+  payload: currentUser,
+});
+export const setUserState = (user) => ({
+  type: UserActionTypes.SET_USER_STATE,
   payload: user,
 });
 const fetchUserStart = () => ({ type: UserActionTypes.FETCH_USER_START });
@@ -24,10 +28,19 @@ const fetchUserFailed = (error) => ({ type: UserActionTypes.FETCH_USER_FAILED, p
 
 export const updateUserInDb = (currentUser) => async (dispatch) => {
   dispatch(fetchUserStart());
-  console.log("updateUserInDb id:", currentUser.uid, currentUser);
   try {
     const userRef = doc(db, `users/${currentUser.uid}`);
+    //delete empty objects, they clear out old values on setDoc merge
+    const { cartItemIds, favsItemIds } = currentUser;
+    if (cartItemIds && Object.keys(cartItemIds).length === 0) {
+      delete currentUser.cartItemIds;
+    }
+    if (favsItemIds && Object.keys(favsItemIds).length === 0) {
+      delete currentUser.favsItemIds;
+    }
+    console.log("updateUserInDb setDoc - currentUser:", currentUser);
     await setDoc(userRef, currentUser, { merge: true });
+
     dispatch(updateCartFromDb(currentUser.uid));
     dispatch(updateFavsFromDb(currentUser.uid));
     dispatch(fetchUserSuccess({ currentUser }));
@@ -84,7 +97,7 @@ export const signInUser = (email, password) => async (dispatch, getState) => {
     currentUser = { ...currentUser, isAnonymous, uid, createdAt, email, displayName };
     dispatch(updateUserInDb(currentUser));
   } catch (error) {
-    console.error("error in continueWithGoogle:", error);
+    console.error("error in signInUser:", error);
     dispatch(fetchUserFailed(error.message));
   }
 };

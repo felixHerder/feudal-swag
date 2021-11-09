@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { FormControl, FormLabel, Input, FormErrorMessage } from "@chakra-ui/react";
 import { Box, Text, VStack, Button } from "@chakra-ui/react";
-import { signUpUser } from "../redux/user/user.actions";
+import { signUpUser, setUserState } from "../redux/user/user.actions";
 
 class SignUp extends React.Component {
   state = {
@@ -15,7 +15,10 @@ class SignUp extends React.Component {
   };
   _isMounted = false;
   componentDidMount() {
+    console.log('mounted')
     this._isMounted = true;
+    //reset error state
+    this.props.setUserState({ error: false });
   }
   componentWillUnmount() {
     this._isMounted = false;
@@ -24,14 +27,6 @@ class SignUp extends React.Component {
     event.preventDefault();
     const { displayName, email, password } = this.state;
     this.props.signUpUser(email, password, displayName);
-
-    this._isMounted &&
-      this.setState({
-        displayName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
   };
   handleChange = (event) => {
     const { name, value } = event.target;
@@ -53,8 +48,14 @@ class SignUp extends React.Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.error !== this.props.error) {
-      this.setState({ isLoading: false });
+    //check submiting is done with no error
+    if (prevProps.isLoading === true && this.props.isLoading === false && !this.props.error) {
+      //cleat state on no error
+      this._isMounted && this.setState({ displayName: "", email: "", password: "", confirmPassword: "" });
+      //close modal on user change
+      if (this.props.onClose) {
+        this.props.onClose();
+      }
     }
   }
   render() {
@@ -64,20 +65,44 @@ class SignUp extends React.Component {
           <VStack spacing={2} sx={{ "& label": { fontSize: "sm", mb: 1 } }}>
             <FormControl isRequired id="displayName">
               <FormLabel>Name</FormLabel>
-              <Input focusBorderColor="brand.400" type="displayName" name="displayName" value={this.state.displayName} onChange={this.handleChange} />
+              <Input
+                focusBorderColor="brand.400"
+                type="displayName"
+                name="displayName"
+                value={this.state.displayName}
+                onChange={this.handleChange}
+              />
             </FormControl>
             <FormControl isRequired id="emailSignup">
               <FormLabel>Email</FormLabel>
-              <Input focusBorderColor="brand.400" type="email" name="email" value={this.state.email} onChange={this.handleChange} />
+              <Input
+                focusBorderColor="brand.400"
+                type="email"
+                name="email"
+                value={this.state.email}
+                onChange={this.handleChange}
+              />
             </FormControl>
             <FormControl isRequired id="password" isInvalid={this.state.passwordInvalid}>
               <FormLabel>Password</FormLabel>
-              <Input focusBorderColor="brand.400" type="password" name="password" value={this.state.password} onChange={this.handleChange} />
+              <Input
+                focusBorderColor="brand.400"
+                type="password"
+                name="password"
+                value={this.state.password}
+                onChange={this.handleChange}
+              />
               <FormErrorMessage>min 6 characters</FormErrorMessage>
             </FormControl>
             <FormControl isRequired id="confirmPassword" isInvalid={!this.state.passwordsMatch}>
               <FormLabel>Confirm password</FormLabel>
-              <Input focusBorderColor="brand.400" type="password" name="confirmPassword" value={this.state.confirmPassword} onChange={this.handleChange} />
+              <Input
+                focusBorderColor="brand.400"
+                type="password"
+                name="confirmPassword"
+                value={this.state.confirmPassword}
+                onChange={this.handleChange}
+              />
               <FormErrorMessage>passwords must match</FormErrorMessage>
             </FormControl>
           </VStack>
@@ -97,7 +122,7 @@ class SignUp extends React.Component {
 
 const mapStateToProps = (state) => ({
   error: state.user.error,
-  isLoading: state.user.isLoading
+  isLoading: state.user.isLoading,
 });
-const mapDispatchToPtops = { signUpUser };
+const mapDispatchToPtops = { signUpUser, setUserState };
 export default connect(mapStateToProps, mapDispatchToPtops)(SignUp);

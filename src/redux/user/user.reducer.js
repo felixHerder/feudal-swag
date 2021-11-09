@@ -12,6 +12,11 @@ const userReducer = (state = INITIAL_STATE, action) => {
         ...state,
         currentUser: action.payload,
       };
+      case UserActionTypes.SET_USER_STATE:
+        return {
+          ...state,
+          ...action.payload,
+        };
     case UserActionTypes.FETCH_USER_START:
       return {
         ...state,

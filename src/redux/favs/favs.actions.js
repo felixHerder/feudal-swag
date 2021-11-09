@@ -1,7 +1,6 @@
 import FavsActionTypes from "./favs.types";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase.utils";
-import { fetchShopItemsByIds } from "../shop/shop.actions";
 //actions
 const updateFavsStart = () => ({ type: FavsActionTypes.UPDATE_FAVS_START });
 const updateFavsSuccess = (favItemIds) => ({ type: FavsActionTypes.UPDATE_FAVS_SUCCESS, payload: favItemIds });

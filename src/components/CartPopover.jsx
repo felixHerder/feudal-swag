@@ -10,7 +10,7 @@ import {
   selectIsCartLoading,
 } from "../redux/cart/cart.selectors";
 import { ReactComponent as TrunkIcon } from "../assets/trunk.svg";
-import { Center, Text, Icon, Button, Portal, Box, Image, HStack, VStack,Flex, CloseButton } from "@chakra-ui/react";
+import { Center, Text, Icon, Button, Portal, Box, Image, HStack, VStack, Flex, CloseButton } from "@chakra-ui/react";
 import {
   Popover,
   PopoverTrigger,
@@ -73,41 +73,44 @@ function CartPopover({ cartHidden, itemCount, setCartHidden, cartItems, cartTota
               bg={colors.cardBg}
             >
               {cartItems && cartItems.length > 0 && (
-                <LoadingWrapper isLoading={isCartLoading}>
-                  <VStack spacing={0} alignItems="flex-start">
-                    {cartItems.map(
-                      (item, idx) =>
-                        item && (
-                          <HStack w="100%" spacing={2} key={idx} bg={idx % 2 ? colors.cardBg : colors.cardBgLight} py={2}>
-                            <CloseButton ml={2} onClick={() => handleClearItem(item)} title="Remove from trunk" />
-                            <Image flexGrow="inherit"
-                              boxSize="56px"
-                              src={item.imgurl}
-                              alt="cart item"
-                              objectFit="cover"
-                              objectPosition="center"
-                              borderRadius="md"
-                            />
-                            <Flex flexGrow="1"
-                              as={RouterLink}
-                              to={`/shop/${item.section}/${item.id}`}
-                              _hover={{ color: colors.textPrice }}
-                              justifyContent="space-between"
-                            >
-                              <Box textAlign="left">
-                                <Text fontWeight="bold">x{item.count}</Text>
-                                <Text fontSize="sm">{item.sizes[item.sizeId]}sz</Text>
-                              </Box>
-                              <Box textAlign="right" ml="auto" pr={4}>
-                                <Text fontWeight="bold">{item.name}</Text>
-                                <Text fontSize="sm">${item.price}</Text>
-                              </Box>
-                            </Flex>
-                          </HStack>
-                        )
-                    )}
-                  </VStack>
-                </LoadingWrapper>
+                <VStack spacing={0} alignItems="flex-start" position="relative">
+                  <Box position="absolute" w="100%" h="100%" minH="100%" top="0" bg={colors.overlayBgStrong} display={!isCartLoading && "none"}>
+                    <LoadingWrapper isLoading={isCartLoading}/>
+                  </Box>
+                  {cartItems.map(
+                    (item, idx) =>
+                      item && (
+                        <HStack w="100%" spacing={2} key={idx} bg={idx % 2 ? colors.cardBg : colors.cardBgSecondary} py={2}>
+                          <CloseButton ml={2} onClick={() => handleClearItem(item)} title="Remove from trunk" />
+                          <Image
+                            flexGrow="inherit"
+                            boxSize="56px"
+                            src={item.imgurlSmall}
+                            alt="cart item"
+                            objectFit="cover"
+                            objectPosition="center"
+                            borderRadius="md"
+                          />
+                          <Flex
+                            flexGrow="1"
+                            as={RouterLink}
+                            to={`/shop/${item.section}/${item.id}`}
+                            _hover={{ color: colors.textBrand }}
+                            justifyContent="space-between"
+                          >
+                            <Box textAlign="left">
+                              <Text fontWeight="bold">x{item.count}</Text>
+                              <Text fontSize="sm">{item.sizes[item.sizeId]}sz</Text>
+                            </Box>
+                            <Box textAlign="right" ml="auto" pr={4}>
+                              <Text fontWeight="bold">{item.name}</Text>
+                              <Text fontSize="sm">${item.price}</Text>
+                            </Box>
+                          </Flex>
+                        </HStack>
+                      )
+                  )}
+                </VStack>
               )}
               {/* Empty Cart state */}
               {itemCount === 0 && (

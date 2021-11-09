@@ -6,7 +6,7 @@ import SignUp from "../components/Signup";
 
 const SignInAndSignUpPage = () => (
   <Container centerContent maxW="container.lg">
-    <Tabs variant="soft-rounded" w="300px">
+    <Tabs variant="line" w="300px">
       <TabList display="flex" justifyContent="space-between" >
         <Tab fontSize="xl">Sign In</Tab>
         <Tab fontSize="xl">Sign Up</Tab>

@@ -3,15 +3,16 @@ import { useColorModeValue } from "@chakra-ui/react";
 export default function useThemeColors() {
   const themeColors = {
     bg: useColorModeValue("white", "gray.800"),
-    cardBg: useColorModeValue("gray.100", "gray.700"),
-    cardBgLight: useColorModeValue("gray.50", "gray.600"),
+    cardBg: useColorModeValue("gray.200", "gray.700"),
+    cardBgSecondary: useColorModeValue("gray.300", "gray.600"),
     bgBrand: useColorModeValue("brand.700", "brand.200"),
     bgSelect: useColorModeValue("gray.700", "gray.200"),
-    textPrice: useColorModeValue("brand.600", "brand.100"),
+    textBrand: useColorModeValue("brand.600", "brand.100"),
     textOnBrand: useColorModeValue("white", "gray.800"),
-    textSecondary: useColorModeValue("gray.600", "gray.200"),
-    textTertiary: useColorModeValue("gray.500", "gray.300"),
+    textSecondary: useColorModeValue("gray.600", "gray.300"),
+    textTertiary: useColorModeValue("gray.500", "gray.400"),
     overlayBg: useColorModeValue("whiteAlpha.300", "blackAlpha.300"),
+    overlayBgStrong: useColorModeValue("whiteAlpha.500", "blackAlpha.500"),
   };
 
   return themeColors;
