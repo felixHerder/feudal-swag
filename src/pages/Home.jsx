@@ -5,27 +5,35 @@ import { Container, Flex, Box, Heading, Text, Center, Icon, Image } from "@chakr
 import { GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreastplate } from "react-icons/gi";
 import useThemeColors from "../theme/useThemeColors";
 
-export const sectionIcons = [GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreastplate];
 export const sectionsData = [
   {
     icon: GiBreastplate,
-    title: "breastplates",
+    title: "Breastplates",
+    value: "breastplates",
     imageUrl: "/img/heavy-armor/breastplates/breastplates_large_001.jpg",
   },
   {
     icon: GiGauntlet,
-    title: "gauntlets",
+    title: "Gauntlets",
+    value: "gauntlets",
     imageUrl: "/img/heavy-armor/gauntlets/gauntlets_large_001.jpg",
   },
-  { icon: GiGreaves, title: "greaves", imageUrl: "/img/heavy-armor/greaves/greaves_large_003.jpg" },
+  {
+    icon: GiGreaves,
+    title: "Greaves",
+    value: "greaves",
+    imageUrl: "/img/heavy-armor/greaves/greaves_large_003.jpg",
+  },
   {
     icon: GiDwarfHelmet,
-    title: "helmets",
+    title: "Helmets",
+    value: "helmets",
     imageUrl: "/img/heavy-armor/helmets/helmets_large_002.jpg",
   },
   {
     icon: GiMetalBoot,
-    title: "sabatons",
+    title: "Sabatons",
+    value: "sabatons",
     imageUrl: "/img/heavy-armor/sabatons/sabatons_large_006.jpg",
   },
 ];

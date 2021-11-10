@@ -38,11 +38,10 @@ export const updateUserInDb = (currentUser) => async (dispatch) => {
     if (favsItemIds && Object.keys(favsItemIds).length === 0) {
       delete currentUser.favsItemIds;
     }
-    console.log("updateUserInDb setDoc - currentUser:", currentUser);
     await setDoc(userRef, currentUser, { merge: true });
 
-    dispatch(updateCartFromDb(currentUser.uid));
-    dispatch(updateFavsFromDb(currentUser.uid));
+    // dispatch(updateCartFromDb(currentUser.uid));
+    // dispatch(updateFavsFromDb(currentUser.uid));
     dispatch(fetchUserSuccess({ currentUser }));
   } catch (error) {
     console.error("error in updateUser:", error.message);

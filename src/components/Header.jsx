@@ -79,7 +79,8 @@ const Header = () => {
           {/* Mobile drawer toggle */}
           <DrawerNav />
           {/* Cart popover toggle button */}
-          <CartPopover />
+          {/* <CartPopover /> */}
+          {/* Favs link */}
           <IconButton
             as={RouterLink}
             to="/favs"

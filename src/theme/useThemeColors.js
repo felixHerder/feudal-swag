@@ -5,7 +5,7 @@ export default function useThemeColors() {
     bg: useColorModeValue("white", "gray.800"),
     cardBg: useColorModeValue("gray.200", "gray.700"),
     cardBgSecondary: useColorModeValue("gray.300", "gray.600"),
-    bgBrand: useColorModeValue("brand.700", "brand.200"),
+    bgBrand: useColorModeValue("brand.500", "brand.200"),
     bgSelect: useColorModeValue("gray.700", "gray.200"),
     textBrand: useColorModeValue("brand.600", "brand.100"),
     textOnBrand: useColorModeValue("white", "gray.800"),

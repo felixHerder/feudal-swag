@@ -147,10 +147,10 @@ let itemId = 0;
 for (const sectionName of sectionsArr) {
   let sectionIds = [];
   for (const item of armorData[sectionName]) {
+    item.reviewCount = Object.keys(item.reviews).length;
     const ratingSum = Object.values(item.reviews).reduce((total, review) => total + review.rating, 0);
-    const reviewCount = Object.keys(item.reviews).length;
+    item.ratingAvg = ratingSum / item.reviewCount
     reviewsMap[itemId] = { ...item.reviews };
-    item.rating = { count: reviewCount, value: ratingSum / reviewCount };
     delete item.reviews;
     itemsMap[itemId] = { ...item, id: itemId.toString(), section: sectionName };
     sectionIds.push(itemId.toString());

@@ -12,7 +12,7 @@ import { makeSelectIsItemFav } from "../redux/favs/favs.selectors";
 import Rating from "./Rating";
 
 export default function ItemCard({ item }) {
-  const { name, price, imgurl, id, section, rating } = item;
+  const { name, price, imgurl, id, section, reviewCount,ratingAvg } = item;
   const colors = useThemeColors();
   const dispatch = useDispatch();
   const selectIsItemInCartInstance = React.useMemo(() => makeSelectIsItemInCart(id), [id]);
@@ -29,7 +29,7 @@ export default function ItemCard({ item }) {
       dispatch(addItemToFavs(item.id));
     }
   };
-  console.log("Item Card: ", item.id, " rendered");
+  // console.log("Item Card: ", item.id, " rendered");
   return (
     <VStack
       spacing={0}
@@ -84,7 +84,7 @@ export default function ItemCard({ item }) {
             as={RouterLink}
             to={`/shop/${section}/${id}`}
             fontWeight="bold"
-            fontSize="2xl"
+            fontSize="xl"
             letterSpacing="wide"
             _hover={{ color: colors.textBrand }}
             _active={{ color: colors.textBrand }}
@@ -94,6 +94,7 @@ export default function ItemCard({ item }) {
           {/* Heart Button */}
           <IconButton
             ml="auto"
+            mr={-1}
             icon={<FavIcon boxSize={6} isFav={isItemFav} mt="3px" />}
             role="group"
             variant="ghost"
@@ -104,9 +105,9 @@ export default function ItemCard({ item }) {
         </Flex>
         {/* Rating */}
         <Flex alignItems="center">
-          <Rating value={rating.value} size={4} />
+          <Rating value={ratingAvg} size={4} />
           <Text ml={2} fontSize="md" color={colors.textSecondary}>
-            ({rating.count})
+            ({reviewCount})
           </Text>
         </Flex>
         {/* Bottom Row - Price and Buttons */}
@@ -123,10 +124,10 @@ export default function ItemCard({ item }) {
           {/* Trunk Buttons */}
           <IconButton
             mr={-1}
-            icon={<TrunkIcon isInCart={isItemInCart} fill="currentColor" mt="2px" boxSize={8} />}
+            icon={<TrunkIcon isInCart={isItemInCart} fill="currentColor" mt="2px" boxSize={6} />}
             role="group"
             variant="ghost"
-            size="lg"
+            size="md"
             title="Add to trunk"
             onClick={handleAddtoCart}
           />

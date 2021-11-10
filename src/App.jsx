@@ -13,9 +13,9 @@ import SignInAndSignUpPage from "./pages/SignInUp";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { updateUserInDb } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
-import Section from "./pages/Section";
-import Item from "./pages/Item";
-import Favs from "./pages/Favs";
+// import Section from "./pages/Section";
+// import Item from "./pages/Item";
+// import Favs from "./pages/Favs";
 class App extends React.Component {
   render() {
     const { currentUser } = this.props;
@@ -30,15 +30,15 @@ class App extends React.Component {
           <Route exact path="/shop">
             <Shop />
           </Route>
-          <Route exact path="/shop/:sectionId">
+          {/* <Route exact path="/shop/:sectionId">
             <Section />
-          </Route>
-          <Route exact path="/shop/:sectionId/:itemId">
+          </Route> */}
+          {/* <Route exact path="/shop/:sectionId/:itemId">
             <Item />
-          </Route>
-          <Route exact path="/favs">
+          </Route> */}
+          {/* <Route exact path="/favs">
             <Favs />
-          </Route>
+          </Route> */}
 
           {/* <Route path="/checkout" component={CheckoutPage} /> */}
           <Route exact path="/signin">
