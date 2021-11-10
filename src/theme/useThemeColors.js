@@ -9,8 +9,8 @@ export default function useThemeColors() {
     bgSelect: useColorModeValue("gray.700", "gray.200"),
     textBrand: useColorModeValue("brand.600", "brand.100"),
     textOnBrand: useColorModeValue("white", "gray.800"),
-    textSecondary: useColorModeValue("gray.600", "gray.300"),
-    textTertiary: useColorModeValue("gray.500", "gray.400"),
+    textSecondary: useColorModeValue("gray.700", "gray.300"),
+    textTertiary: useColorModeValue("gray.600", "gray.400"),
     overlayBg: useColorModeValue("whiteAlpha.300", "blackAlpha.300"),
     overlayBgStrong: useColorModeValue("whiteAlpha.500", "blackAlpha.500"),
   };

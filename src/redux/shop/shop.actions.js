@@ -61,10 +61,11 @@ export const fetchShopItemsByIds = (idsToFetch) => async (dispatch, getState) =>
             dispatch(fetchShopItemsStart());
           }
           console.log("fetchShopItemsByIds item", id);
-          const itemDoc = (await getDoc(doc(db, "items", id.toString()))).data();
-          newItems[id] = itemDoc;
+          const itemDoc = await getDoc(doc(db, "items", id.toString()))
+          newItems[id] = itemDoc.data();
         }
       }
+      console.log("fetchShopItemsByIds, newItem:",newItems)
       if (Object.keys(newItems).length) {
         dispatch(fetchShopItemsSuccess(newItems));
       }

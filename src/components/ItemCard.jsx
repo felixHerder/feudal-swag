@@ -1,6 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Flex, Image, Text, IconButton, VStack } from "@chakra-ui/react";
+import { Box, Flex, Image, Text, IconButton, VStack, } from "@chakra-ui/react";
 import FavIcon from "./FavIcon";
 import TrunkIcon from "./TrunkIcon";
 import useThemeColors from "../theme/useThemeColors";
@@ -11,17 +11,14 @@ import { addItemToFavs, removeItemFromFavs } from "../redux/favs/favs.actions";
 import { makeSelectIsItemFav } from "../redux/favs/favs.selectors";
 import Rating from "./Rating";
 
-const ItemCard = ({ item, key, ...props }) => {
+export default function ItemCard({ item }) {
   const { name, price, imgurl, id, section, rating } = item;
   const colors = useThemeColors();
-
   const dispatch = useDispatch();
   const selectIsItemInCartInstance = React.useMemo(() => makeSelectIsItemInCart(id), [id]);
   const isItemInCart = useSelector((state) => selectIsItemInCartInstance(state));
-
   const selectIsItemFavIstance = React.useMemo(() => makeSelectIsItemFav(id), [id]);
   const isItemFav = useSelector((state) => selectIsItemFavIstance(state));
-
   const handleAddtoCart = () => {
     dispatch(addItemToCart({ itemId: id, sizeId: 0 }));
   };
@@ -35,6 +32,7 @@ const ItemCard = ({ item, key, ...props }) => {
   console.log("Item Card: ", item.id, " rendered");
   return (
     <VStack
+      spacing={0}
       alignItems="flex-start"
       borderRadius="lg"
       overflow="hidden"
@@ -45,7 +43,6 @@ const ItemCard = ({ item, key, ...props }) => {
       transition="box-shadow .2s ease"
       // boxShadow="lg"
       _active={{ boxShadow: "outline" }}
-      {...props}
     >
       {/* Card Image Container */}
       <Box
@@ -76,11 +73,12 @@ const ItemCard = ({ item, key, ...props }) => {
         alignItems="flex-start"
         justifyContent="space-between"
         px={4}
-        py={2}
+        py={1}
         flexGrow="1"
+        position="relative"
       >
         {/* Title */}
-        <Flex w="100%" alignItems="center">
+        <Flex w="100%" alignItems="center" mt={1}>
           <Text
             mr={2}
             as={RouterLink}
@@ -118,9 +116,12 @@ const ItemCard = ({ item, key, ...props }) => {
               $ {price}
             </Text>
           </Box>
+          {/* section */}
+          <Text  fontSize="xs" color={colors.textTertiary} mt={0}>
+            {section}
+          </Text>
           {/* Trunk Buttons */}
           <IconButton
-            ml="auto"
             mr={-1}
             icon={<TrunkIcon isInCart={isItemInCart} fill="currentColor" mt="2px" boxSize={8} />}
             role="group"
@@ -133,5 +134,4 @@ const ItemCard = ({ item, key, ...props }) => {
       </VStack>
     </VStack>
   );
-};
-export default ItemCard;
+}
