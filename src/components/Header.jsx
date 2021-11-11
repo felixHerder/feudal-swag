@@ -63,7 +63,7 @@ const Header = () => {
                     py={4}
                     px={8}
                     as={RouterLink}
-                    to={`/shop/?section=${value}`}
+                    to={`/shop/?section=${value}&page=0`}
                     icon={<Icon boxSize={5} as={icon} />}
                   >
                     {value.toUpperCase()}

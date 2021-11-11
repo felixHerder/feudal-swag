@@ -9,85 +9,63 @@ const fetchShopItemsSuccess = (payload) => ({ type: ShopActionTypes.FETCH_ITEMS_
 const setItemsCache = (items) => ({ type: ShopActionTypes.SET_ITEMS_CACHE, payload: items });
 const setSearchParams = (params) => ({ type: ShopActionTypes.SET_SEARCH_PARAMS, payload: params });
 
-export const fetchShopItemsByQuery = (searchParams) => async (dispatch, getState) => {
-  try {
-    const lastSearchParams = getState().shop.searchParams;
-    if (JSON.stringify(searchParams) === JSON.stringify(lastSearchParams) && searchParams.page.toString() === "0") {
-      return;
-    }
-    dispatch(fetchShopItemsStart());
-    const itemsRef = collection(db, "items");
-    const queryConstraints = [];
-    if (searchParams.section !== "all") {
-      queryConstraints.push(where("section", "==", searchParams.section));
-    }
-    queryConstraints.push(orderBy(searchParams.orderBy, searchParams.asc));
-    queryConstraints.push(limit(searchParams.limit));
-    const q = query(itemsRef, ...queryConstraints);
-    const itemDocs = (await getDocs(q)).docs;
-    const items = itemDocs.map((doc) => doc.data());
-
-    dispatch(setItemsCache([]));
-    dispatch(setSearchParams(searchParams));
-    dispatch(fetchShopItemsSuccess(items));
-    //clear cache
-  } catch (error) {
-    console.error("error in fetchShopItemsByQuery", error);
-    dispatch(fetchShopItemsFailed(error.message));
-  }
-};
-
+//expected searchParams: { limit: 6, section: "all", orderBy: "name", asc: "asc", page: 3 },
 export const fetchShopItemsByQueryPaginate = (searchParams) => async (dispatch, getState) => {
   try {
     dispatch(fetchShopItemsStart());
-    const itemsRef = collection(db, "items");
+    let { page, ...queryParams } = searchParams;
+    page = +page;
+    let { page: lastPage, ...lastQueryParams } = getState().shop.searchParams;
+    lastPage = +lastPage;
+    //limit items per page option at 12
+    const pageLimit = Math.min(12, +searchParams.limit);
     const storeItems = getState().shop.itemsArr;
-    const { page, limit: pageLimit } = searchParams;
-    const { page: lastPage } = { ...getState().shop.searchParams };
-    const storeItemsCache = [...getState().shop.itemsCacheArr];
-    console.log({ lastPage }, { page });
-    const queryConstraints = [];
-    let items = [];
-    if (page < lastPage) {
-      //load last page from cache
-      items = storeItemsCache.slice(page * pageLimit, lastPage * pageLimit);
-      //store current items in history if not present
-      if (storeItemsCache.length <= lastPage * pageLimit) {
-        dispatch(setItemsCache([...storeItemsCache, ...storeItems]));
-      }
+    let storeItemsCache = getState().shop.itemsCacheArr;
+    //clear cache if query params change
+    if (JSON.stringify(queryParams) !== JSON.stringify(lastQueryParams)) {
+      storeItemsCache = [];
     }
-    if (page > lastPage || !lastPage) {
-      //try and load next page from cache
-      if (storeItemsCache.length > page * pageLimit) {
-        items = storeItemsCache.slice((lastPage + 1) * pageLimit, (page + 1) * pageLimit);
-      } else {
-        //fetch next page from db
-        if (searchParams.section !== "all") {
-          queryConstraints.push(where("section", "==", searchParams.section));
+    //try and get items from cache
+    let fetchedItems = storeItemsCache.slice(page * pageLimit, (page + 1) * pageLimit);
+    if (fetchedItems.length < 1 || fetchedItems.indexOf(undefined) > -1) {
+      const itemsColRef = collection(db, "items");
+      const queryConstraints = [];
+      searchParams.section !== "all" && queryConstraints.push(where("section", "==", searchParams.section));
+      queryConstraints.push(orderBy(searchParams.orderBy, searchParams.asc));
+      if (page > 0) {
+        let lastItemDoc;
+        const lastItem = storeItems[page * pageLimit];
+        if (lastItem) {
+          //get last item in last page
+          lastItemDoc = await getDoc(doc(itemsColRef, lastItem.id));
+        } else {
+          //no last page, query firebase for last document of last page
+          const forwardQuery = query(itemsColRef, ...queryConstraints, limit(pageLimit * page));
+          const forwardDocs = (await getDocs(forwardQuery)).docs;
+          lastItemDoc = forwardDocs[forwardDocs.length - 1];
         }
-        queryConstraints.push(orderBy(searchParams.orderBy, searchParams.asc));
-        const lastItem = storeItems[storeItems.length - 1];
-        const lastItemDoc = await getDoc(doc(itemsRef, lastItem.id));
         queryConstraints.push(startAfter(lastItemDoc));
-
-        queryConstraints.push(limit(searchParams.limit));
-        const q = query(itemsRef, ...queryConstraints);
-        const itemDocs = (await getDocs(q)).docs;
-        items = itemDocs.map((doc) => doc.data());
-        //store current items in history if not present
-        if (storeItemsCache.length < page * pageLimit) {
-          dispatch(setItemsCache([...storeItemsCache, ...storeItems]));
-        }
       }
+      queryConstraints.push(limit(searchParams.limit));
+      const q = query(itemsColRef, ...queryConstraints);
+      const itemDocs = (await getDocs(q)).docs;
+      fetchedItems = itemDocs.map((doc) => doc.data());
+      //fill cache with undefined in case shop will be mounted with page > 0
+      if (storeItemsCache.length <= 0) {
+        storeItemsCache = new Array((page + 1) * pageLimit).fill(undefined);
+      }
+      storeItemsCache.splice(page * pageLimit, pageLimit, ...fetchedItems);
+      dispatch(setItemsCache([...storeItemsCache]));
     }
     dispatch(setSearchParams(searchParams));
-    dispatch(fetchShopItemsSuccess(items));
+    dispatch(fetchShopItemsSuccess(fetchedItems));
     //clear cache on no pagination requested
   } catch (error) {
     console.error("error in fetchShopItemsByQueryPaginate", error);
     dispatch(fetchShopItemsFailed(error.message));
   }
 };
+
 
 export const fetchShopItemsByIds = (idsToFetch) => async (dispatch, getState) => {
   try {

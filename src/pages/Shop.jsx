@@ -43,31 +43,23 @@ export default function Shop() {
   const storeSeachParams = useSelector(selectSeachParams);
   const isFetchingItems = useSelector(selectIsFetchingItems);
   const [searchParams, setSearchParams] = React.useState({ ...storeSeachParams });
-  const [page, setPage] = React.useState(0);
   // console.log("Shop Rendered with Search:", routerLocation.search, "items:", itemsArr);
-
   const handleAddParams = (param) => {
-    const newSearchParams = { ...searchParams, ...param, page: 0 };
-    setPage(0);
-    setSearchParams(newSearchParams);
+    const newSearchParams = { ...searchParams, page: 0, ...param };
     routerHistory.push("?" + new URLSearchParams(newSearchParams).toString());
   };
-  const handleNextPage = () => {
-    setPage(page + 1);
-    dispatch(fetchShopItemsByQueryPaginate({ ...searchParams, page: page + 1 }));
+  const handleSetPage = (val) => {
+    const newPage = +searchParams.page + val;
+    handleAddParams({ page: newPage });
   };
-  const handlePreviousPage = () => {
-    setPage(page - 1);
-    dispatch(fetchShopItemsByQueryPaginate({ ...searchParams, page: page - 1 }));
-  };
+
   React.useEffect(() => {
     const routerSearchParams = {};
     new URLSearchParams(routerLocation.search).forEach((v, k) => (routerSearchParams[k] = v));
     setSearchParams({ ...storeSeachParams, ...routerSearchParams });
-    dispatch(fetchShopItemsByQuery({ ...storeSeachParams, ...routerSearchParams }));
+    dispatch(fetchShopItemsByQueryPaginate({ ...storeSeachParams, ...routerSearchParams }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routerLocation, dispatch]);
-
   return (
     <Container maxW="container.xl">
       <HStack alignItems="flex-start" spacing={8}>
@@ -112,16 +104,21 @@ export default function Shop() {
             )}
           </LoadingOverlay>
           <Flex py={8} w="100%" justifyContent="space-between" alignItems="flex-end">
-            <Button variant="outline" isDisabled={page === 0} onClick={handlePreviousPage} leftIcon={<Icon as={FaArrowLeft} />}>
+            <Button
+              variant="outline"
+              isDisabled={+searchParams.page <= 0}
+              onClick={() => handleSetPage(-1)}
+              leftIcon={<Icon as={FaArrowLeft} />}
+            >
               Previous
             </Button>
             <Text fontSize="md" color={colors.textTertiary}>
-              - {page + 1} -
+              - {+searchParams.page + 1} -
             </Text>
             <Button
               variant="outline"
               isDisabled={itemsArr && itemsArr.length < searchParams.limit}
-              onClick={handleNextPage}
+              onClick={() => handleSetPage(1)}
               rightIcon={<Icon as={FaArrowRight} />}
             >
               Next

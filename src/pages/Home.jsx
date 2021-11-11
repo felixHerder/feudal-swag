@@ -55,7 +55,7 @@ const Home = () => {
         {sectionsData.map(({ title, value, imageUrl, icon }, idx) => (
           <Box
             as={RouterLink}
-            to={`/shop/?section=${value}`}
+            to={`/shop/?section=${value}&page=0`}
             tabIndex={0}
             key={idx}
             w="160px"
