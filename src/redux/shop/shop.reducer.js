@@ -1,8 +1,9 @@
 import ShopActionTypes from "./shop.types";
 // import {itemsMap,sectionsMap} from "../../firebase/mockDb.js"
 const INITIAL_STATE = {
-  itemsArr: null,
-  itemsCacheArr: null,
+  itemsArr: [],
+  itemsCacheArr: [],
+  searchParams: { limit: 6, section: "all", orderBy: "name", asc: "asc", page: -1 },
   isFetching: false,
   error: false,
 };
@@ -27,11 +28,16 @@ const shopReducer = (state = INITIAL_STATE, action) => {
         isFetching: false,
         error: action.payload,
       };
-      case ShopActionTypes.SET_ITEMS_CACHE:
-        return {
-          ...state,
-          itemsCacheArr: action.payload,
-        };
+    case ShopActionTypes.SET_ITEMS_CACHE:
+      return {
+        ...state,
+        itemsCacheArr: action.payload,
+      };
+    case ShopActionTypes.SET_SEARCH_PARAMS:
+      return {
+        ...state,
+        searchParams: action.payload,
+      };
     default:
       return state;
   }

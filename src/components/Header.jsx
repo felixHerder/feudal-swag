@@ -57,16 +57,16 @@ const Header = () => {
             </MenuButton>
             <Portal>
               <MenuList minW="auto">
-                {sectionsData.map(({ title, icon }, idx) => (
+                {sectionsData.map(({ value, icon }, idx) => (
                   <MenuItem
                     key={idx}
                     py={4}
                     px={8}
                     as={RouterLink}
-                    to={`/shop/${title}`}
+                    to={`/shop/?section=${value}`}
                     icon={<Icon boxSize={5} as={icon} />}
                   >
-                    {title.toUpperCase()}
+                    {value.toUpperCase()}
                   </MenuItem>
                 ))}
               </MenuList>

@@ -1,7 +1,8 @@
-import { createSelector } from "reselect";
+// import { createSelector } from "reselect";
 
-const selectId = (state, id) => id;
+// const selectId = (state, id) => id;
 export const selectItems = (state) => state.shop.itemsArr;
+export const selectSeachParams = (state) => state.shop.searchParams;
 export const selectIsFetchingItems = (state) => state.shop.isFetching;
 
 

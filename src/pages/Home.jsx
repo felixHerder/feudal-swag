@@ -39,7 +39,7 @@ export const sectionsData = [
 ];
 
 const Home = () => {
-  const { cardBg, textPrice } = useThemeColors();
+  const colors = useThemeColors();
 
   return (
     <Container maxW="container.xl">
@@ -52,10 +52,10 @@ const Home = () => {
         </Text>
       </Box>
       <Flex mb={12} wrap="wrap" sx={{ gap: 16 }} justifyContent="center">
-        {sectionsData.map(({ title, imageUrl, icon }, idx) => (
+        {sectionsData.map(({ title, value, imageUrl, icon }, idx) => (
           <Box
             as={RouterLink}
-            to={`/shop/${title}`}
+            to={`/shop/?section=${value}`}
             tabIndex={0}
             key={idx}
             w="160px"
@@ -82,7 +82,13 @@ const Home = () => {
                 _groupActive={{ transform: "scale(1)" }}
               />
             </Box>
-            <Center bg={cardBg} py={4} _groupHover={{ color: textPrice }} _groupActive={{ color: textPrice }}>
+            <Center
+              bg={colors.cardBg}
+              py={4}
+              transition="color .2s ease"
+              _groupHover={{ color: colors.textBrand }}
+              _groupActive={{ color: colors.textBrand }}
+            >
               <Icon mr={2} as={icon} />
               <Heading size="sm" fontFamily="body">
                 {title.toUpperCase()}

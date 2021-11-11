@@ -7,43 +7,84 @@ const fetchShopItemsFailed = (error = {}) => ({ type: ShopActionTypes.FETCH_ITEM
 const fetchShopItemsSuccess = (payload) => ({ type: ShopActionTypes.FETCH_ITEMS_SUCCESS, payload: payload });
 
 const setItemsCache = (items) => ({ type: ShopActionTypes.SET_ITEMS_CACHE, payload: items });
+const setSearchParams = (params) => ({ type: ShopActionTypes.SET_SEARCH_PARAMS, payload: params });
 
 export const fetchShopItemsByQuery = (searchParams) => async (dispatch, getState) => {
-  console.log("fetchShopItemsByQuery called", searchParams);
   try {
+    const lastSearchParams = getState().shop.searchParams;
+    if (JSON.stringify(searchParams) === JSON.stringify(lastSearchParams) && searchParams.page.toString() === "0") {
+      return;
+    }
     dispatch(fetchShopItemsStart());
     const itemsRef = collection(db, "items");
     const queryConstraints = [];
+    if (searchParams.section !== "all") {
+      queryConstraints.push(where("section", "==", searchParams.section));
+    }
+    queryConstraints.push(orderBy(searchParams.orderBy, searchParams.asc));
+    queryConstraints.push(limit(searchParams.limit));
+    const q = query(itemsRef, ...queryConstraints);
+    const itemDocs = (await getDocs(q)).docs;
+    const items = itemDocs.map((doc) => doc.data());
+
+    dispatch(setItemsCache([]));
+    dispatch(setSearchParams(searchParams));
+    dispatch(fetchShopItemsSuccess(items));
+    //clear cache
+  } catch (error) {
+    console.error("error in fetchShopItemsByQuery", error);
+    dispatch(fetchShopItemsFailed(error.message));
+  }
+};
+
+export const fetchShopItemsByQueryPaginate = (searchParams) => async (dispatch, getState) => {
+  try {
+    dispatch(fetchShopItemsStart());
+    const itemsRef = collection(db, "items");
+    const storeItems = getState().shop.itemsArr;
+    const { page, limit: pageLimit } = searchParams;
+    const { page: lastPage } = { ...getState().shop.searchParams };
+    const storeItemsCache = [...getState().shop.itemsCacheArr];
+    console.log({ lastPage }, { page });
+    const queryConstraints = [];
     let items = [];
-    if (searchParams.page === "prev") {
-      const storeItemsCache = [...getState().shop.itemsCacheArr];
-      items = storeItemsCache.slice(-searchParams.limit);
-      dispatch(setItemsCache(storeItemsCache.slice(0, -searchParams.limit)));
-    } else {
-      if (searchParams.section !== "all") {
-        queryConstraints.push(where("section", "==", searchParams.section));
-      }
-      queryConstraints.push(orderBy(searchParams.orderBy, searchParams.asc));
-      if (searchParams.page === "next") {
-        const storeItems = getState().shop.itemsArr;
-        const storeItemsCache = [...getState().shop.itemsCacheArr];
+    if (page < lastPage) {
+      //load last page from cache
+      items = storeItemsCache.slice(page * pageLimit, lastPage * pageLimit);
+      //store current items in history if not present
+      if (storeItemsCache.length <= lastPage * pageLimit) {
         dispatch(setItemsCache([...storeItemsCache, ...storeItems]));
+      }
+    }
+    if (page > lastPage || !lastPage) {
+      //try and load next page from cache
+      if (storeItemsCache.length > page * pageLimit) {
+        items = storeItemsCache.slice((lastPage + 1) * pageLimit, (page + 1) * pageLimit);
+      } else {
+        //fetch next page from db
+        if (searchParams.section !== "all") {
+          queryConstraints.push(where("section", "==", searchParams.section));
+        }
+        queryConstraints.push(orderBy(searchParams.orderBy, searchParams.asc));
         const lastItem = storeItems[storeItems.length - 1];
         const lastItemDoc = await getDoc(doc(itemsRef, lastItem.id));
         queryConstraints.push(startAfter(lastItemDoc));
+
+        queryConstraints.push(limit(searchParams.limit));
+        const q = query(itemsRef, ...queryConstraints);
+        const itemDocs = (await getDocs(q)).docs;
+        items = itemDocs.map((doc) => doc.data());
+        //store current items in history if not present
+        if (storeItemsCache.length < page * pageLimit) {
+          dispatch(setItemsCache([...storeItemsCache, ...storeItems]));
+        }
       }
-      queryConstraints.push(limit(searchParams.limit));
-      const q = query(itemsRef, ...queryConstraints);
-      const itemDocs = (await getDocs(q)).docs;
-      items = itemDocs.map((doc) => doc.data());
     }
+    dispatch(setSearchParams(searchParams));
     dispatch(fetchShopItemsSuccess(items));
     //clear cache on no pagination requested
-    if (!searchParams.page) {
-      dispatch(setItemsCache([]));
-    }
   } catch (error) {
-    console.error("error in fetchShopItemsByQuery", error);
+    console.error("error in fetchShopItemsByQueryPaginate", error);
     dispatch(fetchShopItemsFailed(error.message));
   }
 };

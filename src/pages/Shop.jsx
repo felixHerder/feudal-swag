@@ -1,13 +1,23 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Container, SimpleGrid, HStack, Button, Box, VStack, Icon, Flex, Text } from "@chakra-ui/react";
-import LoadingWrapper from "../components/LoadingWrapper";
-import { fetchShopItemsByQuery } from "../redux/shop/shop.actions";
-import { selectItems, selectIsFetchingItems } from "../redux/shop/shop.selectors";
+import { Container, SimpleGrid, HStack, Button, Box, VStack, Icon, Flex, Text, Center } from "@chakra-ui/react";
+// import LoadingWrapper from "../components/LoadingWrapper";
+import LoadingOverlay from "../components/LoadingOverlay";
+import { fetchShopItemsByQuery, fetchShopItemsByQueryPaginate } from "../redux/shop/shop.actions";
+import { selectItems, selectIsFetchingItems, selectSeachParams } from "../redux/shop/shop.selectors";
 import { useLocation, useHistory } from "react-router-dom";
 import useThemeColors from "../theme/useThemeColors";
 import ItemCard from "../components/ItemCard";
-import { FaFont, FaDollarSign, FaStar, FaSitemap, FaSortAmountDown, FaSortAmountUpAlt } from "react-icons/fa";
+import {
+  FaFont,
+  FaDollarSign,
+  FaStar,
+  FaSitemap,
+  FaSortAmountDown,
+  FaSortAmountUpAlt,
+  FaArrowLeft,
+  FaArrowRight,
+} from "react-icons/fa";
 import { GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreastplate } from "react-icons/gi";
 
 const orderByOptions = [
@@ -30,81 +40,114 @@ export default function Shop() {
   const routerHistory = useHistory();
   const colors = useThemeColors();
   const itemsArr = useSelector(selectItems);
+  const storeSeachParams = useSelector(selectSeachParams);
   const isFetchingItems = useSelector(selectIsFetchingItems);
-  const [searchParams, setSearchParams] = React.useState({ limit: 6, section: "gauntlets", orderBy: "name", asc: "asc" });
+  const [searchParams, setSearchParams] = React.useState({ ...storeSeachParams });
   const [page, setPage] = React.useState(0);
-  console.log("Shop Rendered with Search:", routerLocation.search, "items:", itemsArr);
+  // console.log("Shop Rendered with Search:", routerLocation.search, "items:", itemsArr);
 
   const handleAddParams = (param) => {
-    const newSearchParams = { ...searchParams, ...param };
-    setSearchParams(newSearchParams);
+    const newSearchParams = { ...searchParams, ...param, page: 0 };
     setPage(0);
-    const searchString = new URLSearchParams(newSearchParams).toString();
-    routerHistory.push("?" + searchString);
-    dispatch(fetchShopItemsByQuery(newSearchParams));
+    setSearchParams(newSearchParams);
+    routerHistory.push("?" + new URLSearchParams(newSearchParams).toString());
   };
   const handleNextPage = () => {
-    setPage((prev) => prev + 1);
-    dispatch(fetchShopItemsByQuery({ ...searchParams, page: "next" }));
+    setPage(page + 1);
+    dispatch(fetchShopItemsByQueryPaginate({ ...searchParams, page: page + 1 }));
   };
   const handlePreviousPage = () => {
-    setPage((prev) => prev - 1);
-    dispatch(fetchShopItemsByQuery({ ...searchParams, page: "prev" }));
+    setPage(page - 1);
+    dispatch(fetchShopItemsByQueryPaginate({ ...searchParams, page: page - 1 }));
   };
+  React.useEffect(() => {
+    const routerSearchParams = {};
+    new URLSearchParams(routerLocation.search).forEach((v, k) => (routerSearchParams[k] = v));
+    setSearchParams({ ...storeSeachParams, ...routerSearchParams });
+    dispatch(fetchShopItemsByQuery({ ...storeSeachParams, ...routerSearchParams }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routerLocation, dispatch]);
 
-  React.useEffect(() => {}, []);
-  console.log(isFetchingItems)
   return (
     <Container maxW="container.xl">
       <HStack alignItems="flex-start" spacing={8}>
         {/* Side Panel */}
-        <VStack alignItems="flex-start" w="200px" spacing={4}>
+        <VStack alignItems="flex-start" w="200px" spacing={8} py={4}>
           {/* Pick Section */}
-          <Box w="100%">
-            <Text fontSize="xl" fontWeight="bold" color={colors.textSecondary}>
+          <VStack w="100%">
+            <Text fontSize="md" fontWeight="bold" color={colors.textSecondary}>
               Sections:
             </Text>
-            <SelectStack optionsArray={sectionOptions} handleAddParams={handleAddParams} paramName="section" />
-          </Box>
+            <SelectStack
+              optionsArray={sectionOptions}
+              handleAddParams={handleAddParams}
+              paramName="section"
+              active={searchParams.section}
+            />
+          </VStack>
           {/* Select Sort */}
-          <Box w="100%">
-            <Text fontSize="xl" fontWeight="bold" color={colors.textSecondary} mb={2}>
+          <VStack w="100%">
+            <Text fontSize="md" fontWeight="bold" color={colors.textSecondary}>
               Sort by:
             </Text>
-            <SelectAscending handleAddParams={handleAddParams} />
-            <SelectStack optionsArray={orderByOptions} handleAddParams={handleAddParams} paramName="orderBy" />
-          </Box>
+            <SelectAscending handleAddParams={handleAddParams} asc={searchParams.asc} />
+            <SelectStack
+              optionsArray={orderByOptions}
+              handleAddParams={handleAddParams}
+              paramName="orderBy"
+              active={searchParams.orderBy}
+            />
+          </VStack>
         </VStack>
         {/* Main content */}
-        <Box w="100%" minH="65vh">
-          <LoadingWrapper isLoading={isFetchingItems}>
+        <Box w="100%" minH="30vh">
+          <LoadingOverlay isLoading={isFetchingItems}>
             <SimpleGrid columns={[1, 2, 3]} spacing={8}>
               {itemsArr && itemsArr.map((item, idx) => item && <ItemCard key={idx} item={item} />)}
             </SimpleGrid>
-            <Flex my={4} w="100%" justifyContent="space-between" alignItems="center">
-              <Button isDisabled={page === 0} onClick={handlePreviousPage}>
-                Previous
-              </Button>
-              <Text fontSize="xl">{page}</Text>
-              <Button isDisabled={itemsArr && itemsArr.length < searchParams.limit} onClick={handleNextPage}>
-                Next
-              </Button>
-            </Flex>
-          </LoadingWrapper>
+            {itemsArr && itemsArr.length === 0 && !isFetchingItems && (
+              <Center h="40vh" w="100%">
+                <Text>No more Items...</Text>
+              </Center>
+            )}
+          </LoadingOverlay>
+          <Flex py={8} w="100%" justifyContent="space-between" alignItems="flex-end">
+            <Button variant="outline" isDisabled={page === 0} onClick={handlePreviousPage} leftIcon={<Icon as={FaArrowLeft} />}>
+              Previous
+            </Button>
+            <Text fontSize="md" color={colors.textTertiary}>
+              - {page + 1} -
+            </Text>
+            <Button
+              variant="outline"
+              isDisabled={itemsArr && itemsArr.length < searchParams.limit}
+              onClick={handleNextPage}
+              rightIcon={<Icon as={FaArrowRight} />}
+            >
+              Next
+            </Button>
+          </Flex>
         </Box>
       </HStack>
     </Container>
   );
 }
 
-const SelectAscending = ({ handleAddParams }) => {
+const SelectAscending = ({ handleAddParams, asc }) => {
   const colors = useThemeColors();
   return (
     <Flex
       justifyContent="space-between"
       sx={{ gap: 4, "input:checked + label": { bg: colors.bgBrand, color: colors.textOnBrand } }}
     >
-      <input type="radio" defaultChecked name="sortOrder" id="ascending" style={{ visibility: "hidden", position: "absolute" }} />
+      <input
+        type="radio"
+        checked={asc === "asc"}
+        name="sortOrder"
+        id="ascending"
+        style={{ visibility: "hidden", position: "absolute" }}
+        onChange={() => handleAddParams({ asc: "asc" })}
+      />
       <Button
         as="label"
         htmlFor="ascending"
@@ -114,11 +157,17 @@ const SelectAscending = ({ handleAddParams }) => {
         borderRadius="md"
         isFullWidth
         variant="outline"
-        onClick={() => handleAddParams({ asc: "asc" })}
       >
         asc
       </Button>
-      <input type="radio" name="sortOrder" id="descending" style={{ visibility: "hidden", position: "absolute" }} />
+      <input
+        type="radio"
+        checked={asc === "desc"}
+        name="sortOrder"
+        id="descending"
+        style={{ visibility: "hidden", position: "absolute" }}
+        onChange={() => handleAddParams({ asc: "desc" })}
+      />
       <Button
         as="label"
         htmlFor="descending"
@@ -128,7 +177,6 @@ const SelectAscending = ({ handleAddParams }) => {
         borderRadius="md"
         isFullWidth
         variant="outline"
-        onClick={() => handleAddParams({ asc: "desc" })}
       >
         desc
       </Button>
@@ -136,16 +184,16 @@ const SelectAscending = ({ handleAddParams }) => {
   );
 };
 
-const SelectStack = ({ optionsArray, handleAddParams, paramName }) => {
+const SelectStack = ({ optionsArray, handleAddParams, paramName, active }) => {
   const colors = useThemeColors();
   return (
     <VStack alignItems="flex-start" sx={{ "input:checked + label": { bg: colors.bgBrand, color: colors.textOnBrand } }}>
       {optionsArray.map(({ title, icon, value }, idx) => (
-        <>
+        <Box key={idx} w="100%">
           <input
-            key={idx}
             type="radio"
-            defaultChecked={idx === 0}
+            checked={active === value}
+            onChange={() => handleAddParams({ [paramName]: value })}
             name={paramName}
             id={title}
             style={{ visibility: "hidden", position: "absolute" }}
@@ -154,7 +202,6 @@ const SelectStack = ({ optionsArray, handleAddParams, paramName }) => {
             as="label"
             cursor="pointer"
             borderRadius="md"
-            key={idx * 2 + 1}
             isFullWidth
             justifyContent="space-between"
             rightIcon={<Icon boxSize={5} as={icon} />}
@@ -164,7 +211,7 @@ const SelectStack = ({ optionsArray, handleAddParams, paramName }) => {
           >
             {title.charAt(0).toUpperCase() + title.slice(1)}
           </Button>
-        </>
+        </Box>
       ))}
     </VStack>
   );
