@@ -25,7 +25,7 @@ export const fetchShopItemsByQueryPaginate = (searchParams) => async (dispatch, 
     if (JSON.stringify(queryParams) !== JSON.stringify(lastQueryParams)) {
       storeItemsCache = [];
     }
-    //try and get items from cache
+    //try and get current page items from cache
     let fetchedItems = storeItemsCache.slice(page * pageLimit, (page + 1) * pageLimit);
     if (fetchedItems.length < 1 || fetchedItems.indexOf(undefined) > -1) {
       const itemsColRef = collection(db, "items");
@@ -34,28 +34,27 @@ export const fetchShopItemsByQueryPaginate = (searchParams) => async (dispatch, 
       queryConstraints.push(orderBy(searchParams.orderBy, searchParams.asc));
       if (page > 0) {
         let lastItemDoc;
-        const lastItem = storeItems[page * pageLimit];
+        //try and get last item in last page from cache
+        const lastItem = storeItemsCache[(page * pageLimit)-1];
+        console.log({lastItem})
         if (lastItem) {
-          //get last item in last page
           lastItemDoc = await getDoc(doc(itemsColRef, lastItem.id));
         } else {
-          //no last page, query firebase for last document of last page
+          //no last page in cache, query firebase for all items untill last document of last page
           const forwardQuery = query(itemsColRef, ...queryConstraints, limit(pageLimit * page));
           const forwardDocs = (await getDocs(forwardQuery)).docs;
           lastItemDoc = forwardDocs[forwardDocs.length - 1];
+          //fill cache with all items until requested page
+          storeItemsCache = forwardDocs.map(doc=>doc.data()) 
         }
         queryConstraints.push(startAfter(lastItemDoc));
       }
       queryConstraints.push(limit(searchParams.limit));
       const q = query(itemsColRef, ...queryConstraints);
       const itemDocs = (await getDocs(q)).docs;
-      fetchedItems = itemDocs.map((doc) => doc.data());
-      //fill cache with undefined in case shop will be mounted with page > 0
-      if (storeItemsCache.length <= 0) {
-        storeItemsCache = new Array((page + 1) * pageLimit).fill(undefined);
-      }
-      storeItemsCache.splice(page * pageLimit, pageLimit, ...fetchedItems);
-      dispatch(setItemsCache([...storeItemsCache]));
+      fetchedItems = itemDocs.map((doc) => doc.data());      
+      //add current page items to cache
+      dispatch(setItemsCache([...storeItemsCache,...fetchedItems]));
     }
     dispatch(setSearchParams(searchParams));
     dispatch(fetchShopItemsSuccess(fetchedItems));
