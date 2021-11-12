@@ -10,7 +10,7 @@ export const sectionsData = [
     icon: GiBreastplate,
     title: "Breastplates",
     value: "breastplates",
-    imageUrl: "/img/heavy-armor/breastplates/breastplates_large_001.jpg",
+    imageUrl: "/img/heavy-armor/breastplates/breastplates_large_002.jpg",
   },
   {
     icon: GiGauntlet,
@@ -22,13 +22,13 @@ export const sectionsData = [
     icon: GiGreaves,
     title: "Greaves",
     value: "greaves",
-    imageUrl: "/img/heavy-armor/greaves/greaves_large_003.jpg",
+    imageUrl: "/img/heavy-armor/greaves/greaves_large_001.jpg",
   },
   {
     icon: GiDwarfHelmet,
     title: "Helmets",
     value: "helmets",
-    imageUrl: "/img/heavy-armor/helmets/helmets_large_002.jpg",
+    imageUrl: "/img/heavy-armor/helmets/helmets_large_003.jpg",
   },
   {
     icon: GiMetalBoot,
@@ -42,7 +42,7 @@ const Home = () => {
   const colors = useThemeColors();
 
   return (
-    <Container maxW="container.xl">
+    <Container maxW="container.lg">
       <Box mt={[4, 6, 12]} textAlign="center">
         <Heading as="h1" size={"2xl"}>
           Best apparel in the Kingdom

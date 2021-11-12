@@ -1,6 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Flex, Image, Text, IconButton, VStack, } from "@chakra-ui/react";
+import { Box, Flex, Image, Text, IconButton, VStack } from "@chakra-ui/react";
 import FavIcon from "./FavIcon";
 import TrunkIcon from "./TrunkIcon";
 import useThemeColors from "../theme/useThemeColors";
@@ -12,7 +12,7 @@ import { makeSelectIsItemFav } from "../redux/favs/favs.selectors";
 import Rating from "./Rating";
 
 export default function ItemCard({ item }) {
-  const { name, price, imgurl, id, section, reviewCount,ratingAvg } = item;
+  const { name, price, imgurl, id, section, reviewCount, ratingAvg } = item;
   const colors = useThemeColors();
   const dispatch = useDispatch();
   const selectIsItemInCartInstance = React.useMemo(() => makeSelectIsItemInCart(id), [id]);
@@ -41,8 +41,8 @@ export default function ItemCard({ item }) {
       borderColor={colors.cardBg}
       _hover={{ boxShadow: "lg" }}
       transition="box-shadow .2s ease"
-      // boxShadow="lg"
       _active={{ boxShadow: "outline" }}
+      role="group"
     >
       {/* Card Image Container */}
       <Box
@@ -68,6 +68,7 @@ export default function ItemCard({ item }) {
       </Box>
       {/* Card Footer */}
       <VStack
+        spacing={3}
         lineHeight="shorter"
         w="100%"
         alignItems="flex-start"
@@ -78,7 +79,7 @@ export default function ItemCard({ item }) {
         position="relative"
       >
         {/* Title */}
-        <Flex w="100%" alignItems="center" mt={1}>
+        <Flex w="100%" alignItems="center" mt={1} mb={-2}>
           <Text
             mr={2}
             as={RouterLink}
@@ -118,7 +119,7 @@ export default function ItemCard({ item }) {
             </Text>
           </Box>
           {/* section */}
-          <Text  fontSize="xs" color={colors.textTertiary} mt={0}>
+          <Text fontSize="xs" color={colors.textTertiary} mt={0}>
             {section}
           </Text>
           {/* Trunk Buttons */}

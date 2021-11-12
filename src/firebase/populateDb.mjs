@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { deleteDoc, doc, getDocs, setDoc, collection, getFirestore } from "firebase/firestore";
-import { sectionsMap, itemsMap,reviewsMap } from "./armorData.mjs";
+import { itemsMap,reviewsMap,indexMap } from "./armorData.mjs";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBpGcrRiUqw1eJezaBOmyoUEuaYY92SyJU",
@@ -23,10 +23,10 @@ async function populateDb() {
     for (const itemDoc of itemDocsSnap.docs) {
       await deleteDoc(itemDoc.ref);
     }
-    const sectionColRef = await collection(db, "sections");
-    const sectionDocsSnap = await getDocs(sectionColRef);
-    for (const sectionDoc of sectionDocsSnap.docs) {
-      await deleteDoc(sectionDoc.ref);
+    const itemIndexColRef = await collection(db, "itemsIndex");
+    const itemIndexDocsSnap = await getDocs(itemIndexColRef);
+    for (const itemIndexDoc of itemIndexDocsSnap.docs) {
+      await deleteDoc(itemIndexDoc.ref);
     }
     const reviewsColRef = await collection(db, "reviews");
     const reviewsDocsSnap = await getDocs(reviewsColRef);
@@ -35,9 +35,6 @@ async function populateDb() {
     }
 
     //populate db
-    for(const skey of Object.keys(sectionsMap)){
-      await setDoc(doc(db, "sections", skey), {itemIds:sectionsMap[skey]});
-    }
     for (const ikey of Object.keys(itemsMap)){
       await setDoc(doc(db, "items", ikey), itemsMap[ikey]);
     }
@@ -45,6 +42,8 @@ async function populateDb() {
     for (const rkey of Object.keys(reviewsMap)){
       await setDoc(doc(db, "reviews", rkey), reviewsMap[rkey]);
     }
+
+    await setDoc(doc(db, "itemsIndex",'indexMap'),indexMap);
 
     console.log("batch done");
   } catch (error) {
