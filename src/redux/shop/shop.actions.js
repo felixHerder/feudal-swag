@@ -8,19 +8,21 @@ const fetchShopItemsSuccess = (payload) => ({ type: ShopActionTypes.FETCH_ITEMS_
 
 const setItemsCache = (items) => ({ type: ShopActionTypes.SET_ITEMS_CACHE, payload: items });
 const setSearchParams = (params) => ({ type: ShopActionTypes.SET_SEARCH_PARAMS, payload: params });
+const setSearchResults = (results) => ({ type: ShopActionTypes.SET_SEARCH_RESULTS, payload: results });
+const setIndexMap = (indexMap) => ({ type: ShopActionTypes.SET_INDEX_MAP, payload: indexMap });
 
 //searchParams: { limit: 6, section: "all", orderBy: "name", asc: "asc", page: 0, name: "" },
 export const fetchShopItems = (searchParams) => async (dispatch, getState) => {
   const lastSearchParams = getState().shop.searchParams;
-  if (JSON.stringify(searchParams) === JSON.stringify(lastSearchParams)) {
+  const storeItems = getState().shop.itemsArr;
+  if (JSON.stringify(searchParams) === JSON.stringify(lastSearchParams) && storeItems.length > 0) {
     return;
   }
   let { page, ...queryParams } = searchParams;
   let { page: lastPage, ...lastQueryParams } = lastSearchParams;
   page = +page;
   lastPage = +lastPage;
-  //limit items per page option at 10, firebase where-in query limit
-  const pageLimit = Math.min(10, +searchParams.limit);
+  const pageLimit = +searchParams.limit;
   let storeItemsCache = getState().shop.itemsCacheArr;
   try {
     //clear cache if any params changes except the page
@@ -30,8 +32,14 @@ export const fetchShopItems = (searchParams) => async (dispatch, getState) => {
     dispatch(fetchShopItemsStart());
     //try and get current page items from cache
     let fetchedItems = storeItemsCache.slice(page * pageLimit, (page + 1) * pageLimit);
-    if (fetchedItems.length < 1 || fetchedItems.indexOf(undefined) > -1) {
-      const indexMap = (await getDoc(doc(db, "itemsIndex", "indexMap"))).data();
+    if (fetchedItems.length <= 0 || fetchedItems.indexOf(undefined) > -1) {
+      fetchedItems = [];
+      //cache indexMap in shop store
+      let indexMap = getState().shop.indexMap;
+      if (Object.keys(indexMap).length <= 0) {
+        indexMap = (await getDoc(doc(db, "itemsIndex", "indexMap"))).data();
+        dispatch(setIndexMap(indexMap));
+      }
       let filteredArr = Object.values(indexMap);
       //filter by name
       if (searchParams.name !== "") {
@@ -41,19 +49,36 @@ export const fetchShopItems = (searchParams) => async (dispatch, getState) => {
       if (searchParams.section !== "all") {
         filteredArr = filteredArr.filter((item) => item.section === searchParams.section);
       }
+      //filter by price range min
+      if (searchParams.priceMin && searchParams.priceMin !== "undefined") {
+        filteredArr = filteredArr.filter((item) => item.price >= +searchParams.priceMin);
+      }
+      //filter by price range max
+      if (searchParams.priceMax && searchParams.priceMax !== "undefined") {
+        filteredArr = filteredArr.filter((item) => item.price <= +searchParams.priceMax);
+      }
+      if (searchParams.ratingMin) {
+        filteredArr = filteredArr.filter((item) => item.ratingAvg >= +searchParams.ratingMin);
+      }
       const asc = searchParams.asc === "asc" ? 1 : -1;
       const orderKey = searchParams.orderBy;
       filteredArr.sort((a, b) => (a[orderKey] < b[orderKey] ? -asc : asc));
       const filteredIds = filteredArr.map((item) => item.id);
-      if (storeItemsCache.length < page + 1 * pageLimit) {
+      dispatch(setSearchResults(filteredIds.length));
+      //fill cache with undefined in case shop was mounted with page > 0
+      if (storeItemsCache.length < page * pageLimit) {
         storeItemsCache = [...filteredIds.slice(0, page * pageLimit)].fill(undefined);
       }
-      const idsToFetch = filteredIds.slice(page * pageLimit, (page + 1) * pageLimit);
-      if (idsToFetch.length > 0) {
-        const itemsColRef = collection(db, "items");
-        const q = query(itemsColRef, where("id", "in", idsToFetch), orderBy(searchParams.orderBy, searchParams.asc));
-        const itemDocs = (await getDocs(q)).docs;
-        fetchedItems = itemDocs.map((doc) => doc.data());
+      //do multiple fetches for pageLimit > 10
+      for (let i = 0; i < pageLimit; i = i + 10) {
+        const fetchLimit = Math.min(pageLimit - i, 10);
+        const idsToFetch = filteredIds.slice(page * pageLimit + i, page * pageLimit + i + fetchLimit);
+        if (idsToFetch.length > 0) {
+          const itemsColRef = collection(db, "items");
+          const q = query(itemsColRef, where("id", "in", idsToFetch), orderBy(searchParams.orderBy, searchParams.asc));
+          const itemDocs = (await getDocs(q)).docs;
+          fetchedItems = fetchedItems.concat(itemDocs.map((doc) => doc.data()));
+        }
       }
       storeItemsCache.splice(page * pageLimit, pageLimit, ...fetchedItems);
       dispatch(setItemsCache([...storeItemsCache]));

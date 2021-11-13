@@ -1,32 +1,17 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Container, SimpleGrid, HStack, Button, Box, VStack, Icon, Flex, Text, Center } from "@chakra-ui/react";
+import { Container, SimpleGrid, HStack, Button, Box, VStack, Icon, Flex, Text, Center, Select } from "@chakra-ui/react";
 import { Input, IconButton, InputRightElement, InputLeftElement, InputGroup, CloseButton } from "@chakra-ui/react";
 // import LoadingWrapper from "../components/LoadingWrapper";
 import LoadingOverlay from "../components/LoadingOverlay";
 import { fetchShopItems } from "../redux/shop/shop.actions";
-import { selectItems, selectIsFetchingItems, selectSeachParams } from "../redux/shop/shop.selectors";
+import { selectItems, selectIsFetchingItems, selectSeachParams, selectSearchResults } from "../redux/shop/shop.selectors";
 import { useLocation, useHistory } from "react-router-dom";
 import useThemeColors from "../theme/useThemeColors";
 import ItemCard from "../components/ItemCard";
-import { FaFont, FaDollarSign, FaStar, FaSitemap } from "react-icons/fa";
-import { FaSortAmountDown, FaSortAmountUpAlt, FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
-import { GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreastplate } from "react-icons/gi";
+import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import ShopFilter from "../components/ShopFilter";
 
-const orderByOptions = [
-  { title: "Alphabetical", value: "name", icon: FaFont },
-  { title: "Price", value: "price", icon: FaDollarSign },
-  { title: "Rating", value: "ratingAvg", icon: FaStar },
-];
-
-const sectionOptions = [
-  { title: "All", value: "all", icon: FaSitemap },
-  { title: "Breastplates", value: "breastplates", icon: GiBreastplate },
-  { title: "Gauntlets", value: "gauntlets", icon: GiGauntlet },
-  { title: "Greaves", value: "greaves", icon: GiGreaves },
-  { title: "Helmets", value: "helmets", icon: GiDwarfHelmet },
-  { title: "Sabatons", value: "sabatons", icon: GiMetalBoot },
-];
 export default function Shop() {
   const dispatch = useDispatch();
   const routerLocation = useLocation();
@@ -34,6 +19,7 @@ export default function Shop() {
   const colors = useThemeColors();
   const itemsArr = useSelector(selectItems);
   const storeSeachParams = useSelector(selectSeachParams);
+  const storeSearchResults = useSelector(selectSearchResults);
   const isFetchingItems = useSelector(selectIsFetchingItems);
   const [searchParams, setSearchParams] = React.useState({ ...storeSeachParams });
 
@@ -67,37 +53,11 @@ export default function Shop() {
     <Container maxW="container.xl">
       <HStack spacing={8} alignItems="stretch" pb={8}>
         {/* Side Panel */}
-        <VStack alignItems="flex-start" w="200px" spacing={8} pt={2}>
-          {/* Pick Section */}
-          <VStack w="100%">
-            <Text fontSize="md" fontWeight="bold" color={colors.textSecondary}>
-              Sections:
-            </Text>
-            <SelectStack
-              optionsArray={sectionOptions}
-              pushSearchParam={pushSearchParam}
-              paramName="section"
-              active={searchParams.section}
-            />
-          </VStack>
-          {/* Select Sort */}
-          <VStack w="100%">
-            <Text fontSize="md" fontWeight="bold" color={colors.textSecondary}>
-              Sort by:
-            </Text>
-            <SelectAscending pushSearchParam={pushSearchParam} asc={searchParams.asc} />
-            <SelectStack
-              optionsArray={orderByOptions}
-              pushSearchParam={pushSearchParam}
-              paramName="orderBy"
-              active={searchParams.orderBy}
-            />
-          </VStack>
-        </VStack>
-        {/* Item display */}
-        <VStack w="100%" minH="30vh" alignItems="center" justifyContent="space-between" flexGrow="1">
-          {/* Search Box Input */}
-          <Box pb={4}>
+        <ShopFilter pushSearchParam={pushSearchParam} searchParams={searchParams} setSearchParams={setSearchParams} />
+        {/* Main Item panel */}
+        <VStack spacing={6} w="100%" minH="30vh" alignItems="flex-start" justifyContent="space-between" flexGrow="1">
+          <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
+            {/* Search Box Input */}
             <InputGroup as="form" onSubmit={handleSearch} maxW="260px">
               <Input
                 placeholder="Search by Name"
@@ -114,8 +74,26 @@ export default function Shop() {
                 <IconButton type="submit" variant="ghost" borderRadius="md" icon={<Icon as={FaSearch} />} />
               </InputRightElement>
             </InputGroup>
-          </Box>
-          {/* Main display */}
+            {/* Select items per page */}
+            <Select
+              borderRadius="md"
+              size="sm"
+              maxW="160px"
+              mt={2}
+              variant="outline"
+              color={colors.textSecondary}
+              pl={1}
+              focusBorderColor="brand.400"
+              title="Items per page"
+              onChange={(e) => pushSearchParam({ limit: e.target.value })}
+              value={searchParams.limit}
+            >
+              <option value="6">6 items per page</option>
+              <option value="12">12 items per page</option>
+              <option value="24">24 items per page</option>
+            </Select>
+          </Flex>
+          {/* Item grid */}
           <LoadingOverlay isLoading={isFetchingItems}>
             <SimpleGrid columns={[1, 2, 2, 3]} spacing={8}>
               {itemsArr && itemsArr.map((item, idx) => item && <ItemCard key={idx} item={item} />)}
@@ -126,8 +104,8 @@ export default function Shop() {
               </Center>
             )}
           </LoadingOverlay>
-          {/* Page buttons */}
-          <Flex pt={8} w="100%" justifyContent="space-between" alignItems="flex-end">
+          {/* Page controlls */}
+          <Flex w="100%" justifyContent="space-between" alignItems="flex-end">
             <Button
               variant="outline"
               isDisabled={+searchParams.page <= 0}
@@ -137,11 +115,11 @@ export default function Shop() {
               Previous
             </Button>
             <Text fontSize="md" color={colors.textTertiary}>
-              - {+searchParams.page + 1} -
+              - {+searchParams.page + 1} of {Math.ceil(storeSearchResults / +searchParams.limit)} -
             </Text>
             <Button
               variant="outline"
-              isDisabled={itemsArr && itemsArr.length < searchParams.limit}
+              isDisabled={+searchParams.page >= storeSearchResults / +searchParams.limit - 1}
               onClick={() => handleSetPage(1)}
               rightIcon={<Icon as={FaArrowRight} />}
             >
@@ -153,87 +131,3 @@ export default function Shop() {
     </Container>
   );
 }
-
-const SelectAscending = ({ pushSearchParam, asc }) => {
-  const colors = useThemeColors();
-  return (
-    <Flex
-      justifyContent="space-between"
-      sx={{ gap: 4, "input:checked + label": { bg: colors.bgBrand, color: colors.textOnBrand } }}
-    >
-      <input
-        type="radio"
-        checked={asc === "asc"}
-        name="sortOrder"
-        id="ascending"
-        style={{ visibility: "hidden", position: "absolute" }}
-        onChange={() => pushSearchParam({ asc: "asc" })}
-      />
-      <Button
-        as="label"
-        htmlFor="ascending"
-        cursor="pointer"
-        leftIcon={<Icon boxSize={4} as={FaSortAmountUpAlt} />}
-        size="sm"
-        borderRadius="md"
-        isFullWidth
-        variant="outline"
-      >
-        asc
-      </Button>
-      <input
-        type="radio"
-        checked={asc === "desc"}
-        name="sortOrder"
-        id="descending"
-        style={{ visibility: "hidden", position: "absolute" }}
-        onChange={() => pushSearchParam({ asc: "desc" })}
-      />
-      <Button
-        as="label"
-        htmlFor="descending"
-        cursor="pointer"
-        leftIcon={<Icon boxSize={4} as={FaSortAmountDown} />}
-        size="sm"
-        borderRadius="md"
-        isFullWidth
-        variant="outline"
-      >
-        desc
-      </Button>
-    </Flex>
-  );
-};
-
-const SelectStack = ({ optionsArray, pushSearchParam, paramName, active }) => {
-  const colors = useThemeColors();
-  return (
-    <VStack alignItems="flex-start" sx={{ "input:checked + label": { bg: colors.bgBrand, color: colors.textOnBrand } }}>
-      {optionsArray.map(({ title, icon, value }, idx) => (
-        <Box key={idx} w="100%">
-          <input
-            type="radio"
-            checked={active === value}
-            onChange={() => pushSearchParam({ [paramName]: value })}
-            name={paramName}
-            id={title}
-            style={{ visibility: "hidden", position: "absolute" }}
-          />
-          <Button
-            as="label"
-            cursor="pointer"
-            borderRadius="md"
-            isFullWidth
-            justifyContent="space-between"
-            rightIcon={<Icon boxSize={5} as={icon} />}
-            variant="outline"
-            htmlFor={title}
-            onClick={() => pushSearchParam({ [paramName]: value })}
-          >
-            {title.charAt(0).toUpperCase() + title.slice(1)}
-          </Button>
-        </Box>
-      ))}
-    </VStack>
-  );
-};

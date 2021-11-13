@@ -4,6 +4,8 @@ const INITIAL_STATE = {
   itemsArr: [],
   itemsCacheArr: [],
   searchParams: { limit: 6, section: "all", orderBy: "name", asc: "asc", page: 0, name: "" },
+  searchResults: 0,
+  indexMap: {},
   isFetching: false,
   error: false,
 };
@@ -37,6 +39,16 @@ const shopReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         searchParams: action.payload,
+      };
+    case ShopActionTypes.SET_SEARCH_RESULTS:
+      return {
+        ...state,
+        searchResults: action.payload,
+      };
+    case ShopActionTypes.SET_INDEX_MAP:
+      return {
+        ...state,
+        indexMap: action.payload,
       };
     default:
       return state;

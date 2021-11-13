@@ -6,19 +6,21 @@ const randomInt = (min, max) => {
 };
 const randomRating = (min, max) => {
   const rand = Math.random();
-  if (rand > 0.4) {
-    return 5;
+  let n;
+  if (rand > 0.35) {
+    n = 5;
+  } else if (rand > 0.3) {
+    n = 4;
+  } else if (rand > 0.2) {
+    n = 3;
+  } else if (rand > 0.15) {
+    n = 2;
+  } else {
+    n = 1;
   }
-  if (rand > 0.3) {
-    return 4;
-  }
-  if (rand > 0.2) {
-    return 3;
-  }
-  if (rand > 0.1) {
-    return 2;
-  }
-  return 1;
+  if (n >= max) return max;
+  if (n <= min) return min;
+  return n;
 };
 const randomSizes = (min, max, num) => {
   const delta = Math.ceil((max - min) / num);
@@ -31,12 +33,25 @@ const randomSizes = (min, max, num) => {
 const genReviews = () => {
   const numReviews = randomInt(5, 25);
   let reviews = {};
+  const rand = Math.random();
   for (let i = 0; i < numReviews; i++) {
+    let rating = randomRating(1, 5);
+
+    if (rand > 0.95) {
+      rating = 5;
+    }
+    if (rand < 0.15) {
+      rating = randomRating(1, 3);
+    }
+    if (rand < 0.05) {
+      rating = rating = randomRating(1, 2);
+    }
     const uuid = faker.datatype.uuid();
     reviews[uuid] = {
       name: faker.name.findName(),
-      rating: randomRating(1, 5),
+      rating,
       comment: faker.lorem.paragraph(2),
+      date: new Date(),
     };
   }
   return reviews;
