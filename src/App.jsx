@@ -14,7 +14,7 @@ import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { updateUserInDb } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 // import Section from "./pages/Section";
-// import Item from "./pages/Item";
+import Item from "./pages/Item";
 // import Favs from "./pages/Favs";
 class App extends React.Component {
   render() {
@@ -30,12 +30,12 @@ class App extends React.Component {
           <Route exact path="/shop">
             <Shop />
           </Route>
-          {/* <Route exact path="/shop/:sectionId">
-            <Section />
-          </Route> */}
-          {/* <Route exact path="/shop/:sectionId/:itemId">
+          <Route exact path="/shop/:section/:name">
             <Item />
-          </Route> */}
+          </Route>
+          <Route exact path="/shop/:section">
+            {(history) => <Redirect to={`/shop?section=${history.match.params.section}`} />}
+          </Route>
           {/* <Route exact path="/favs">
             <Favs />
           </Route> */}

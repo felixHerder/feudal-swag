@@ -10,12 +10,14 @@ const setItemsCache = (items) => ({ type: ShopActionTypes.SET_ITEMS_CACHE, paylo
 const setSearchParams = (params) => ({ type: ShopActionTypes.SET_SEARCH_PARAMS, payload: params });
 const setSearchResults = (results) => ({ type: ShopActionTypes.SET_SEARCH_RESULTS, payload: results });
 const setIndexMap = (indexMap) => ({ type: ShopActionTypes.SET_INDEX_MAP, payload: indexMap });
+export const clearStoreItems = () => ({ type: ShopActionTypes.CLEAR_ITEMS });
 
 //searchParams: { limit: 6, section: "all", orderBy: "name", asc: "asc", page: 0, name: "" },
 export const fetchShopItems = (searchParams) => async (dispatch, getState) => {
   const lastSearchParams = getState().shop.searchParams;
-  const storeItems = getState().shop.itemsArr;
-  if (JSON.stringify(searchParams) === JSON.stringify(lastSearchParams) && storeItems.length > 0) {
+  // const storeItems = getState().shop.itemsArr;
+  let storeItemsCache = getState().shop.itemsCacheArr;
+  if (JSON.stringify(searchParams) === JSON.stringify(lastSearchParams) && storeItemsCache.length > 0) {
     return;
   }
   let { page, ...queryParams } = searchParams;
@@ -23,9 +25,8 @@ export const fetchShopItems = (searchParams) => async (dispatch, getState) => {
   page = +page;
   lastPage = +lastPage;
   const pageLimit = +searchParams.limit;
-  let storeItemsCache = getState().shop.itemsCacheArr;
   try {
-    //clear cache if any params changes except the page
+    //clear cache if any params change except the page
     if (JSON.stringify(queryParams) !== JSON.stringify(lastQueryParams)) {
       storeItemsCache = [];
     }
@@ -53,13 +54,14 @@ export const fetchShopItems = (searchParams) => async (dispatch, getState) => {
       if (searchParams.priceMin && searchParams.priceMin !== "undefined") {
         filteredArr = filteredArr.filter((item) => item.price >= +searchParams.priceMin);
       }
-      //filter by price range max
+      //filter by price range
       if (searchParams.priceMax && searchParams.priceMax !== "undefined") {
         filteredArr = filteredArr.filter((item) => item.price <= +searchParams.priceMax);
       }
       if (searchParams.ratingMin) {
         filteredArr = filteredArr.filter((item) => item.ratingAvg >= +searchParams.ratingMin);
       }
+      //sort order
       const asc = searchParams.asc === "asc" ? 1 : -1;
       const orderKey = searchParams.orderBy;
       filteredArr.sort((a, b) => (a[orderKey] < b[orderKey] ? -asc : asc));
@@ -91,27 +93,19 @@ export const fetchShopItems = (searchParams) => async (dispatch, getState) => {
   }
 };
 
-export const fetchShopItemsByIds = (idsToFetch) => async (dispatch, getState) => {
+export const fetchShopItemById = (itemId) => async (dispatch, getState) => {
   try {
-    let items = getState().shop.items || {};
-    const newItems = {};
-    if (idsToFetch) {
-      //fetch items only if  specific item is not found in store
-      for (const id of idsToFetch) {
-        if (!items[id]) {
-          if (Object.keys(newItems).length === 1) {
-            dispatch(fetchShopItemsStart());
-          }
-          const itemDoc = await getDoc(doc(db, "items", id.toString()));
-          newItems[id] = itemDoc.data();
-        }
-      }
-      if (Object.keys(newItems).length) {
-        dispatch(fetchShopItemsSuccess(newItems));
-      }
+    dispatch(fetchShopItemsStart());
+    const itemRef = doc(db, "items", itemId);
+    const itemDoc = await getDoc(itemRef);
+    if (itemDoc.exists()) {
+      const item = itemDoc.data();
+      dispatch(fetchShopItemsSuccess([item]));
+    } else {
+      dispatch(fetchShopItemsFailed("no item found for id:", itemId));
     }
   } catch (error) {
-    console.error("failed to fetchShopItemsByIds,error:", error);
+    console.error("failed to fetchShopItemById,error:", error);
     dispatch(fetchShopItemsFailed(error.message));
   }
 };

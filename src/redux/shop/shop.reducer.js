@@ -50,6 +50,12 @@ const shopReducer = (state = INITIAL_STATE, action) => {
         ...state,
         indexMap: action.payload,
       };
+    case ShopActionTypes.CLEAR_ITEMS:
+      return {
+        ...state,
+        itemsArr: [],
+        itemsCacheArr: [],
+      };
     default:
       return state;
   }

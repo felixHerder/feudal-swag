@@ -29,7 +29,7 @@ export const updateCartFromDb = (uid) => async (dispatch) => {
       //update items in shop
       const idsToFetch = Object.keys(cartItemIds).map((id) => id.split("-")[0]);
       if (idsToFetch) {
-        dispatch(fetchShopItemsByIds(idsToFetch));
+        // dispatch(fetchShopItemsByIds(idsToFetch));
       }
     }
     //update cart in store

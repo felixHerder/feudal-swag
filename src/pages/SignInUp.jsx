@@ -1,8 +1,8 @@
 import React from "react";
 import { Container, Text } from "@chakra-ui/react";
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
-import SignIn from "../components/Signin";
-import SignUp from "../components/Signup";
+import SignIn from "../components/SignIn";
+import SignUp from "../components/SignUp";
 
 const SignInAndSignUpPage = () => (
   <Container centerContent maxW="container.lg">

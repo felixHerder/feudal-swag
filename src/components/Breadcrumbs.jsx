@@ -3,7 +3,7 @@ import { useLocation, Link as RouterLink } from "react-router-dom";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 
 export default function BreadCrumbs() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const breadcrumbs = pathname.split("/").slice(1);
   return (
     <Container maxW="container.xl" pb={4}>
@@ -15,10 +15,11 @@ export default function BreadCrumbs() {
             </BreadcrumbLink>
           </BreadcrumbItem>
           {breadcrumbs.map((crumb, idx) => {
-            const path=breadcrumbs.slice(0, idx + 1).join("/");
+            let path = breadcrumbs.slice(0, idx + 1).join("/");
+            path = idx === breadcrumbs.length - 1 ? path + search : path;
             return (
               <BreadcrumbItem key={idx}>
-                <BreadcrumbLink as={RouterLink} to={"/"+path}>
+                <BreadcrumbLink as={RouterLink} to={"/" + path}>
                   {crumb}
                 </BreadcrumbLink>
               </BreadcrumbItem>

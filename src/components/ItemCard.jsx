@@ -29,6 +29,7 @@ export default function ItemCard({ item }) {
       dispatch(addItemToFavs(item.id));
     }
   };
+  const itemUrl = `/shop/${section}/${name}?id=${id}`;
   // console.log("Item Card: ", item.id, " rendered");
   return (
     <VStack
@@ -45,15 +46,7 @@ export default function ItemCard({ item }) {
       role="group"
     >
       {/* Card Image Container */}
-      <Box
-        as={RouterLink}
-        to={`/shop/${section}/${id}`}
-        height="160px"
-        w="100%"
-        display="block"
-        position="relative"
-        title="Go to Item Page"
-      >
+      <Box as={RouterLink} to={itemUrl} height="160px" w="100%" display="block" position="relative" title="Go to Item Page">
         <Image src={imgurl} h="100%" w="100%" alt="item" objectPosition="center" objectFit="cover" />
         {/*Image Hover Overlay */}
         <Box
@@ -83,7 +76,7 @@ export default function ItemCard({ item }) {
           <Text
             mr={2}
             as={RouterLink}
-            to={`/shop/${section}/${id}`}
+            to={itemUrl}
             fontWeight="bold"
             fontSize="xl"
             letterSpacing="wide"

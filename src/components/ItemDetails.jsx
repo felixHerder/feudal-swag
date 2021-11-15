@@ -2,17 +2,17 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addItemToCart } from "../redux/cart/cart.actions";
 import { addItemToFavs, removeItemFromFavs } from "../redux/favs/favs.actions";
-import { Center, Box, Flex, Button, Image, Text, IconButton, Heading,  } from "@chakra-ui/react";
-import { useDisclosure, useRadio, useRadioGroup,  SimpleGrid, VStack } from "@chakra-ui/react";
+import { Center, Box, Flex, Button, Image, Text, IconButton, Heading } from "@chakra-ui/react";
+import { useDisclosure, useRadio, useRadioGroup, SimpleGrid, VStack } from "@chakra-ui/react";
 import { Modal, ModalOverlay, ModalContent, ModalCloseButton } from "@chakra-ui/react";
 import FavIcon from "../components/FavIcon";
 import useThemeColors from "../theme/useThemeColors";
 import { selectIsItemFav } from "../redux/favs/favs.selectors";
 import Rating from "../components/Rating";
 
-export default function ItemDetails({ item }){
+export default function ItemDetails({ item }) {
   const dispatch = useDispatch();
-  const { name, price, imgurlLarge, description, sizes, rating } = item;
+  const { name, price, imgurlLarge, description, sizes, ratingAvg, } = item;
   const colors = useThemeColors();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [sizeId, setSizeId] = React.useState(0);
@@ -37,28 +37,29 @@ export default function ItemDetails({ item }){
     <>
       <SimpleGrid columns={[1, 1, 2]} spacingX={12} spacingY={6} alignItems="center">
         {/* Image */}
-          <Box
-            flexGrow="1"
-            w="100%"
-            h="100%"
-            cursor="pointer"
-            onClick={onOpen}
-            borderRadius="md"
-            overflow="hidden"
-            _active={{ boxShadow: "outline" }}
-          >
-            <Image src={imgurlLarge} maxH="480px" h="100%" w="100%" alt="item" objectPosition="center" objectFit="cover" />
-          </Box>
+        <Box
+          flexGrow="1"
+          w="100%"
+          h="100%"
+          cursor="pointer"
+          onClick={onOpen}
+          borderRadius="md"
+          overflow="hidden"
+          _active={{ boxShadow: "outline" }}
+        >
+          <Image src={imgurlLarge} maxH="480px" h="100%" w="100%" alt="item" objectPosition="center" objectFit="cover" />
+        </Box>
         {/* Item details */}
         <VStack h="100%" alignItems="flex-start" justifyContent="space-between" spacing={4}>
           <Heading size="2xl">{name}</Heading>
-          {/* description */}
+          {/* Rating */}
           <Flex alignItems="center">
-            <Rating value={rating.value} size={6} />
-            <Text mr={2} fontSize="2xl" color={colors.textSecondary} mt={1}>
-              {rating.value.toString().concat(".0").slice(0, 3)}
+            <Rating value={ratingAvg} size={6} />
+            <Text ml={2} fontSize="2xl" color={colors.textSecondary} mt={1}>
+              {ratingAvg.toString().concat(".0").slice(0, 3)}
             </Text>
           </Flex>
+          {/* description */}
           <Text color={colors.textSecondary}>{description}</Text>
           {/* Size selection */}
           <Box>
@@ -108,7 +109,7 @@ export default function ItemDetails({ item }){
       </Modal>
     </>
   );
-};
+}
 
 function RadioButton(props) {
   const { getInputProps, getCheckboxProps } = useRadio(props);

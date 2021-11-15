@@ -106,7 +106,7 @@ class SignUp extends React.Component {
               <FormErrorMessage>passwords must match</FormErrorMessage>
             </FormControl>
           </VStack>
-          <Button mt={4} isFullWidth type="submit" isLoading={this.props.isLoading} loadingText="Submitting">
+          <Button mt={6} isFullWidth type="submit" isLoading={this.props.isLoading} loadingText="Submitting">
             Sign up
           </Button>
           {this.props.error ? (

@@ -66,7 +66,7 @@ class SignIn extends React.Component {
             </FormControl>
           </VStack>
           <Button
-            mt={4}
+            mt={6}
             isFullWidth
             type="submit"
             isLoading={this.props.isLoading && !this.state.googleActive}

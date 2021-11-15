@@ -44,14 +44,15 @@ const genReviews = () => {
       rating = randomRating(1, 3);
     }
     if (rand < 0.05) {
-      rating = rating = randomRating(1, 2);
+      rating = 1;
     }
     const uuid = faker.datatype.uuid();
     reviews[uuid] = {
       name: faker.name.findName(),
+      id: uuid,
       rating,
       comment: faker.lorem.paragraph(2),
-      date: new Date(),
+      date: faker.date.between("2018-01-01", "2021-11-01"),
     };
   }
   return reviews;

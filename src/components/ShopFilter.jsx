@@ -1,4 +1,4 @@
-import { Button, Box, VStack, Icon, Flex, Text, HStack, IconButton } from "@chakra-ui/react";
+import { Button, Box, VStack, Icon, Flex, Text, IconButton } from "@chakra-ui/react";
 import { GiGauntlet, GiGreaves, GiMetalBoot, GiDwarfHelmet, GiBreastplate } from "react-icons/gi";
 import { FaSortAmountDown, FaSortAmountUpAlt } from "react-icons/fa";
 import { FaFont, FaDollarSign, FaStar, FaSitemap } from "react-icons/fa";

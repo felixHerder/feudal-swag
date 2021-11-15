@@ -1,8 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Container, SimpleGrid, HStack, Button, Box, VStack, Icon, Flex, Text, Center, Select } from "@chakra-ui/react";
+import { Container, SimpleGrid, HStack, Button,  VStack, Icon, Flex, Text, Center, Select } from "@chakra-ui/react";
 import { Input, IconButton, InputRightElement, InputLeftElement, InputGroup, CloseButton } from "@chakra-ui/react";
-// import LoadingWrapper from "../components/LoadingWrapper";
 import LoadingOverlay from "../components/LoadingOverlay";
 import { fetchShopItems } from "../redux/shop/shop.actions";
 import { selectItems, selectIsFetchingItems, selectSeachParams, selectSearchResults } from "../redux/shop/shop.selectors";
