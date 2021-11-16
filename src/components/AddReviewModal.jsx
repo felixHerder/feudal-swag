@@ -24,6 +24,7 @@ export default function AddReviewModal({ itemId, isAddReviewOpen, setAddReviewOp
       setAddReviewOpen(false);
     }
     prevReviewSubmiting.current = isReviewSubmiting;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReviewSubmiting]);
 
   const handleSubmit = (e) => {
@@ -41,6 +42,8 @@ export default function AddReviewModal({ itemId, isAddReviewOpen, setAddReviewOp
       return;
     }
     setErrorMsg("");
+    setNewComment("");
+    setNewRating(0);
     dispatch(submitReview(itemId, newRating, newComment, currentUser.uid, currentUser.displayName));
   };
 

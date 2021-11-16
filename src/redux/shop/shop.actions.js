@@ -15,7 +15,6 @@ export const clearStoreItems = () => ({ type: ShopActionTypes.CLEAR_ITEMS });
 //searchParams: { limit: 6, section: "all", orderBy: "name", asc: "asc", page: 0, name: "" },
 export const fetchShopItems = (searchParams) => async (dispatch, getState) => {
   const lastSearchParams = getState().shop.searchParams;
-  // const storeItems = getState().shop.itemsArr;
   let storeItemsCache = getState().shop.itemsCacheArr;
   if (JSON.stringify(searchParams) === JSON.stringify(lastSearchParams) && storeItemsCache.length > 0) {
     return;

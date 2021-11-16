@@ -42,7 +42,7 @@ export default function ShopFilter({ pushSearchParam, searchParams, setSearchPar
       {/* Select Sort */}
       <VStack w="100%">
         <Text fontSize="md" fontWeight="bold" color={colors.textSecondary}>
-          Order by:
+          Sort by:
         </Text>
         <SelectAscending pushSearchParam={pushSearchParam} asc={searchParams.asc} />
         <SelectStack

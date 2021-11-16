@@ -1,48 +1,70 @@
 import ReviewsActionTypes from "./reviews.types";
 import { doc, getDoc, getDocs, query, limit, collection, startAfter, orderBy, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase.utils";
+import { clearStoreItems } from "../shop/shop.actions";
 //actions
 const fetchReviewsStart = () => ({ type: ReviewsActionTypes.FETCH_REVIEWS_START });
+const fetchMoreReviewsStart = () => ({ type: ReviewsActionTypes.FETCH_MORE_REVIEWS_START });
 const fetchReviewsSuccess = (reviews) => ({ type: ReviewsActionTypes.FETCH_REVIEWS_SUCCESS, payload: reviews });
 const fetchReviewsFail = (error) => ({ type: ReviewsActionTypes.FETCH_REVIEWS_FAIL, payload: error });
 const setUserReviewed = (payload) => ({ type: ReviewsActionTypes.DID_USER_REVIEW, payload });
-
+const setFetchParams = (payload) => ({ type: ReviewsActionTypes.SET_FETCH_PARAMS, payload });
 const submitReviewStart = () => ({ type: ReviewsActionTypes.SUBMIT_REVIEW_START });
 const submitReviewSuccess = () => ({ type: ReviewsActionTypes.SUBMIT_REVIEW_SUCCESS });
 const submitReviewFail = (error) => ({ type: ReviewsActionTypes.SUBMIT_REVIEW_FAIL, payload: error });
-
 export const clearStoreReviews = () => ({ type: ReviewsActionTypes.CLEAR_REVIEWS });
 
-export const fetchReviewsById =
-  (itemId, countToLoad = 6, sortBy = { sort: "date", by: "desc" }) =>
-  async (dispatch, getState) => {
-    try {
-      let storeReviews = getState().reviews.reviewsArr;
-      dispatch(fetchReviewsStart());
-      const reviewsRef = collection(db, "reviews", itemId, "reviews");
-      const queryConstraints = [];
-      queryConstraints.push(orderBy(sortBy.sort, sortBy.by));
-      if ((countToLoad) => storeReviews.length) {
-        queryConstraints.push(limit(countToLoad));
-        storeReviews = [];
+export const fetchReviewsById = (fetchParams) => async (dispatch, getState) => {
+  const newFetchParams = { ...getState().reviews.fetchParams, ...fetchParams };
+  const { itemId, countToLoad, sort, by } = newFetchParams;
+  try {
+    dispatch(fetchReviewsStart());
+    const reviewsRef = collection(db, "reviews", itemId, "reviews");
+    const queryConstraints = [];
+    queryConstraints.push(orderBy(sort, by));
+    queryConstraints.push(limit(countToLoad));
+    const q = query(reviewsRef, ...queryConstraints);
+    const reviewDocs = (await getDocs(q)).docs;
+    const fetchedReviews = reviewDocs.map((r) => r.data());
+    dispatch(setFetchParams(newFetchParams));
+    dispatch(fetchReviewsSuccess(fetchedReviews));
+  } catch (error) {
+    console.error("error in fetchReviewsById:", error);
+    dispatch(fetchReviewsFail(error.message));
+  }
+};
+export const fetchMoreReviewsById = (fetchParams) => async (dispatch, getState) => {
+  const newFetchParams = { ...getState().reviews.fetchParams, ...fetchParams };
+  const { itemId, countToLoad, sort, by } = newFetchParams;
+  try {
+    dispatch(fetchMoreReviewsStart());
+    let storeReviews = getState().reviews.reviewsArr;
+    const reviewsRef = collection(db, "reviews", itemId, "reviews");
+    const queryConstraints = [];
+    queryConstraints.push(orderBy(sort, by));
+    if (storeReviews.length > 0) {
+      const lastReview = storeReviews[storeReviews.length - 1];
+      const reviewRef = doc(db, "reviews", itemId, "reviews", lastReview.id);
+      const reviewDoc = await getDoc(reviewRef);
+      if (reviewDoc.exists()) {
+        queryConstraints.push(startAfter(reviewDoc));
       } else {
-        queryConstraints.push(limit(countToLoad - storeReviews.length));
+        throw new Error("last doc in store reviews doesn't exist in firestore");
       }
-      if (storeReviews.length > 0) {
-        const lastReview = storeReviews[storeReviews.length - 1];
-        const reviewRef = doc(db, "reviews", itemId, "reviews", lastReview.id);
-        const reviewDoc = await getDoc(reviewRef);
-        reviewDoc.exists() && queryConstraints.push(startAfter(reviewDoc));
-      }
-      const q = query(reviewsRef, ...queryConstraints);
-      const reviewDocs = (await getDocs(q)).docs;
-      const fetchedReviews = reviewDocs.map((r) => r.data());
-      dispatch(fetchReviewsSuccess([...storeReviews, ...fetchedReviews]));
-    } catch (error) {
-      console.error("error in fetchReviewsById:", error);
-      dispatch(fetchReviewsFail(error.message));
+    } else {
+      throw new Error("empty store reviews");
     }
-  };
+    queryConstraints.push(limit(countToLoad - storeReviews.length));
+    const q = query(reviewsRef, ...queryConstraints);
+    const reviewDocs = (await getDocs(q)).docs;
+    const fetchedReviews = reviewDocs.map((r) => r.data());
+    dispatch(setFetchParams(newFetchParams));
+    dispatch(fetchReviewsSuccess([...storeReviews, ...fetchedReviews]));
+  } catch (error) {
+    console.error("error in fetchMoreReviewsById:", error);
+    dispatch(fetchReviewsFail(error.message));
+  }
+};
 
 export const fetchUserReviewed = (itemId, userId) => async (dispatch) => {
   try {
@@ -64,14 +86,14 @@ export const submitReview = (itemId, rating, comment, userId, userName) => async
     const reviewsColRef = collection(db, "reviews", itemId, "reviews");
     const reviewDoc = await getDoc(doc(reviewsColRef, userId));
     if (reviewDoc.exists()) {
-      dispatch(submitReviewFail("user allready reviewd this item,userid:", userId));
-      return;
+      throw new Error("user allready reviewd item: " + itemId);
     }
     await setDoc(doc(reviewsColRef, userId), { rating, comment, id: userId, name: userName, date: new Date() });
-    dispatch(fetchReviewsById(itemId));
+    dispatch(fetchReviewsById({ itemId }));
     dispatch(setUserReviewed(true));
     dispatch(submitReviewSuccess());
     await updateItemRating(itemId);
+    dispatch(clearStoreItems());
   } catch (error) {
     console.error("error in submitReview:", error.message);
     dispatch(submitReviewFail(error.message));
@@ -88,17 +110,18 @@ export const deleteReview = (itemId, userId) => async (dispatch, getState) => {
       return;
     }
     await deleteDoc(doc(reviewsColRef, userId));
-    dispatch(fetchReviewsById(itemId));
+    dispatch(fetchReviewsById({ itemId }));
     dispatch(setUserReviewed(false));
     dispatch(submitReviewSuccess());
     await updateItemRating(itemId);
+    dispatch(clearStoreItems());
   } catch (error) {
     console.error("error in deleteReview:", error.message);
     dispatch(submitReviewFail(error.message));
   }
 };
 
-export const updateItemRating = async (itemId) => {
+const updateItemRating = async (itemId) => {
   try {
     //recalc item avg rating
     const reviewsColRef = collection(db, "reviews", itemId, "reviews");

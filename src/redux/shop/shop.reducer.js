@@ -3,7 +3,7 @@ import ShopActionTypes from "./shop.types";
 const INITIAL_STATE = {
   itemsArr: [],
   itemsCacheArr: [],
-  searchParams: { limit: 6, section: "all", orderBy: "name", asc: "asc", page: 0, name: "" },
+  searchParams: { limit: "6", section: "all", orderBy: "name", asc: "asc", page: "0", name: "" },
   searchResults: 0,
   indexMap: {},
   isFetching: false,

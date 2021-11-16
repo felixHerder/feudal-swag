@@ -1,8 +1,10 @@
 import ReviewsActionTypes from "./reviews.types";
 const initialState = {
   reviewsArr: [],
+  fetchParams: { itemId: 0, countToLoad: 6, sort: "date", by: "desc" },
   didUserReview: false,
   isFetching: false,
+  isFetchingMore: false,
   isSubmiting: false,
   error: false,
 };
@@ -15,17 +17,25 @@ const reviewsReducer = (state = initialState, action) => {
         isFetching: true,
         error: false,
       };
+    case ReviewsActionTypes.FETCH_MORE_REVIEWS_START:
+      return {
+        ...state,
+        isFetchingMore: true,
+        error: false,
+      };
     case ReviewsActionTypes.FETCH_REVIEWS_SUCCESS:
       return {
         ...state,
         reviewsArr: action.payload,
         isFetching: false,
+        isFetchingMore: false,
         error: false,
       };
     case ReviewsActionTypes.FETCH_REVIEWS_FAIL:
       return {
         ...state,
         isFetching: false,
+        isFetchingMore: false,
         error: action.payload,
       };
     case ReviewsActionTypes.SUBMIT_REVIEW_START:
@@ -51,10 +61,15 @@ const reviewsReducer = (state = initialState, action) => {
         ...state,
         reviewsArr: [],
       };
-      case ReviewsActionTypes.DID_USER_REVIEW:
+    case ReviewsActionTypes.DID_USER_REVIEW:
       return {
         ...state,
-        didUserReview: action.payload
+        didUserReview: action.payload,
+      };
+    case ReviewsActionTypes.SET_FETCH_PARAMS:
+      return {
+        ...state,
+        fetchParams: action.payload,
       };
     default:
       return state;

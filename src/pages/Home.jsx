@@ -89,7 +89,7 @@ const Home = () => {
               _groupHover={{ color: colors.textBrand }}
               _groupActive={{ color: colors.textBrand }}
             >
-              <Icon mr={2} as={icon} />
+              <Icon mr={2} boxSize={6} as={icon} />
               <Heading size="sm" fontFamily="body">
                 {title.toUpperCase()}
               </Heading>

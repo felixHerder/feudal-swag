@@ -4,8 +4,20 @@ import { Flex, Button, Text, Heading, Icon, Box, Select, Center, SimpleGrid, Ico
 import { FaPlus, FaChevronDown, FaTrash } from "react-icons/fa";
 import useThemeColors from "../theme/useThemeColors";
 import LoadingOverlay from "../components/LoadingOverlay";
-import { fetchReviewsById, clearStoreReviews, deleteReview, fetchUserReviewed } from "../redux/reviews/reviews.actions";
-import { selectReviews, selectAreReviewsFetching, selectUserReviewd } from "../redux/reviews/reviews.selectors";
+import LoadingWrapper from "../components/LoadingWrapper";
+import {
+  fetchReviewsById,
+  fetchMoreReviewsById,
+  clearStoreReviews,
+  deleteReview,
+  fetchUserReviewed,
+} from "../redux/reviews/reviews.actions";
+import {
+  selectReviews,
+  selectAreReviewsFetching,
+  selectAreMoreReviewsFetching,
+  selectUserReviewd,
+} from "../redux/reviews/reviews.selectors";
 import Rating from "../components/Rating";
 import { selectCurrentUser } from "../redux/user/user.selectors";
 import AddReviewModal from "./AddReviewModal";
@@ -15,29 +27,38 @@ export default function ItemReviews({ item }) {
   const colors = useThemeColors();
   const dispatch = useDispatch();
   const areReviewsFetching = useSelector(selectAreReviewsFetching);
+  const areMoreReviewsFetching = useSelector(selectAreMoreReviewsFetching);
   const currentUser = useSelector(selectCurrentUser);
   const didUserReview = useSelector(selectUserReviewd);
-  const [countLoaded, setCountLoaded] = React.useState(6);
+  const [countToLoad, setCountToLoad] = React.useState(6);
   const [sortBy, setSortBy] = React.useState({ sort: "date", by: "desc" });
   const reviewsArr = useSelector(selectReviews);
   const [isAddReviewOpen, setAddReviewOpen] = React.useState(false);
   const [isSigninOpen, setSigninOpen] = React.useState(false);
-  const handleLoadMore = () => setCountLoaded((prev) => prev + 6);
-
+  const itemId = item.id;
+  const isMounted = React.useRef(false);
   React.useEffect(() => {
-    dispatch(fetchReviewsById(item.id, countLoaded, sortBy));
-  }, [countLoaded, sortBy, dispatch, item.id]);
+    if (isMounted.current) {
+      dispatch(fetchMoreReviewsById({ itemId, countToLoad }));
+    }
+  }, [countToLoad, dispatch, itemId]);
   React.useEffect(() => {
-    currentUser && dispatch(fetchUserReviewed(item.id, currentUser.uid));
-  }, [currentUser, dispatch, item.id]);
+    dispatch(fetchReviewsById({ itemId, ...sortBy }));
+  }, [sortBy, dispatch, itemId]);
+  React.useEffect(() => {
+    currentUser && dispatch(fetchUserReviewed(itemId, currentUser.uid));
+  }, [currentUser, dispatch, itemId]);
   //clear store of reviews on unmount
   React.useEffect(() => {
-    currentUser && dispatch(fetchUserReviewed(item.id, currentUser.uid));
+    currentUser && dispatch(fetchUserReviewed(itemId, currentUser.uid));
+    isMounted.current = true;
     return () => {
       dispatch(clearStoreReviews());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleLoadMore = () => setCountToLoad((prev) => prev + 6);
 
   const handleSelectSortBy = (e) => {
     const [sort, by] = e.target.value.split("-");
@@ -45,7 +66,7 @@ export default function ItemReviews({ item }) {
   };
 
   const handleDeleteReview = () => {
-    dispatch(deleteReview(item.id, currentUser.uid));
+    dispatch(deleteReview(itemId, currentUser.uid));
   };
 
   const handleAddReview = () => {
@@ -124,8 +145,10 @@ export default function ItemReviews({ item }) {
               </Box>
             ))}
         </SimpleGrid>
-        {/* Load more button*/}
-        <Center w="100%" pb={4} pt={6}>
+      </LoadingOverlay>
+      {/* Load more button*/}
+      <Center w="100%" pb={4} pt={6}>
+        <LoadingWrapper isLoading={areMoreReviewsFetching}>
           <Button
             isDisabled={reviewsArr.length <= 0 || reviewsArr.length >= item.reviewCount}
             size="lg"
@@ -135,11 +158,11 @@ export default function ItemReviews({ item }) {
           >
             Load More
           </Button>
-        </Center>
-      </LoadingOverlay>
+        </LoadingWrapper>
+      </Center>
 
       {/* Add Review Modal */}
-      <AddReviewModal itemId={item.id} {...{ isAddReviewOpen, setAddReviewOpen }} />
+      <AddReviewModal itemId={itemId} {...{ isAddReviewOpen, setAddReviewOpen }} />
       <SigninupModal isOpen={isSigninOpen} onClose={() => setSigninOpen(false)} label="Please sign in or sign up to review" />
     </Box>
   );
