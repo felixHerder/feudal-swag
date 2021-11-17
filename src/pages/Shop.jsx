@@ -47,7 +47,6 @@ export default function Shop() {
     dispatch(fetchShopItems({ ...storeSeachParams, ...routerSearchParams }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routerLocation, dispatch]);
-  console.log("Shop comp rendered")
   return (
     <Container maxW="container.xl">
       <HStack spacing={8} alignItems="stretch" pb={8}>

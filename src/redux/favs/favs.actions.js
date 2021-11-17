@@ -9,7 +9,7 @@ const fetchFavsItemsStart = () => ({ type: FavsActionTypes.FETCH_FAVSITEMS_START
 const fetchFavsItemsSuccess = (favItemIds) => ({ type: FavsActionTypes.FETCH_FAVSITEMS_SUCCESS, payload: favItemIds });
 const fetchFavsItemsFail = (error) => ({ type: FavsActionTypes.FETCH_FAVSITEMS_SUCCESS, payload: error });
 const setFavsIds = (favItemIds) => ({ type: FavsActionTypes.SET_FAVS_IDS, payload: favItemIds });
-const setFavsItems = (favsItems) => ({ type: FavsActionTypes.SET_FAVS_ITEMS, payload: favsItems });
+// const setFavsItems = (favsItems) => ({ type: FavsActionTypes.SET_FAVS_ITEMS, payload: favsItems });
 
 const updateUserFavsItems = async (uid, newFavsIds) => {
   const userRef = doc(db, `users/${uid}`);
@@ -66,16 +66,22 @@ export const removeItemFromFavs = (itemId) => async (dispatch, getState) => {
 export const fetchFavsItems = () => async (dispatch, getState) => {
   dispatch(fetchFavsItemsStart());
   try {
+    const favsItemsCache = { ...getState().favs.favsItemsCache };
+    const favsItemsCacheArr = Object.keys(favsItemsCache);
     const favsItemIdsArr = Object.keys(getState().favs.favsItemIds);
+    //fetch only items not present in cache
+    const favsItemIdsArrFiltered = favsItemIdsArr.filter((id) => favsItemsCacheArr.indexOf(id) === -1);
+    //delete items from cache that are not present in user favs
+    favsItemsCacheArr.forEach((id) => favsItemIdsArr.indexOf(id) === -1 && delete favsItemsCache[id]);
     const itemsColRef = collection(db, "items");
     const favsItems = {};
-    for (let i = 0; i < favsItemIdsArr.length; i += 10) {
-      const idsToFetch = favsItemIdsArr.slice(i, i + 10);
+    for (let i = 0; i < favsItemIdsArrFiltered.length; i += 10) {
+      const idsToFetch = favsItemIdsArrFiltered.slice(i, i + 10);
       const q = query(itemsColRef, where("id", "in", idsToFetch));
       const itemDocs = (await getDocs(q)).docs;
       itemDocs.forEach((doc) => (favsItems[doc.id] = doc.data()));
     }
-    dispatch(fetchFavsItemsSuccess(favsItems));
+    dispatch(fetchFavsItemsSuccess({ ...favsItemsCache, ...favsItems }));
   } catch (error) {
     console.error("error in fetchFavsItems", error);
     dispatch(fetchFavsItemsFail(error.message));

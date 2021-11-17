@@ -30,7 +30,7 @@ export default function ItemCard({ item }) {
     }
   };
   const itemUrl = `/shop/${section}/${name}?id=${id}`;
-  console.log("Item Card: ", item.id, " rendered");
+  // console.log("Item Card: ", item.id, " rendered", "in cart", isItemInCart);
   return (
     <VStack
       spacing={0}

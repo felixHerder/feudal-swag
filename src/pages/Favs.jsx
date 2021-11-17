@@ -15,8 +15,6 @@ export default function Favs() {
   React.useEffect(() => {
     dispatch(fetchFavsItems());
   }, [dispatch, favItemsIds]);
-
-  console.log("Favs rendered with", favsItems);
   return (
     <Container maxW="container.lg" minH="65vh">
       <Heading textAlign="center" size="2xl" mt={[2, 4, 6]} mb={[4, 8, 12]} textTransform="capitalize">
