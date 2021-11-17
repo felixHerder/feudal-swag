@@ -10,47 +10,32 @@ import {
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase.utils";
-import { updateCartFromDb } from "../cart/cart.actions";
-import { updateFavsFromDb } from "../favs/favs.actions";
 import { UserActionTypes } from "./user.types";
 
-export const setCurrentUser = (currentUser) => ({
-  type: UserActionTypes.SET_CURRENT_USER,
-  payload: currentUser,
-});
-export const setUserState = (user) => ({
-  type: UserActionTypes.SET_USER_STATE,
-  payload: user,
-});
-const fetchUserStart = () => ({ type: UserActionTypes.FETCH_USER_START });
-const fetchUserSuccess = (user) => ({ type: UserActionTypes.FETCH_USER_SUCCESS, payload: user });
-const fetchUserFailed = (error) => ({ type: UserActionTypes.FETCH_USER_FAILED, payload: error });
+export const setCurrentUser = (currentUser) => ({ type: UserActionTypes.SET_CURRENT_USER, payload: currentUser });
+export const setUserState = (user) => ({ type: UserActionTypes.SET_USER_STATE, payload: user });
+export const fetchUserStart = () => ({ type: UserActionTypes.FETCH_USER_START });
+export const fetchUserSuccess = (user) => ({ type: UserActionTypes.FETCH_USER_SUCCESS, payload: user });
+export const fetchUserFailed = (error) => ({ type: UserActionTypes.FETCH_USER_FAILED, payload: error });
+export const updateUserStart = () => ({ type: UserActionTypes.UPDATE_USER_START });
+export const updateUserSuccess = (user) => ({ type: UserActionTypes.UPDATE_USER_SUCCESS, payload: user });
+export const updateUserFailed = (error) => ({ type: UserActionTypes.UPDATE_USER_FAILED, payload: error });
 
-export const updateUserInDb = (currentUser) => async (dispatch) => {
-  dispatch(fetchUserStart());
-  try {
-    const userRef = doc(db, `users/${currentUser.uid}`);
-    //delete empty objects, they clear out old values on setDoc merge
-    const { cartItemIds, favsItemIds } = currentUser;
-    if (cartItemIds && Object.keys(cartItemIds).length === 0) {
-      delete currentUser.cartItemIds;
-    }
-    if (favsItemIds && Object.keys(favsItemIds).length === 0) {
-      delete currentUser.favsItemIds;
-    }
-    await setDoc(userRef, currentUser, { merge: true });
-
-    // dispatch(updateCartFromDb(currentUser.uid));
-    // dispatch(updateFavsFromDb(currentUser.uid));
-    dispatch(fetchUserSuccess({ currentUser }));
-  } catch (error) {
-    console.error("error in updateUser:", error.message);
-    dispatch(fetchUserFailed(error.message));
+const updateUserInDb = async (currentUser) => {
+  const userRef = doc(db, `users/${currentUser.uid}`);
+  //delete empty objects, they clear out old values on setDoc merge
+  const { cartItemIds, favsItemIds } = currentUser;
+  if (cartItemIds && Object.keys(cartItemIds).length === 0) {
+    delete currentUser.cartItemIds;
   }
+  if (favsItemIds && Object.keys(favsItemIds).length === 0) {
+    delete currentUser.favsItemIds;
+  }
+  await setDoc(userRef, currentUser, { merge: true });
 };
 
 export const signUpUser = (email, password, displayName) => async (dispatch, getState) => {
-  dispatch(fetchUserStart());
+  dispatch(updateUserStart());
   try {
     const auth = getAuth();
     const cartItemIds = { ...getState().cart.cartItemIds };
@@ -63,67 +48,55 @@ export const signUpUser = (email, password, displayName) => async (dispatch, get
       await createUserWithEmailAndPassword(auth, email, password);
     }
     await updateProfile(auth.currentUser, { displayName });
-    const {
-      isAnonymous,
-      uid,
-      metadata: { createdAt },
-    } = auth.currentUser;
-    const currentUser = { email, displayName, isAnonymous, uid, createdAt, cartItemIds, favsItemIds };
-    dispatch(updateUserInDb(currentUser));
+    const currentUser = { displayName, cartItemIds, favsItemIds };
+    await updateUserInDb(currentUser);
+    dispatch(updateUserSuccess());
   } catch (error) {
     console.error("error in signUpUser:", error);
-    dispatch(fetchUserFailed(error.message));
+    dispatch(updateUserFailed(error.message));
   }
 };
 
 export const signInUser = (email, password) => async (dispatch, getState) => {
-  dispatch(fetchUserStart());
+  dispatch(updateUserStart());
   try {
     const auth = getAuth();
     let currentUser = {};
+    //save data from guest acount
     if (auth.currentUser && auth.currentUser.isAnonymous) {
       const cartItemIds = { ...getState().cart.cartItemIds };
       const favsItemIds = { ...getState().favs.favsItemIds };
       currentUser = { cartItemIds, favsItemIds };
     }
     await signInWithEmailAndPassword(auth, email, password);
-    const {
-      displayName,
-      isAnonymous,
-      uid,
-      metadata: { createdAt },
-    } = auth.currentUser;
-    currentUser = { ...currentUser, isAnonymous, uid, createdAt, email, displayName };
-    dispatch(updateUserInDb(currentUser));
+    if (Object.keys(currentUser).length > 0) {
+      await updateUserInDb(currentUser);
+    }
+    dispatch(updateUserSuccess());
   } catch (error) {
     console.error("error in signInUser:", error);
-    dispatch(fetchUserFailed(error.message));
+    dispatch(updateUserFailed(error.message));
   }
 };
 
 export const continueWithGoogle = () => async (dispatch, getState) => {
-  dispatch(fetchUserStart());
   try {
     const auth = getAuth();
     let currentUser = {};
-    //get cartitems from guest acount
+    //save data from guest acount
     if (auth.currentUser && auth.currentUser.isAnonymous) {
       const cartItemIds = { ...getState().cart.cartItemIds };
       const favsItemIds = { ...getState().favs.favsItemIds };
       currentUser = { cartItemIds, favsItemIds };
     }
     await signInWithPopup(auth, new GoogleAuthProvider());
-    const {
-      email,
-      displayName,
-      isAnonymous,
-      uid,
-      metadata: { createdAt },
-    } = auth.currentUser;
-    currentUser = { ...currentUser, isAnonymous, uid, createdAt, email, displayName };
-    dispatch(updateUserInDb(currentUser));
+    dispatch(updateUserStart());
+    if (Object.keys(currentUser).length > 0) {
+      await updateUserInDb(currentUser);
+    }
+    dispatch(updateUserSuccess());
   } catch (error) {
     console.error("error in continueWithGoogle:", error);
-    dispatch(fetchUserFailed(error.message));
+    dispatch(updateUserFailed(error.message));
   }
 };

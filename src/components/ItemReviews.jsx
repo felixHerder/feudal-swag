@@ -37,6 +37,7 @@ export default function ItemReviews({ item }) {
   const [isSigninOpen, setSigninOpen] = React.useState(false);
   const itemId = item.id;
   const isMounted = React.useRef(false);
+  
   React.useEffect(() => {
     if (isMounted.current) {
       dispatch(fetchMoreReviewsById({ itemId, countToLoad }));
@@ -48,27 +49,22 @@ export default function ItemReviews({ item }) {
   React.useEffect(() => {
     currentUser && dispatch(fetchUserReviewed(itemId, currentUser.uid));
   }, [currentUser, dispatch, itemId]);
-  //clear store of reviews on unmount
   React.useEffect(() => {
-    currentUser && dispatch(fetchUserReviewed(itemId, currentUser.uid));
     isMounted.current = true;
+    //clear store of reviews on unmount
     return () => {
       dispatch(clearStoreReviews());
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
   const handleLoadMore = () => setCountToLoad((prev) => prev + 6);
-
   const handleSelectSortBy = (e) => {
     const [sort, by] = e.target.value.split("-");
     setSortBy({ sort, by });
   };
-
   const handleDeleteReview = () => {
     dispatch(deleteReview(itemId, currentUser.uid));
   };
-
   const handleAddReview = () => {
     if (!currentUser.isAnonymous) {
       setAddReviewOpen(true);

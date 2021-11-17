@@ -10,15 +10,16 @@ import { Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalHeader, Modal
 import { signOutUser } from "../firebase/firebase.utils";
 import SignIn from "./SignIn";
 import SigninupModal from "./SigninupModal";
+import LoadingWrapper from "./LoadingWrapper";
 
-function UserMenu({ currentUser }) {
+function UserMenu({ currentUser, isUserLoading }) {
   const switchUserModal = useDisclosure();
   const signInUpModal = useDisclosure();
   return (
-    <>
+    <LoadingWrapper isLoading={isUserLoading} size={6}>
       {currentUser ? (
         <Menu isLazy>
-          <MenuButton as={Button} pl={6} variant="ghost" rightIcon={<ChevronDownIcon />}>
+          <MenuButton as={Button} pl={4} pr={2} variant="ghost" rightIcon={<ChevronDownIcon />}>
             {currentUser.isAnonymous ? `Guest (${currentUser.uid.slice(0, 3).toLowerCase()})` : currentUser.displayName}
           </MenuButton>
           <Portal>
@@ -70,12 +71,13 @@ function UserMenu({ currentUser }) {
           SIGN IN
         </Button>
       ) : null}
-    </>
+    </LoadingWrapper>
   );
 }
 
 const mapStatetoProps = (state) => ({
   currentUser: state.user.currentUser,
+  isUserLoading: state.user.isLoading,
 });
 
 export default connect(mapStatetoProps)(UserMenu);

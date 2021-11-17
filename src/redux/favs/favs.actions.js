@@ -1,10 +1,15 @@
 import FavsActionTypes from "./favs.types";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebase.utils";
 //actions
 const updateFavsStart = () => ({ type: FavsActionTypes.UPDATE_FAVS_START });
-const updateFavsSuccess = (favItemIds) => ({ type: FavsActionTypes.UPDATE_FAVS_SUCCESS, payload: favItemIds });
+const updateFavsSuccess = () => ({ type: FavsActionTypes.UPDATE_FAVS_SUCCESS });
 const updateFavsFail = (error) => ({ type: FavsActionTypes.UPDATE_FAVS_SUCCESS, payload: error });
+const fetchFavsItemsStart = () => ({ type: FavsActionTypes.FETCH_FAVSITEMS_START });
+const fetchFavsItemsSuccess = (favItemIds) => ({ type: FavsActionTypes.FETCH_FAVSITEMS_SUCCESS, payload: favItemIds });
+const fetchFavsItemsFail = (error) => ({ type: FavsActionTypes.FETCH_FAVSITEMS_SUCCESS, payload: error });
+const setFavsIds = (favItemIds) => ({ type: FavsActionTypes.SET_FAVS_IDS, payload: favItemIds });
+const setFavsItems = (favsItems) => ({ type: FavsActionTypes.SET_FAVS_ITEMS, payload: favsItems });
 
 const updateUserFavsItems = async (uid, newFavsIds) => {
   const userRef = doc(db, `users/${uid}`);
@@ -12,7 +17,13 @@ const updateUserFavsItems = async (uid, newFavsIds) => {
   if (userDoc.exists()) {
     const userData = userDoc.data();
     await setDoc(userRef, { ...userData, favsItemIds: newFavsIds }, { merge: false });
+  } else {
+    throw new Error("no userDoc found");
   }
+};
+
+export const setFavsFromUser = () => (dispatch, getState) => {
+  dispatch(setFavsIds(getState().user.currentUser.favsItemIds || {}));
 };
 
 //thunks
@@ -24,8 +35,10 @@ export const addItemToFavs = (itemId) => async (dispatch, getState) => {
     newFavsIds[itemId] = true;
     if (user.currentUser) {
       await updateUserFavsItems(user.currentUser.uid, newFavsIds);
+      dispatch(updateFavsSuccess());
+    } else {
+      throw new Error("no user signed in");
     }
-    dispatch(updateFavsSuccess(newFavsIds));
   } catch (error) {
     console.error("error in addItemToFavs", error);
     dispatch(updateFavsFail(error.message));
@@ -40,28 +53,31 @@ export const removeItemFromFavs = (itemId) => async (dispatch, getState) => {
     delete newFavsIds[itemId];
     if (user.currentUser) {
       await updateUserFavsItems(user.currentUser.uid, newFavsIds);
+      dispatch(updateFavsSuccess());
+    } else {
+      throw new Error("no user signed in");
     }
-    dispatch(updateFavsSuccess(newFavsIds));
   } catch (error) {
-    console.error("error in addItemToFavs", error);
+    console.error("error in removeItemFromFavs", error);
     dispatch(updateFavsFail(error.message));
   }
 };
 
-export const updateFavsFromDb = (uid) => async (dispatch) => {
-  dispatch(updateFavsStart());
+export const fetchFavsItems = () => async (dispatch, getState) => {
+  dispatch(fetchFavsItemsStart());
   try {
-    //get favsItemIds from firestore db
-    const userRef = doc(db, `users/${uid}`);
-    const userSnapshot = await getDoc(userRef);
-    let favsItemIds = [];
-    if (userSnapshot.exists()) {
-      favsItemIds = userSnapshot.data().favsItemIds || [];
+    const favsItemIdsArr = Object.keys(getState().favs.favsItemIds);
+    const itemsColRef = collection(db, "items");
+    const favsItems = {};
+    for (let i = 0; i < favsItemIdsArr.length; i += 10) {
+      const idsToFetch = favsItemIdsArr.slice(i, i + 10);
+      const q = query(itemsColRef, where("id", "in", idsToFetch));
+      const itemDocs = (await getDocs(q)).docs;
+      itemDocs.forEach((doc) => (favsItems[doc.id] = doc.data()));
     }
-    //update cart in store
-    dispatch(updateFavsSuccess(favsItemIds));
+    dispatch(fetchFavsItemsSuccess(favsItems));
   } catch (error) {
-    console.error("error in updateFavsFromDb:", error);
-    dispatch(updateFavsFail(error.message));
+    console.error("error in fetchFavsItems", error);
+    dispatch(fetchFavsItemsFail(error.message));
   }
 };

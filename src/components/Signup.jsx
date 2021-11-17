@@ -49,7 +49,7 @@ class SignUp extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     //check submiting is done with no error
-    if (prevProps.isLoading === true && this.props.isLoading === false && !this.props.error) {
+    if (prevProps.isUpdating === true && this.props.isUpdating === false && !this.props.error) {
       //cleat state on no error
       this._isMounted && this.setState({ displayName: "", email: "", password: "", confirmPassword: "" });
       //close modal on user change
@@ -106,7 +106,7 @@ class SignUp extends React.Component {
               <FormErrorMessage>passwords must match</FormErrorMessage>
             </FormControl>
           </VStack>
-          <Button mt={6} isFullWidth type="submit" isLoading={this.props.isLoading} loadingText="Submitting">
+          <Button mt={6} isFullWidth type="submit" isLoading={this.props.isUpdating} loadingText="Submitting">
             Sign up
           </Button>
           {this.props.error ? (
@@ -122,7 +122,7 @@ class SignUp extends React.Component {
 
 const mapStateToProps = (state) => ({
   error: state.user.error,
-  isLoading: state.user.isLoading,
+  isUpdating: state.user.isUpdating,
 });
 const mapDispatchToPtops = { signUpUser, setUserState };
 export default connect(mapStateToProps, mapDispatchToPtops)(SignUp);

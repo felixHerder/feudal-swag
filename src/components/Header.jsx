@@ -1,24 +1,12 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import {
-  Container,
-  HStack,
-  Center,
-  Icon,
-  Heading,
-  IconButton,
-  useColorMode,
-  Button,
-  Portal,
-  Flex,
-} from "@chakra-ui/react";
-import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
-import { SunIcon, MoonIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { Container, HStack, Center, Icon, Heading, IconButton, useColorMode, Button, Flex } from "@chakra-ui/react";
+import { SunIcon, MoonIcon } from "@chakra-ui/icons";
 import { ReactComponent as Logo } from "../assets/banner.svg";
 import CartPopover from "./CartPopover";
+import { IoStorefrontOutline } from "react-icons/io5";
 import DrawerNav from "./NavDrawer";
 import UserMenu from "./UserMenu";
-import { sectionsData } from "../pages/Home";
 import FavIcon from "./FavIcon";
 
 const Header = () => {
@@ -41,37 +29,17 @@ const Header = () => {
       </Center>
       {/* Nav links */}
       <Flex>
-        <HStack
-          spacing={[0, null, 4]}
-          fontSize={["xs", "sm", "md"]}
-          display={["none", "none", "inline-flex"]}
-          alignItems="center"
-        >
-          <Button variant="ghost" colorScheme="gray" as={RouterLink} to="/shop" px={6}>
+        <HStack spacing={[0, null, 4]} fontSize={["xs", "sm", "md"]} display={["none", "none", "flex"]} alignItems="center">
+          <Button
+            variant="ghost"
+            colorScheme="gray"
+            as={RouterLink}
+            to="/shop"
+            px={4}
+            rightIcon={<Icon as={IoStorefrontOutline} />}
+          >
             SHOP
           </Button>
-          {/* Sections Menu */}
-          <Menu isLazy>
-            <MenuButton as={Button} pl={6} variant="ghost" colorScheme="gray" rightIcon={<ChevronDownIcon />}>
-              SECTIONS
-            </MenuButton>
-            <Portal>
-              <MenuList minW="auto">
-                {sectionsData.map(({ value, icon }, idx) => (
-                  <MenuItem
-                    key={idx}
-                    py={4}
-                    px={8}
-                    as={RouterLink}
-                    to={`/shop/?section=${value}&page=0`}
-                    icon={<Icon boxSize={5} as={icon} />}
-                  >
-                    {value.toUpperCase()}
-                  </MenuItem>
-                ))}
-              </MenuList>
-            </Portal>
-          </Menu>
           {/* User menu options */}
           <UserMenu />
         </HStack>
@@ -88,9 +56,7 @@ const Header = () => {
             variant="ghost"
             colorScheme="gray"
             px={6}
-          >
-            SHOP
-          </IconButton>
+          />
           {/* Theme toggle button */}
           <IconButton
             size="md"

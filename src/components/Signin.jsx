@@ -29,7 +29,7 @@ class SignIn extends React.Component {
   };
   componentDidUpdate(prevProps, prevState) {
     //check submiting is done with no error
-    if (prevProps.isLoading === true && this.props.isLoading === false && !this.props.error) {
+    if (prevProps.isUpdating === true && this.props.isUpdating === false && !this.props.error) {
       //cleat state on no error
       this._isMounted && this.setState({ email: "", password: "" });
       this.setState({ googleActive: false });
@@ -69,7 +69,7 @@ class SignIn extends React.Component {
             mt={6}
             isFullWidth
             type="submit"
-            isLoading={this.props.isLoading && !this.state.googleActive}
+            isLoading={this.props.isUpdating && !this.state.googleActive}
             loadingText="Submitting"
           >
             Sign in
@@ -86,7 +86,7 @@ class SignIn extends React.Component {
         <Button
           isFullWidth
           colorScheme="blue"
-          isLoading={this.props.isLoading && this.state.googleActive}
+          isLoading={this.props.isUpdating && this.state.googleActive}
           onClick={this.handleContinueWithGoogle}
         >
           Continue with Google
@@ -99,7 +99,7 @@ class SignIn extends React.Component {
 export default connect(
   (state) => ({
     error: state.user.error,
-    isLoading: state.user.isLoading,
+    isUpdating: state.user.isUpdating,
   }),
   { continueWithGoogle, signInUser, setUserState }
 )(SignIn);

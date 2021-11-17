@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signOut } from "@firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import  store  from "../redux/store";
-import { setCurrentUser } from "../redux/user/user.actions";
+// import  store  from "../redux/store";
+// import { setCurrentUser } from "../redux/user/user.actions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBpGcrRiUqw1eJezaBOmyoUEuaYY92SyJU",
@@ -17,6 +17,5 @@ export const firebaseApp = initializeApp(firebaseConfig);
 export const db = getFirestore();
 
 export const signOutUser = () => {
-  store.dispatch(setCurrentUser(null));
   signOut(getAuth());
 };
