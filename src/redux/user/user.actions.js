@@ -70,7 +70,8 @@ export const signInUser = (email, password) => async (dispatch, getState) => {
     }
     await signInWithEmailAndPassword(auth, email, password);
     if (Object.keys(currentUser).length > 0) {
-      await updateUserInDb(currentUser);
+      currentUser.uid = auth.currentUser.uid;
+      await updateUserInDb({currentUser});
     }
     dispatch(updateUserSuccess());
   } catch (error) {
@@ -92,6 +93,7 @@ export const continueWithGoogle = () => async (dispatch, getState) => {
     await signInWithPopup(auth, new GoogleAuthProvider());
     dispatch(updateUserStart());
     if (Object.keys(currentUser).length > 0) {
+      currentUser.uid = auth.currentUser.uid;
       await updateUserInDb(currentUser);
     }
     dispatch(updateUserSuccess());
