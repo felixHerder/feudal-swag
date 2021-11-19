@@ -8,7 +8,7 @@ import {
   signInWithPopup,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase.utils";
 import { UserActionTypes } from "./user.types";
 
@@ -31,7 +31,11 @@ const updateUserInDb = async (currentUser) => {
   if (favsItemIds && Object.keys(favsItemIds).length === 0) {
     delete currentUser.favsItemIds;
   }
-  await setDoc(userRef, currentUser, { merge: true });
+  const oldUser = (await getDoc(userRef)).data();
+  const newUser = { ...oldUser, ...currentUser };
+  newUser.cartItemIds = { ...oldUser.cartItemIds, ...currentUser.cartItemIds };
+  newUser.favsItemIds = { ...oldUser.favsItemIds, ...currentUser.favsItemIds };
+  await setDoc(userRef, newUser);
 };
 
 export const signUpUser = (email, password, displayName) => async (dispatch, getState) => {
@@ -71,7 +75,7 @@ export const signInUser = (email, password) => async (dispatch, getState) => {
     await signInWithEmailAndPassword(auth, email, password);
     if (Object.keys(currentUser).length > 0) {
       currentUser.uid = auth.currentUser.uid;
-      await updateUserInDb({currentUser});
+      await updateUserInDb({ currentUser });
     }
     dispatch(updateUserSuccess());
   } catch (error) {
