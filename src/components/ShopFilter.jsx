@@ -26,7 +26,7 @@ export default function ShopFilter({ pushSearchParam, searchParams, setSearchPar
     pushSearchParam({ priceMin: priceMin, priceMax: priceMax });
   };
   return (
-    <VStack alignItems="flex-start" w="200px" spacing={6} {...props}>
+    <VStack alignItems="flex-start" maxW="200px" spacing={6} {...props}>
       {/* Pick Section */}
       <VStack w="100%">
         {/* <Text fontSize="md" fontWeight="bold" color={colors.textSecondary}>

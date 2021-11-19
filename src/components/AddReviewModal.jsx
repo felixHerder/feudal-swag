@@ -70,11 +70,11 @@ export default function AddReviewModal({ itemId, isAddReviewOpen, setAddReviewOp
                   borderRadius="md"
                   size="lg"
                   color={idx < newRating ? colors.bgBrand : colors.cardBgSecondary}
-                  p={4}
+                  p={3}
                   variant="ghost"
                   key={idx}
                   title={`rating button ${idx + 1} stars`}
-                  icon={<Icon boxSize={9} mb="2px" as={FaStar} onClick={() => setNewRating(idx + 1)} />}
+                  icon={<Icon boxSize={8} mb="2px" as={FaStar} onClick={() => setNewRating(idx + 1)} />}
                 />
               ))}
             </Flex>

@@ -100,8 +100,8 @@ export default function ItemCard({ item }) {
         {/* Rating */}
         <Flex alignItems="center">
           <Rating value={ratingAvg} size={4} />
-          <Text ml={2} fontSize="md" color={colors.textSecondary}>
-            ({reviewCount})
+          <Text ml={2} fontSize="md" color={colors.textTertiary}>
+            {ratingAvg.toString().concat('.0').slice(0,3)} of {reviewCount}
           </Text>
         </Flex>
         {/* Bottom Row - Price and Buttons */}

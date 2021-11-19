@@ -1,5 +1,5 @@
 import ReviewsActionTypes from "./reviews.types";
-import { doc, getDoc, getDocs, query, limit, collection, startAfter, orderBy, setDoc, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs, query, limit, collection, startAfter, orderBy, setDoc, deleteDoc,updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase.utils";
 import { clearStoreItems } from "../shop/shop.actions";
 //actions
@@ -89,6 +89,8 @@ export const submitReview = (itemId, rating, comment, userId, userName) => async
       throw new Error("user allready reviewd item: " + itemId);
     }
     await setDoc(doc(reviewsColRef, userId), { rating, comment, id: userId, name: userName, date: new Date() });
+    const reviewedItems = { ...getState().user.currentUser.reviewedItems, [itemId]: true };
+    await setDoc(doc(db, "users", userId), { reviewedItems }, { merge: true });
     dispatch(fetchReviewsById({ itemId }));
     dispatch(setUserReviewed(true));
     dispatch(submitReviewSuccess());
@@ -110,6 +112,9 @@ export const deleteReview = (itemId, userId) => async (dispatch, getState) => {
       return;
     }
     await deleteDoc(doc(reviewsColRef, userId));
+    const reviewedItems = { ...getState().user.currentUser.reviewedItems };
+    delete reviewedItems[itemId];
+    await updateDoc(doc(db, "users", userId), { reviewedItems }, );
     dispatch(fetchReviewsById({ itemId }));
     dispatch(setUserReviewed(false));
     dispatch(submitReviewSuccess());

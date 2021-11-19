@@ -17,6 +17,8 @@ import Item from "./pages/Item";
 import { setFavsFromUser } from "./redux/favs/favs.actions";
 import { setCartFromUser } from "./redux/cart/cart.actions";
 import Favs from "./pages/Favs";
+import Trunk from "./pages/Trunk";
+
 class App extends React.Component {
   render() {
     const { currentUser } = this.props;
@@ -40,7 +42,9 @@ class App extends React.Component {
           <Route exact path="/favs">
             <Favs />
           </Route>
-
+          <Route exact path="/trunk">
+            <Trunk />
+          </Route>
           {/* <Route path="/checkout" component={CheckoutPage} /> */}
           <Route exact path="/signin">
             {!currentUser || currentUser.isAnonymous ? <SignInAndSignUpPage /> : <Redirect to="/" />}
@@ -78,7 +82,7 @@ class App extends React.Component {
             if (!userDoc.exists()) {
               await setDoc(userDocRef, currentUser);
             } else {
-              setCurrentUser(userDoc.data());
+              setCurrentUser({ ...userDoc.data() });
               setFavsFromUser();
               setCartFromUser();
             }

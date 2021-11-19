@@ -5,7 +5,6 @@ import { SunIcon, MoonIcon } from "@chakra-ui/icons";
 import { ReactComponent as Logo } from "../assets/banner.svg";
 import CartPopover from "./CartPopover";
 import { IoStorefrontOutline } from "react-icons/io5";
-import DrawerNav from "./NavDrawer";
 import UserMenu from "./UserMenu";
 import FavIcon from "./FavIcon";
 import { useSelector } from "react-redux";
@@ -45,9 +44,11 @@ const Header = () => {
       </Center>
       {/* Nav links */}
       <Flex>
-        <HStack spacing={[0, null, 4]} fontSize={["xs", "sm", "md"]} display={["none", "none", "flex"]} alignItems="center">
+        <HStack spacing={[2, 4, 8]} fontSize={["xs", "sm", "md"]} alignItems="center">
+          {/*shop desktop link */}
           <Button
             minW="110px"
+            display={["none", null, "flex"]}
             variant={routerPath === "/shop" ? "solid" : "ghost"}
             colorScheme="gray"
             as={RouterLink}
@@ -57,12 +58,15 @@ const Header = () => {
           >
             SHOP
           </Button>
-          {/* User menu options */}
-          <UserMenu />
-        </HStack>
-        <HStack spacing={4}>
-          {/* Mobile drawer toggle */}
-          <DrawerNav />
+          {/*shop mobile link */}
+          <IconButton
+            display={["flex", null, "none"]}
+            variant={routerPath === "/shop" ? "solid" : "ghost"}
+            colorScheme="gray"
+            as={RouterLink}
+            to="/shop"
+            icon={<Icon as={IoStorefrontOutline} />}
+          />
           {/* Cart popover toggle button */}
           <CartPopover />
           {/* Favs link and badge*/}
@@ -82,6 +86,8 @@ const Header = () => {
               </Box>
             )}
           </Box>
+          {/* User menu options */}
+          <UserMenu />
           {/* Theme toggle button */}
           <IconButton
             size="md"

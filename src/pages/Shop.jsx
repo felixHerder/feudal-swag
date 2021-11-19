@@ -1,14 +1,15 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Container, SimpleGrid, HStack, Button,  VStack, Icon, Flex, Text, Center, Select } from "@chakra-ui/react";
-import { Input, IconButton, InputRightElement, InputLeftElement, InputGroup, CloseButton } from "@chakra-ui/react";
+import { Container, SimpleGrid, HStack, Button, VStack, Icon, Flex, Text, Center, Select } from "@chakra-ui/react";
+import { Input, IconButton, InputRightElement, InputLeftElement, InputGroup, CloseButton, useDisclosure } from "@chakra-ui/react";
+import { Drawer, DrawerBody, DrawerOverlay, DrawerContent, DrawerCloseButton,DrawerHeader, Box } from "@chakra-ui/react";
 import LoadingOverlay from "../components/LoadingOverlay";
 import { fetchShopItems } from "../redux/shop/shop.actions";
 import { selectItems, selectIsFetchingItems, selectSeachParams, selectSearchResults } from "../redux/shop/shop.selectors";
 import { useLocation, useHistory } from "react-router-dom";
 import useThemeColors from "../theme/useThemeColors";
 import ItemCard from "../components/ItemCard";
-import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaSearch, FaFilter } from "react-icons/fa";
 import ShopFilter from "../components/ShopFilter";
 
 export default function Shop() {
@@ -21,6 +22,7 @@ export default function Shop() {
   const storeSearchResults = useSelector(selectSearchResults);
   const isFetchingItems = useSelector(selectIsFetchingItems);
   const [searchParams, setSearchParams] = React.useState({ ...storeSeachParams });
+  const drawerFilter = useDisclosure();
 
   //push new params state to router history
   const pushSearchParam = (param) => {
@@ -49,48 +51,59 @@ export default function Shop() {
   }, [routerLocation, dispatch]);
   return (
     <Container maxW="container.xl">
-      <HStack spacing={8} alignItems="stretch" pb={8}>
+      <Flex sx={{ gap: 16 }} alignItems="stretch" pb={8}>
         {/* Side Panel */}
-        <ShopFilter pushSearchParam={pushSearchParam} searchParams={searchParams} setSearchParams={setSearchParams} />
+        <ShopFilter
+          display={["none", null, "flex"]}
+          pushSearchParam={pushSearchParam}
+          searchParams={searchParams}
+          setSearchParams={setSearchParams}
+        />
         {/* Main Item panel */}
         <VStack spacing={6} w="100%" minH="30vh" alignItems="flex-start" justifyContent="space-between" flexGrow="1">
-          <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
+          {/* Top Row */}
+          <SimpleGrid columns={[1, 2]} w="100%" alignItems="flex-end">
             {/* Search Box Input */}
-            <InputGroup as="form" onSubmit={handleSearch} maxW="260px">
-              <Input
-                placeholder="Search by Name"
-                focusBorderColor="brand.400"
-                value={searchParams.name}
-                onChange={(e) => setSearchParams({ ...searchParams, name: e.target.value })}
-              />
-              {searchParams.name !== "" && (
-                <InputLeftElement>
-                  <CloseButton size="sm" onClick={handleClearSearch} />
-                </InputLeftElement>
-              )}
-              <InputRightElement>
-                <IconButton type="submit" variant="ghost" borderRadius="md" icon={<Icon as={FaSearch} />} />
-              </InputRightElement>
-            </InputGroup>
+            <HStack spacing={4}>
+              <IconButton size="lg" display={["block", null, "none"]} icon={<Icon as={FaFilter} />} onClick={drawerFilter.onOpen} />
+              <InputGroup as="form" onSubmit={handleSearch} maxW="260px">
+                <Input
+                  placeholder="Search by Name"
+                  focusBorderColor="brand.400"
+                  value={searchParams.name}
+                  onChange={(e) => setSearchParams({ ...searchParams, name: e.target.value })}
+                />
+                {searchParams.name !== "" && (
+                  <InputLeftElement>
+                    <CloseButton size="sm" onClick={handleClearSearch} />
+                  </InputLeftElement>
+                )}
+                <InputRightElement zIndex="1">
+                  <IconButton type="submit" variant="ghost" borderRadius="md" icon={<Icon as={FaSearch} />} />
+                </InputRightElement>
+              </InputGroup>
+            </HStack>
             {/* Select items per page */}
-            <Select
-              borderRadius="md"
-              size="sm"
-              maxW="160px"
-              mt={2}
-              variant="outline"
-              color={colors.textSecondary}
-              pl={1}
-              focusBorderColor="brand.400"
-              title="Items per page"
-              onChange={(e) => pushSearchParam({ limit: e.target.value })}
-              value={searchParams.limit}
-            >
-              <option value="6">6 items per page</option>
-              <option value="12">12 items per page</option>
-              <option value="24">24 items per page</option>
-            </Select>
-          </Flex>
+            <Box justifySelf={["flex-start", "flex-end"]} mt={4}>
+              <Select
+                borderRadius="md"
+                size="sm"
+                maxW="160px"
+                variant="outline"
+                color={colors.textSecondary}
+                pl={1}
+                focusBorderColor="brand.400"
+                title="Items per page"
+                onChange={(e) => pushSearchParam({ limit: e.target.value })}
+                value={searchParams.limit}
+              >
+                <option value="6">6 items per page</option>
+                <option value="12">12 items per page</option>
+                <option value="24">24 items per page</option>
+              </Select>
+            </Box>
+          </SimpleGrid>
+
           {/* Item grid */}
           <LoadingOverlay isLoading={isFetchingItems}>
             <SimpleGrid columns={[1, 2, 2, 3]} spacing={8}>
@@ -102,8 +115,8 @@ export default function Shop() {
               </Center>
             )}
           </LoadingOverlay>
-          {/* Page controlls */}
-          <Flex w="100%" justifyContent="space-between" alignItems="flex-end">
+          {/* Page controls */}
+          <Flex w="100%" justifyContent="space-between" alignItems="center">
             <Button
               variant="outline"
               isDisabled={+searchParams.page <= 0}
@@ -125,7 +138,17 @@ export default function Shop() {
             </Button>
           </Flex>
         </VStack>
-      </HStack>
+      </Flex>
+      <Drawer isOpen={drawerFilter.isOpen} placement="left" onClose={drawerFilter.onClose}>
+        <DrawerOverlay />
+        <DrawerContent maxW="200px">
+          <DrawerCloseButton />
+          <DrawerHeader py={2}>Filter items </DrawerHeader>
+          <DrawerBody px={4}>
+            <ShopFilter pushSearchParam={pushSearchParam} searchParams={searchParams} setSearchParams={setSearchParams} />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </Container>
   );
 }

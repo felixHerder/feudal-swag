@@ -67,5 +67,5 @@ const deleteAllUsers = (nextPageToken) => {
 };
 
 
-deleteAnonUsers();
-// deleteAllUsers();
+// deleteAnonUsers();
+deleteAllUsers();

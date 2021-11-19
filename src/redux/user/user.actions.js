@@ -48,7 +48,7 @@ export const signUpUser = (email, password, displayName) => async (dispatch, get
       await createUserWithEmailAndPassword(auth, email, password);
     }
     await updateProfile(auth.currentUser, { displayName });
-    const currentUser = { displayName, cartItemIds, favsItemIds };
+    const currentUser = { displayName, cartItemIds, favsItemIds, uid: auth.currentUser.uid, email, isAnonymous: false };
     await updateUserInDb(currentUser);
     dispatch(updateUserSuccess());
   } catch (error) {

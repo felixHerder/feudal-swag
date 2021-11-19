@@ -1,6 +1,7 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router";
 import { setCartHidden, clearItemFromCart, fetchCartItems } from "../redux/cart/cart.actions";
 import {
   selectCartItemsCount,
@@ -33,12 +34,14 @@ export default function CartPopover() {
   const cartItems = useSelector(selectCartItemsArr);
   const cartTotal = useSelector(selectCartTotal);
   const cartItemIds = useSelector(selectCartItemIds);
+  const routerLocation = useLocation();
   const colors = useThemeColors();
+  const { pathname: routerPath } = useLocation();
   const handleClearItem = (item) => {
     dispatch(clearItemFromCart({ itemId: item.id, sizeId: item.sizeId }));
   };
   React.useEffect(() => {
-    dispatch(fetchCartItems());
+    if (Object.keys(cartItemIds).length > 0) dispatch(fetchCartItems());
   }, [cartItemIds, dispatch]);
 
   return (
@@ -46,7 +49,7 @@ export default function CartPopover() {
       isLazy
       initialFocusRef={null}
       closeOnBlur={false}
-      isOpen={!isCartHidden}
+      isOpen={!isCartHidden && routerLocation.pathname !== "/trunk"}
       onClose={() => {
         dispatch(setCartHidden(true));
       }}
@@ -54,7 +57,13 @@ export default function CartPopover() {
       arrowSize={16}
     >
       <PopoverTrigger>
-        <Button variant="ghost" px={0} position="relative" onClick={() => dispatch(setCartHidden(!isCartHidden))}>
+        <Button
+          variant={routerPath === "/trunk" ? "solid" : "ghost"}
+          colorScheme="gray"
+          px={0}
+          position="relative"
+          onClick={() => dispatch(setCartHidden(!isCartHidden))}
+        >
           <Icon as={TrunkIcon} boxSize={6} fill="currentcolor" />
           <Text fontSize="x-small" as="span" position="absolute" top="50%" left="50%" transform="translate(-50%,-50%)">
             {itemCount}
@@ -65,10 +74,20 @@ export default function CartPopover() {
         <PopoverContent w="auto" mx={4} bg={colors.cardBg}>
           <PopoverArrow bg={colors.cardBg} />
           <PopoverCloseButton size="lg" mt={1} />
-          <PopoverHeader fontSize="lg" py={4} pl={6}>
-            Trunk Preview
+          <PopoverHeader fontSize="lg" py={1} pl={4}>
+            <Button
+              w="80%"
+              my={2}
+              size="sm"
+              isFullWidth
+              as={RouterLink}
+              to="/trunk"
+              onClick={() => dispatch(setCartHidden(true))}
+            >
+              GO TO TRUNK
+            </Button>
           </PopoverHeader>
-          <PopoverBody p={0} maxH="calc(100vh - 260px)" minH="100px" width="300px" overflowY="auto" bg={colors.cardBg}>
+          <PopoverBody p={0} maxH="320px" minH="100px" width="280px" overflowY="auto" bg={colors.cardBg}>
             {cartItems && cartItems.length > 0 && (
               <VStack spacing={0} alignItems="flex-start" position="relative">
                 <Box
@@ -89,6 +108,7 @@ export default function CartPopover() {
                         <CloseButton ml={2} onClick={() => handleClearItem(item)} title="Remove from trunk" />
                         <Image
                           minW="56px"
+                          w="56px"
                           h="56px"
                           src={item.imgurlSmall}
                           alt="cart item"
@@ -130,11 +150,6 @@ export default function CartPopover() {
               <Text fontWeight="bold">TOTAL:</Text>
               <Text fontSize="lg">${cartTotal}</Text>
             </HStack>
-            <Center px={2}>
-              <Button my={2} size="sm" isFullWidth>
-                GO TO TRUNK
-              </Button>
-            </Center>
           </PopoverFooter>
         </PopoverContent>
       </Portal>
