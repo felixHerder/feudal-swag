@@ -29,7 +29,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { signOutUser } from "../firebase/firebase.utils";
-import SignIn from "./SignIn";
+import SignInComp from "./SignInComp";
 import SigninupModal from "./SigninupModal";
 import LoadingWrapper from "./LoadingWrapper";
 
@@ -95,7 +95,7 @@ function UserMenu({ currentUser, isUserLoading }) {
           <ModalCloseButton />
           <ModalHeader>Switch User</ModalHeader>
           <ModalBody py={6}>
-            <SignIn onClose={switchUserModal.onClose} />
+            <SignInComp onClose={switchUserModal.onClose} />
           </ModalBody>
         </ModalContent>
       </Modal>

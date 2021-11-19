@@ -11,7 +11,7 @@ import {
   setDoc,
   deleteDoc,
   updateDoc,
-} from "firebase/firestore/lite";
+} from "firebase/firestore";
 import { db } from "../../firebase/firebase.utils";
 import { clearStoreItems } from "../shop/shop.actions";
 //actions

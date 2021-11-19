@@ -1,8 +1,8 @@
 import React from "react";
 import { Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalHeader, ModalBody } from "@chakra-ui/react";
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
-import SignIn from "./SignIn";
-import SignUp from "./SignUp";
+import SignInComp from "./SignInComp";
+import SignUpComp from "./SignUpComp";
 export default function SigninupModal({ isOpen, onClose,label }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm">
@@ -18,10 +18,10 @@ export default function SigninupModal({ isOpen, onClose,label }) {
             </TabList>
             <TabPanels>
               <TabPanel>
-                <SignIn onClose={onClose} />
+                <SignInComp onClose={onClose} />
               </TabPanel>
               <TabPanel>
-                <SignUp onClose={onClose} />
+                <SignUpComp onClose={onClose} />
               </TabPanel>
             </TabPanels>
           </Tabs>

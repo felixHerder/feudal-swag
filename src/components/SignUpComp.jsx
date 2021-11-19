@@ -4,7 +4,7 @@ import { FormControl, FormLabel, Input, FormErrorMessage } from "@chakra-ui/reac
 import { Box, Text, VStack, Button } from "@chakra-ui/react";
 import { signUpUser, setUserState } from "../redux/user/user.actions";
 
-class SignUp extends React.Component {
+class SignUpComp extends React.Component {
   state = {
     displayName: "",
     email: "",
@@ -15,7 +15,6 @@ class SignUp extends React.Component {
   };
   _isMounted = false;
   componentDidMount() {
-    console.log('mounted')
     this._isMounted = true;
     //reset error state
     this.props.setUserState({ error: false });
@@ -125,4 +124,4 @@ const mapStateToProps = (state) => ({
   isUpdating: state.user.isUpdating,
 });
 const mapDispatchToPtops = { signUpUser, setUserState };
-export default connect(mapStateToProps, mapDispatchToPtops)(SignUp);
+export default connect(mapStateToProps, mapDispatchToPtops)(SignUpComp);

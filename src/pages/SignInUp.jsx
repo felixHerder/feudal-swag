@@ -1,8 +1,8 @@
 import React from "react";
 import { Container, Text } from "@chakra-ui/react";
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
-import SignIn from "../components/SignIn";
-import SignUp from "../components/SignUp";
+import SignInComp from "../components/SignInComp";
+import SignUpComp from "../components/SignUpComp";
 
 const SignInAndSignUpPage = () => (
   <Container centerContent maxW="container.lg">
@@ -14,11 +14,11 @@ const SignInAndSignUpPage = () => (
       <TabPanels>
         <TabPanel>
         <Text mb={4}>Sign in with email and password</Text>
-        <SignIn />
+        <SignInComp />
         </TabPanel>
         <TabPanel>
         <Text mb={4}>Sign up with your email and password</Text>
-        <SignUp />
+        <SignUpComp />
         </TabPanel>
       </TabPanels>
     </Tabs>

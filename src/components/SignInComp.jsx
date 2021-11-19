@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { Box, Text, VStack, Button, Center } from "@chakra-ui/react";
 import { continueWithGoogle, signInUser, setUserState } from "../redux/user/user.actions";
-class SignIn extends React.Component {
+class SignInComp extends React.Component {
   state = { email: "", password: "", googleActive: false };
   _isMounted = false;
   componentDidMount() {
@@ -102,4 +102,4 @@ export default connect(
     isUpdating: state.user.isUpdating,
   }),
   { continueWithGoogle, signInUser, setUserState }
-)(SignIn);
+)(SignInComp);

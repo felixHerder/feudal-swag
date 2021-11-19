@@ -8,7 +8,7 @@ import {
   signInWithPopup,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore/lite";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase.utils";
 import { UserActionTypes } from "./user.types";
 

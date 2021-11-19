@@ -1,4 +1,4 @@
-import { getDoc, doc, collection, getDocs, query, where, orderBy } from "firebase/firestore/lite";
+import { getDoc, doc, collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import ShopActionTypes from "./shop.types";
 import { db } from "../../firebase/firebase.utils";
 
@@ -87,7 +87,7 @@ export const fetchShopItems = (searchParams) => async (dispatch, getState) => {
     dispatch(setSearchParams(searchParams));
     dispatch(fetchShopItemsSuccess(fetchedItems));
   } catch (error) {
-    console.error("error in fetchShopItemsByQueryPaginate", error);
+    console.error("error in fetchShopItems", error);
     dispatch(fetchShopItemsFailed(error.message));
   }
 };

@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route, Redirect, } from "react-router-dom";
 import { connect } from "react-redux";
-import { getFirestore, doc, setDoc } from "firebase/firestore/lite";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
