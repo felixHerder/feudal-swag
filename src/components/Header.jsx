@@ -56,7 +56,7 @@ const Header = () => {
             as={RouterLink}
             to="/shop"
             px={5}
-            rightIcon={<Icon as={IoStorefrontOutline} />}
+            rightIcon={<Icon boxSize={5} as={IoStorefrontOutline} />}
           >
             SHOP
           </Button>
@@ -67,7 +67,7 @@ const Header = () => {
             colorScheme="gray"
             as={RouterLink}
             to="/shop"
-            icon={<Icon as={IoStorefrontOutline} />}
+            icon={<Icon boxSize={5} as={IoStorefrontOutline} />}
           />
           {/* Cart popover toggle button */}
           <Suspense fallback={<LoadingWrapper isLoading={true} size={4} />}>
