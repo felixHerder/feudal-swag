@@ -23,14 +23,6 @@ export const updateUserFailed = (error) => ({ type: UserActionTypes.UPDATE_USER_
 
 const updateUserInDb = async (currentUser) => {
   const userRef = doc(db, `users/${currentUser.uid}`);
-  //delete empty objects, they clear out old values on setDoc merge
-  const { cartItemIds, favsItemIds } = currentUser;
-  if (cartItemIds && Object.keys(cartItemIds).length === 0) {
-    delete currentUser.cartItemIds;
-  }
-  if (favsItemIds && Object.keys(favsItemIds).length === 0) {
-    delete currentUser.favsItemIds;
-  }
   const oldUser = (await getDoc(userRef)).data();
   const newUser = { ...oldUser, ...currentUser };
   newUser.cartItemIds = { ...oldUser.cartItemIds, ...currentUser.cartItemIds };
@@ -75,7 +67,7 @@ export const signInUser = (email, password) => async (dispatch, getState) => {
     await signInWithEmailAndPassword(auth, email, password);
     if (Object.keys(currentUser).length > 0) {
       currentUser.uid = auth.currentUser.uid;
-      await updateUserInDb({ currentUser });
+      await updateUserInDb(currentUser);
     }
     dispatch(updateUserSuccess());
   } catch (error) {
