@@ -8,7 +8,6 @@ const StripeCheckoutButton = ({ price, currentUser }) => {
   const publishableKey =
     "pk_test_51J18KZEnp17OBTFVt9pCPe3Y8Yyh9hVm7RfsYn7wSM0vMsGSvNLV1itY39Q05wnNQBy4GilhwPzpBH2wMbUiv0Je00PwpdO7QE";
   const onToken = (token) => {
-    console.log(token);
     alert("Payment Succesful");
   };
   return !currentUser.isAnonymous ? (

@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense,  }  from "react";
 import { Switch, Route, Redirect, } from "react-router-dom";
 import { connect } from "react-redux";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
@@ -68,7 +68,6 @@ class App extends React.Component {
     this.unsubscribeFromAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {
         this.unsubscribeFromUserDoc && this.unsubscribeFromUserDoc();
-        console.log("AuthState User found:", user.uid);
         try {
           const {
             uid,
@@ -95,8 +94,7 @@ class App extends React.Component {
           fetchUserFailed(error.message);
         }
       } else {
-        console.log("AuthState No user found");
-        await signInAnonymously(auth).then(() => console.log("signed in as guest"));
+        await signInAnonymously(auth);
       }
     });
   }

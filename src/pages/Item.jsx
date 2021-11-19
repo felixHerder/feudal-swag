@@ -18,7 +18,6 @@ export default function Item() {
     setItemFetching(true);
     const itemRef = doc(getFirestore(), "items", itemId);
     const unsubsribe = onSnapshot(itemRef, (snapshot) => {
-      console.log("Item Page, updated item:", itemId);
       setItem(snapshot.data());
       setItemFetching(false);
     });
