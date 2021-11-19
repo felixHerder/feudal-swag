@@ -1,4 +1,4 @@
-import { getDoc, doc, collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import { getDoc, doc, collection, getDocs, query, where, orderBy } from "firebase/firestore/lite";
 import ShopActionTypes from "./shop.types";
 import { db } from "../../firebase/firebase.utils";
 

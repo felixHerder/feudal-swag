@@ -1,5 +1,5 @@
 import FavsActionTypes from "./favs.types";
-import { doc, setDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore/lite";
 import { db } from "../../firebase/firebase.utils";
 //actions
 const updateFavsStart = () => ({ type: FavsActionTypes.UPDATE_FAVS_START });

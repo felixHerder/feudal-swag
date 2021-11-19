@@ -1,15 +1,17 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { Container, HStack, Center, Icon, Heading, IconButton, useColorMode, Button, Flex, Box } from "@chakra-ui/react";
 import { SunIcon, MoonIcon } from "@chakra-ui/icons";
 import { ReactComponent as Logo } from "../assets/banner.svg";
-import CartPopover from "./CartPopover";
 import { IoStorefrontOutline } from "react-icons/io5";
-import UserMenu from "./UserMenu";
 import FavIcon from "./FavIcon";
 import { useSelector } from "react-redux";
 import { selectFavsItemIdsArr } from "../redux/favs/favs.selectors";
 import useThemeColors from "../theme/useThemeColors";
+import LoadingWrapper from "./LoadingWrapper";
+
+const UserMenu = lazy(() => import("./UserMenu"));
+const CartPopover = lazy(() => import("./CartPopover"));
 
 const Header = () => {
   const favsIds = useSelector(selectFavsItemIdsArr);
@@ -68,7 +70,9 @@ const Header = () => {
             icon={<Icon as={IoStorefrontOutline} />}
           />
           {/* Cart popover toggle button */}
-          <CartPopover />
+          <Suspense fallback={<LoadingWrapper isLoading={true} size={4} />}>
+            <CartPopover />
+          </Suspense>
           {/* Favs link and badge*/}
           <Box position="relative">
             <IconButton
@@ -87,7 +91,9 @@ const Header = () => {
             )}
           </Box>
           {/* User menu options */}
-          <UserMenu />
+          <Suspense fallback={<LoadingWrapper isLoading={true} size={4} />}>
+            <UserMenu />
+          </Suspense>
           {/* Theme toggle button */}
           <IconButton
             size="md"

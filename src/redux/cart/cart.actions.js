@@ -1,6 +1,6 @@
 import CartActionTypes from "./cart.types.js";
 import { db } from "../../firebase/firebase.utils";
-import { doc, setDoc, getDoc} from "firebase/firestore";
+import { doc, setDoc, getDoc} from "firebase/firestore/lite";
 
 const updateCartStart = () => ({ type: CartActionTypes.UPDATE_CART_START });
 const updateCartSuccess = () => ({ type: CartActionTypes.UPDATE_CART_SUCCESS });

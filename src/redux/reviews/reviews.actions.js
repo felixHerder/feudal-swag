@@ -1,5 +1,17 @@
 import ReviewsActionTypes from "./reviews.types";
-import { doc, getDoc, getDocs, query, limit, collection, startAfter, orderBy, setDoc, deleteDoc,updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  limit,
+  collection,
+  startAfter,
+  orderBy,
+  setDoc,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore/lite";
 import { db } from "../../firebase/firebase.utils";
 import { clearStoreItems } from "../shop/shop.actions";
 //actions
@@ -114,7 +126,7 @@ export const deleteReview = (itemId, userId) => async (dispatch, getState) => {
     await deleteDoc(doc(reviewsColRef, userId));
     const reviewedItems = { ...getState().user.currentUser.reviewedItems };
     delete reviewedItems[itemId];
-    await updateDoc(doc(db, "users", userId), { reviewedItems }, );
+    await updateDoc(doc(db, "users", userId), { reviewedItems });
     dispatch(fetchReviewsById({ itemId }));
     dispatch(setUserReviewed(false));
     dispatch(submitReviewSuccess());

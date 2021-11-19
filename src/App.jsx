@@ -1,23 +1,24 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import { getFirestore, doc, setDoc, onSnapshot } from "firebase/firestore";
-import Home from "./pages/Home";
-import Shop from "./pages/Shop";
-import Header from "./components/Header";
-import BreadCrumbs from "./components/Breadcrumbs";
-import SignInAndSignUpPage from "./pages/SignInUp";
-// import CheckoutPage from "./pages/checkout/checkout.component";
-//eslint-disable-next-line
+import { getFirestore, doc, setDoc } from "firebase/firestore/lite";
+import { onSnapshot } from "firebase/firestore";
+
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { fetchUserFailed, fetchUserStart, fetchUserSuccess, setCurrentUser } from "./redux/user/user.actions";
 import {} from "./redux/user/user.selectors";
-// import Section from "./pages/Section";
-import Item from "./pages/Item";
 import { setFavsFromUser } from "./redux/favs/favs.actions";
 import { setCartFromUser } from "./redux/cart/cart.actions";
-import Favs from "./pages/Favs";
-import Trunk from "./pages/Trunk";
+import LoadingWrapper from "./components/LoadingWrapper";
+import Header from "./components/Header";
+import BreadCrumbs from "./components/Breadcrumbs";
+
+const SignInAndSignUpPage = lazy(() => import("./pages/SignInUp"));
+const Item = lazy(() => import("./pages/Item"));
+const Shop = lazy(() => import("./pages/Shop"));
+const Favs = lazy(() => import("./pages/Favs"));
+const Trunk = lazy(() => import("./pages/Trunk"));
+const Home = lazy(() => import("./pages/Home"));
 
 class App extends React.Component {
   render() {
@@ -26,31 +27,33 @@ class App extends React.Component {
       <>
         <Header />
         <BreadCrumbs />
-        <Switch>
-          <Route exact path="/">
-            <Home />
-          </Route>
-          <Route exact path="/shop">
-            <Shop />
-          </Route>
-          <Route exact path="/shop/:section/:name">
-            <Item />
-          </Route>
-          <Route exact path="/shop/:section">
-            {(history) => <Redirect to={`/shop?section=${history.match.params.section}`} />}
-          </Route>
-          <Route exact path="/favs">
-            <Favs />
-          </Route>
-          <Route exact path="/trunk">
-            <Trunk />
-          </Route>
-          {/* <Route path="/checkout" component={CheckoutPage} /> */}
-          <Route exact path="/signin">
-            {!currentUser || currentUser.isAnonymous ? <SignInAndSignUpPage /> : <Redirect to="/" />}
-            {/* <SignInAndSignUpPage />  */}
-          </Route>
-        </Switch>
+        <main style={{ minHeight: "90vh" }}>
+          <Suspense fallback={<LoadingWrapper isLoading={true} />}>
+            <Switch>
+              <Route exact path="/">
+                <Home />
+              </Route>
+              <Route exact path="/shop">
+                <Shop />
+              </Route>
+              <Route exact path="/shop/:section/:name">
+                <Item />
+              </Route>
+              <Route exact path="/shop/:section">
+                {(history) => <Redirect to={`/shop?section=${history.match.params.section}`} />}
+              </Route>
+              <Route exact path="/favs">
+                <Favs />
+              </Route>
+              <Route exact path="/trunk">
+                <Trunk />
+              </Route>
+              <Route exact path="/signin">
+                {!currentUser || currentUser.isAnonymous ? <SignInAndSignUpPage /> : <Redirect to="/" />}
+              </Route>
+            </Switch>
+          </Suspense>
+        </main>
       </>
     );
   }
