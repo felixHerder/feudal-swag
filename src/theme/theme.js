@@ -8,8 +8,9 @@ const fonts = {
   body: `Cabin, ${defaultTheme.fonts?.body}`,
 };
 const config = {
-  initialColorMode: "light",
-  useSystemColorMode: true,
+  initialColorMode: "system",
+  useSystemColorMode: false,
+  colorModeManager: "localStorage",
 };
 const components = {
   Link: {
