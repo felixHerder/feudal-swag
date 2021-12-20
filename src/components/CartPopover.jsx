@@ -88,7 +88,7 @@ export default function CartPopover() {
             </Button>
           </PopoverHeader>
           <PopoverBody p={0} maxH="320px" minH="100px" width="280px" overflowY="auto" bg={colors.cardBg}>
-            {cartItems && cartItems.length > 0 && (
+            {itemCount > 0 && cartItems && cartItems.length > 0 && (
               <VStack spacing={0} alignItems="flex-start" position="relative">
                 <Box
                   position="absolute"
